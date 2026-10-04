@@ -23,6 +23,18 @@ export interface ChoiceExercise {
 }
 
 /**
+ * Tones: the hanzi and its pinyin without tone marks are shown, and the user
+ * picks the right tones among four spellings that differ only in tones.
+ */
+export interface ToneExercise {
+  type: 'tone-choice'
+  item: StudyItem
+  /** Pinyin with tone marks, in the order they are shown; one of them is `answer`. */
+  options: readonly string[]
+  answer: string
+}
+
+/**
  * Writing: the meaning and pinyin are shown and the user writes the hanzi
  * stroke by stroke. It has its own progress (ProgressData.writing).
  */
@@ -35,7 +47,7 @@ export interface WritingExercise {
  * All exercise types. It is a union discriminated by `type`:
  * to add a new exercise, add its interface here.
  */
-export type Exercise = FlashcardExercise | ChoiceExercise | WritingExercise
+export type Exercise = FlashcardExercise | ChoiceExercise | ToneExercise | WritingExercise
 
 export type ExerciseType = Exercise['type']
 

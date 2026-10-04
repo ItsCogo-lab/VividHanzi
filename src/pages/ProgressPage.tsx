@@ -9,10 +9,16 @@ import { useDictionary, useLoadItems } from '../features/dictionary/dictionaryCo
 import { hskCharacterItems, hskWordItems } from '../features/dictionary/hskDictionary.ts'
 import { getStudyItem } from '../features/dictionary/studyItem.ts'
 import { useProgress } from '../features/progress/progressContext.ts'
+import { AccuracyChart, ActivityCalendar, BarChart } from '../features/progress/components/ProgressCharts.tsx'
+import { summarizeSkills, type Skill } from '../features/progress/skills.ts'
+import { useSettings } from '../features/settings/settingsContext.ts'
 import {
+  getActivityCalendar,
   getAnswerTotals,
   getDifficultItems,
   getRecentActivity,
+  getReviewForecast,
+  getWeeklyAccuracy,
   summarizeCharacters,
   summarizeItems,
   summarizeWriting,
@@ -20,8 +26,18 @@ import {
 } from '../features/progress/stats.ts'
 import { getCurrentStreak, getLongestStreak } from '../features/progress/streak.ts'
 import type { ProgressData } from '../features/progress/types.ts'
-import { formatPercent, formatShortDay, t } from '../i18n/index.ts'
+import { formatPercent, formatShortDay, t, type MessageKey } from '../i18n/index.ts'
 import { fromDateKey } from '../lib/dates.ts'
+
+/** Days in the answers chart. */
+const RECENT_DAYS = 30
+
+const SKILL_LABELS: Record<Skill, MessageKey> = {
+  meaning: 'skills.meaning',
+  pinyin: 'skills.pinyin',
+  tones: 'skills.tones',
+  writing: 'skills.writing',
+}
 
 /** Difficult items listed; the practice button covers all of them. */
 const MAX_DIFFICULT_SHOWN = 10
@@ -48,8 +64,7 @@ export function ProgressPage() {
 type StatisticsProps = { progress: ProgressData; totals: AnswerTotals; now: Date }
 
 function Statistics({ progress, totals, now }: StatisticsProps) {
-  const recent = getRecentActivity(progress.activity, now)
-  const maxAnswers = Math.max(...recent.map((day) => day.answers), 1)
+  const { dailyGoal } = useSettings().settings
   const byKind = [
     { label: t('dashboard.characters'), summary: summarizeCharacters(hskCharacterItems, hskWordItems, progress, now) },
     { label: t('dashboard.words'), summary: summarizeItems(hskWordItems, progress, now) },
@@ -78,25 +93,60 @@ function Statistics({ progress, totals, now }: StatisticsProps) {
         </dl>
       </section>
 
-      <StatsSection id="stats-last-days" title={t('stats.lastDays')}>
-        <DataTable
-          labelledBy="stats-last-days"
-          headers={[t('stats.day'), t('stats.answers'), t('stats.correct')]}
-          rows={recent.map((day) => [
-            formatShortDay(fromDateKey(day.date)),
-            <span key="answers" className="inline-flex items-center gap-3">
-              {/* Decorative bar: the number next to it already gives the value */}
-              <span
-                aria-hidden="true"
-                className="h-2 rounded-full bg-accent"
-                style={{ width: `${(day.answers / maxAnswers) * 6}rem` }}
-              />
-              {day.answers}
-            </span>,
-            day.correct,
-          ])}
-        />
+      <StatsSection id="stats-calendar" title={t('charts.calendar')}>
+        <ActivityCalendar weeks={getActivityCalendar(progress.activity, now)} goal={dailyGoal} />
       </StatsSection>
+
+      <div className="grid gap-4 sm:gap-6 lg:grid-cols-2">
+        <StatsSection id="stats-last-days" title={t('stats.lastDays')}>
+          <BarChart
+            bars={getRecentActivity(progress.activity, now, RECENT_DAYS).map((day) => ({ date: day.date, value: day.answers }))}
+            label={t('stats.lastDays')}
+            valueLabel={t('stats.answers')}
+            goal={dailyGoal}
+            goalLabel={t('charts.goalLine', { goal: dailyGoal })}
+          />
+        </StatsSection>
+
+        <StatsSection id="stats-accuracy" title={t('charts.accuracyByWeek')}>
+          <AccuracyChart weeks={getWeeklyAccuracy(progress.activity, now)} />
+        </StatsSection>
+      </div>
+
+      <div className="grid gap-4 sm:gap-6 lg:grid-cols-2">
+        <StatsSection id="stats-forecast" title={t('charts.forecast')}>
+          <p className="mb-3 text-ink-muted">{t('charts.forecastDescription')}</p>
+          <BarChart
+            bars={getReviewForecast(progress, now).map((day) => ({ date: day.date, value: day.count }))}
+            label={t('charts.forecast')}
+            valueLabel={t('charts.reviews')}
+            formatEdge={(date) => formatShortDay(fromDateKey(date))}
+          />
+        </StatsSection>
+
+        <StatsSection id="stats-by-skill" title={t('skills.title')}>
+          <p className="mb-3 text-ink-muted">{t('skills.description')}</p>
+          <DataTable
+            labelledBy="stats-by-skill"
+            headers={[t('skills.skill'), t('skills.practiced'), t('skills.solid'), t('stats.accuracy')]}
+            rows={summarizeSkills(progress).map((summary) => [
+              t(SKILL_LABELS[summary.skill]),
+              summary.practiced,
+              <span key="solid" className="inline-flex items-center gap-3">
+                {/* Decorative bar: the number next to it already gives the value */}
+                <span aria-hidden="true" className="hidden h-2 w-16 overflow-hidden rounded-full bg-line sm:inline-block">
+                  <span
+                    className="block h-full rounded-full bg-accent"
+                    style={{ width: `${summary.practiced > 0 ? (summary.solid / summary.practiced) * 100 : 0}%` }}
+                  />
+                </span>
+                {summary.solid}
+              </span>,
+              summary.accuracy === undefined ? '–' : formatPercent(summary.accuracy),
+            ])}
+          />
+        </StatsSection>
+      </div>
 
       <StatsSection id="stats-by-status" title={t('stats.byStatus')}>
         <DataTable

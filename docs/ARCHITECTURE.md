@@ -470,8 +470,26 @@ Distractor rules (covered by tests):
 - For characters with several readings the first one is shown, so that the
   correct option is not distinguishable by being a list.
 
-**Session.** `session.ts` creates the exercises (random items and a buildable
-type for each) and manages advancement with a pure reducer
+**Tones.** `tone-choice` (`toneExercises.ts`) shows the hanzi and its pinyin
+without marks ("ni hao"); the four options differ only in tones. Each wrong
+option changes the tone of one syllable (the neutral tone only after the
+first syllable). Characters with several readings are left out, since another
+reading could be a "wrong" option that is also right. The options are plain
+strings, so it has its own `ToneExercise` type and `ToneQuestion` component;
+the option buttons and feedback are shared with `ChoiceQuestion`
+(`ChoiceParts.tsx`, `choiceState.ts`).
+
+**Skills.** Every exercise type trains one skill (`EXERCISE_SKILLS` in
+`progress/skills.ts`): meaning (flashcard, meaning and hanzi choice), pinyin,
+tones and writing. Spaced repetition stays one recognition level per item
+(plus writing); on top of that each item keeps `skills` with correct, wrong
+and correct answers in a row per skill. The Progress page sums them per skill
+("solid" = right at least twice in a row), and `pickDefinition` picks an
+item's exercise type with weight 1 / (1 + streak of its skill), so weaker
+skills come up more often.
+
+**Session.** `session.ts` creates the exercises (items by priority and a
+buildable type for each, see `pickDefinition`) and manages advancement with a pure reducer
 (`sessionReducer`), which `PracticeSession` uses with `useReducer`. Each answer
 produces an `ExerciseResult { itemId, exerciseType, correct }`, which is what the
 progress system will consume in Phase 8.

@@ -46,3 +46,13 @@ export function formatShortDay(date: Date): string {
 export function formatDate(date: Date): string {
   return new Intl.DateTimeFormat(ACTIVE_UI_LOCALE, { dateStyle: 'medium' }).format(date)
 }
+
+/** Short month in the active language: "Sep". */
+export function formatMonth(date: Date): string {
+  return new Intl.DateTimeFormat(ACTIVE_UI_LOCALE, { month: 'short' }).format(date)
+}
+
+/** Day and month in the active language: "Sep 28". */
+export function formatDayMonth(date: Date): string {
+  return new Intl.DateTimeFormat(ACTIVE_UI_LOCALE, { month: 'short', day: 'numeric' }).format(date)
+}

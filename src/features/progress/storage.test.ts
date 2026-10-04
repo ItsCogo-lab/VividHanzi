@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import { memoryStorage } from '../../test/memoryStorage.ts'
 import { createEmptyProgress, recordAnswer, recordWritingAnswer } from './progress.ts'
-import { loadProgress, saveProgress } from './storage.ts'
+import { loadProgress, PROGRESS_STORAGE_KEY, saveProgress } from './storage.ts'
 
 const now = new Date(2026, 8, 28, 10, 0)
 
@@ -55,5 +55,19 @@ describe('saveProgress / loadProgress', () => {
     }
 
     expect(loadProgress(memoryStorage({ 'hanzivocab.progress': JSON.stringify(saved) }))).toEqual(good)
+  })
+})
+
+describe('skills in saved progress', () => {
+  it('keeps per-skill records and drops items whose skills are malformed', () => {
+    const storage = memoryStorage()
+    const progress = recordAnswer(createEmptyProgress(), 'word:你好', true, new Date(), 'tones')
+    saveProgress(progress, storage)
+    expect(loadProgress(storage).items['word:你好']?.skills).toEqual({ tones: { correct: 1, wrong: 0, streak: 1 } })
+
+    const saved = JSON.parse(storage.getItem(PROGRESS_STORAGE_KEY)!)
+    saved.items['word:你好'].skills = { tones: 'oops' }
+    storage.setItem(PROGRESS_STORAGE_KEY, JSON.stringify(saved))
+    expect(loadProgress(storage).items['word:你好']).toBeUndefined()
   })
 })

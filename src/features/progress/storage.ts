@@ -50,10 +50,20 @@ function isItemProgress(value: unknown): value is ItemProgress {
     typeof value.itemId === 'string' &&
     ['timesSeen', 'timesCorrect', 'timesWrong', 'masteryLevel'].every((key) => typeof value[key] === 'number') &&
     typeof value.lastReviewedAt === 'string' &&
-    typeof value.nextReviewAt === 'string'
+    typeof value.nextReviewAt === 'string' &&
+    (value.skills === undefined || isSkills(value.skills))
   )
 }
 
 function isDailyActivity(value: unknown): value is DailyActivity {
   return isRecord(value) && typeof value.answers === 'number' && typeof value.correct === 'number'
+}
+
+function isSkills(value: unknown): boolean {
+  return (
+    isRecord(value) &&
+    Object.values(value).every(
+      (stats) => isRecord(stats) && ['correct', 'wrong', 'streak'].every((key) => typeof stats[key] === 'number'),
+    )
+  )
 }

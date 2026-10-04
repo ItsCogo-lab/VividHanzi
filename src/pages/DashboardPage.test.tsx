@@ -51,4 +51,13 @@ describe('DashboardPage', () => {
 
     expect(screen.getByText(/teach you new items/)).toBeInTheDocument()
   })
+
+  it("shows how far today's answers are from the daily goal", () => {
+    let progress = createEmptyProgress()
+    for (let index = 0; index < 5; index++) progress = recordAnswer(progress, 'word:谢谢', true, new Date())
+    renderDashboard(progress)
+
+    expect(screen.getByRole('progressbar', { name: 'Daily goal: 5 of 20 answers' })).toBeInTheDocument()
+    expect(screen.getByText(/15 more to reach it/)).toBeInTheDocument()
+  })
 })

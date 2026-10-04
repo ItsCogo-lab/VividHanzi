@@ -4,7 +4,11 @@ import { listStudyItems, type StudyItemId } from '../dictionary/studyItem.ts'
 import { testCharacters, testWords } from '../dictionary/testData.ts'
 import { createEmptyProgress, MASTERED_LEVEL, recordAnswer, recordWritingAnswer } from './progress.ts'
 import {
+  getActivityCalendar,
   getAnswerTotals,
+  getGoalStreak,
+  getReviewForecast,
+  getWeeklyAccuracy,
   getDifficultItems,
   getRecentActivity,
   summarizeCharacters,
@@ -134,5 +138,74 @@ describe('summarizeWriting', () => {
     let progress = recordAnswer(createEmptyProgress(), 'char:好', true, monday)
     progress = recordWritingAnswer(progress, 'char:你', false, monday)
     expect(summarizeWriting(progress)).toEqual({ learning: 1, mastered: 0 })
+  })
+})
+
+describe('getActivityCalendar', () => {
+  it('returns whole weeks from Monday, the current one last, with days after today marked as future', () => {
+    // 2026-10-01 is a Thursday
+    const thursday = new Date(2026, 9, 1, 10)
+    const weeks = getActivityCalendar({ '2026-10-01': { answers: 5, correct: 4 } }, thursday, 3)
+    expect(weeks).toHaveLength(3)
+    expect(weeks.every((week) => week.length === 7)).toBe(true)
+    expect(weeks[0]![0]!.date).toBe('2026-09-14')
+    const lastWeek = weeks[2]!
+    expect(lastWeek[0]!.date).toBe('2026-09-28')
+    expect(lastWeek[3]).toMatchObject({ date: '2026-10-01', answers: 5, future: false })
+    expect(lastWeek[4]).toMatchObject({ date: '2026-10-02', answers: 0, future: true })
+  })
+})
+
+describe('getWeeklyAccuracy', () => {
+  it('adds up each week and leaves weeks without answers empty', () => {
+    const activity = { '2026-09-28': { answers: 4, correct: 3 }, '2026-09-30': { answers: 6, correct: 5 } }
+    const weeks = getWeeklyAccuracy(activity, new Date(2026, 9, 1), 2)
+    expect(weeks).toEqual([
+      { weekStart: '2026-09-21', answers: 0, accuracy: undefined },
+      { weekStart: '2026-09-28', answers: 10, accuracy: 0.8 },
+    ])
+  })
+})
+
+describe('getReviewForecast', () => {
+  it('counts reviews per day, with overdue ones today and basic items left out', () => {
+    const progress = createEmptyProgress()
+    const record = (itemId: StudyItemId, nextReviewAt: Date, basic?: true) => ({
+      itemId,
+      timesSeen: 1,
+      timesCorrect: 1,
+      timesWrong: 0,
+      masteryLevel: 1,
+      lastReviewedAt: monday.toISOString(),
+      nextReviewAt: nextReviewAt.toISOString(),
+      ...(basic && { basic }),
+    })
+    progress.items = {
+      'word:你好': record('word:你好', new Date(2026, 8, 20)),
+      'word:谢谢': record('word:谢谢', new Date(2026, 8, 30)),
+      'word:再见': record('word:再见', new Date(2026, 8, 30), true),
+      'word:老师': record('word:老师', new Date(2026, 11, 1)),
+    }
+    expect(getReviewForecast(progress, monday, 3)).toEqual([
+      { date: '2026-09-28', count: 1 },
+      { date: '2026-09-29', count: 0 },
+      { date: '2026-09-30', count: 1 },
+    ])
+  })
+})
+
+describe('getGoalStreak', () => {
+  const activity = {
+    '2026-09-26': { answers: 25, correct: 20 },
+    '2026-09-27': { answers: 20, correct: 20 },
+    '2026-09-28': { answers: 5, correct: 5 },
+  }
+
+  it('counts days in a row with the goal met, from yesterday while today is not met yet', () => {
+    expect(getGoalStreak(activity, monday, 20)).toBe(2)
+  })
+
+  it('includes today once it is met', () => {
+    expect(getGoalStreak(activity, monday, 5)).toBe(3)
   })
 })

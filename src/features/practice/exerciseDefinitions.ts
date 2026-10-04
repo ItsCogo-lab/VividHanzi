@@ -1,6 +1,7 @@
 import type { StudyItem } from '../dictionary/studyItem.ts'
 import type { RandomFn } from '../../lib/random.ts'
 import { hanziChoiceDefinition, meaningChoiceDefinition, pinyinChoiceDefinition } from './choiceExercises.ts'
+import { toneChoiceDefinition } from './toneExercises.ts'
 import type { Exercise, FlashcardExercise } from './types.ts'
 
 /**
@@ -29,4 +30,5 @@ export const EXERCISE_DEFINITIONS: readonly ExerciseDefinition[] = [
   meaningChoiceDefinition,
   pinyinChoiceDefinition,
   hanziChoiceDefinition,
+  toneChoiceDefinition,
 ]

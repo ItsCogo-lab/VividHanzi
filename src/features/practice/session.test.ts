@@ -14,6 +14,7 @@ import {
   createRetryExercise,
   getFirstAttemptResults,
   isRetry,
+  pickDefinition,
   sessionReducer,
   summarizeResults,
 } from './session.ts'
@@ -224,5 +225,27 @@ describe('summarizeResults', () => {
 
   it('works with an empty session', () => {
     expect(summarizeResults([])).toEqual({ total: 0, correct: 0, wrong: 0 })
+  })
+})
+
+describe('pickDefinition', () => {
+  const item = pool.find((candidate) => candidate.kind === 'word')!
+  const itemId = getStudyItemId(item)
+  const definitions = [
+    { type: 'meaning-choice', canBuild: () => true, build: () => ({ type: 'flashcard', item }) },
+    { type: 'tone-choice', canBuild: () => true, build: () => ({ type: 'flashcard', item }) },
+  ] as unknown as ExerciseDefinition[]
+
+  it('picks evenly between skills that are equally known', () => {
+    expect(pickDefinition(definitions, item, createEmptyProgress(), () => 0.49)?.type).toBe('meaning-choice')
+    expect(pickDefinition(definitions, item, createEmptyProgress(), () => 0.51)?.type).toBe('tone-choice')
+  })
+
+  it('leans towards the weaker skill', () => {
+    let progress = createEmptyProgress()
+    for (let index = 0; index < 3; index++) progress = recordAnswer(progress, itemId, true, new Date(), 'meaning')
+    // Weights: meaning 1/4, tones 1 → meaning only below 0.2
+    expect(pickDefinition(definitions, item, progress, () => 0.19)?.type).toBe('meaning-choice')
+    expect(pickDefinition(definitions, item, progress, () => 0.21)?.type).toBe('tone-choice')
   })
 })

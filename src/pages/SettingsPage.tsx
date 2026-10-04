@@ -5,7 +5,7 @@ import { PageHeader } from '../components/ui/PageHeader.tsx'
 import { InstallSetting } from '../features/install/components/InstallSetting.tsx'
 import { ToneLegend } from '../features/dictionary/components/ToneLegend.tsx'
 import { useProgress } from '../features/progress/progressContext.ts'
-import { SESSION_SIZE_OPTIONS } from '../features/settings/settings.ts'
+import { DAILY_GOAL_OPTIONS, SESSION_SIZE_OPTIONS } from '../features/settings/settings.ts'
 import { useSettings } from '../features/settings/settingsContext.ts'
 import { THEME_OPTIONS } from '../features/settings/theme.ts'
 import { t } from '../i18n/index.ts'
@@ -57,6 +57,7 @@ export function SettingsPage() {
         <SettingsSection title={t('settings.practice')}>
           <div className="flex flex-col gap-4">
             <SessionSizeSetting />
+            <DailyGoalSetting />
             <ToggleSetting setting="writingExercises" label={t('settings.writing')} hint={t('settings.writingHint')} />
           </div>
         </SettingsSection>
@@ -111,26 +112,59 @@ const SEGMENTED_OPTION_CLASSES =
 function SessionSizeSetting() {
   const { settings, updateSettings } = useSettings()
   return (
+    <NumberChoiceSetting
+      name="session-size"
+      legend={t('settings.sessionSize')}
+      options={SESSION_SIZE_OPTIONS}
+      value={settings.sessionSize}
+      onChange={(sessionSize) => updateSettings({ sessionSize })}
+    />
+  )
+}
+
+function DailyGoalSetting() {
+  const { settings, updateSettings } = useSettings()
+  return (
+    <NumberChoiceSetting
+      name="daily-goal"
+      legend={t('settings.dailyGoal')}
+      hint={t('settings.dailyGoalHint')}
+      options={DAILY_GOAL_OPTIONS}
+      value={settings.dailyGoal}
+      onChange={(dailyGoal) => updateSettings({ dailyGoal })}
+    />
+  )
+}
+
+type NumberChoiceSettingProps<T extends number> = {
+  name: string
+  legend: string
+  hint?: string
+  options: readonly T[]
+  value: T
+  onChange: (value: T) => void
+}
+
+function NumberChoiceSetting<T extends number>({ name, legend, hint, options, value, onChange }: NumberChoiceSettingProps<T>) {
+  return (
     <fieldset>
-      <legend className="mb-2 text-ink-muted">{t('settings.sessionSize')}</legend>
+      <legend className="mb-2 text-ink-muted">{legend}</legend>
       <div className="flex gap-2">
-        {SESSION_SIZE_OPTIONS.map((size) => (
-          <label
-            key={size}
-            className={`${SEGMENTED_OPTION_CLASSES} tabular-nums`}
-          >
+        {options.map((option) => (
+          <label key={option} className={`${SEGMENTED_OPTION_CLASSES} tabular-nums`}>
             <input
               type="radio"
-              name="session-size"
-              value={size}
-              checked={settings.sessionSize === size}
-              onChange={() => updateSettings({ sessionSize: size })}
+              name={name}
+              value={option}
+              checked={value === option}
+              onChange={() => onChange(option)}
               className="sr-only"
             />
-            {size}
+            {option}
           </label>
         ))}
       </div>
+      {hint && <p className="mt-2 text-sm text-ink-muted">{hint}</p>}
     </fieldset>
   )
 }

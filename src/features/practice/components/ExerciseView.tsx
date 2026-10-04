@@ -3,6 +3,7 @@ import type { StudyItem } from '../../dictionary/studyItem.ts'
 import type { Exercise } from '../types.ts'
 import { ChoiceQuestion } from './ChoiceQuestion.tsx'
 import { Flashcard } from './Flashcard.tsx'
+import { ToneQuestion } from './ToneQuestion.tsx'
 import { WritingExercise } from './WritingExercise.tsx'
 
 type ExerciseViewProps = {
@@ -28,6 +29,8 @@ export function ExerciseView({ exercise, dictionary, onAnswer, onSkip, onLookUp 
     case 'pinyin-choice':
     case 'hanzi-choice':
       return <ChoiceQuestion exercise={exercise} dictionary={dictionary} onAnswer={onAnswer} onLookUp={onLookUp} />
+    case 'tone-choice':
+      return <ToneQuestion exercise={exercise} dictionary={dictionary} onAnswer={onAnswer} onLookUp={onLookUp} />
     case 'writing':
       return (
         <WritingExercise exercise={exercise} dictionary={dictionary} onAnswer={onAnswer} onSkip={onSkip} onLookUp={onLookUp} />

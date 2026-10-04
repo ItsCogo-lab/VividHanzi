@@ -9,8 +9,15 @@ export const SESSION_SIZE_OPTIONS = [5, 10, 20] as const
 
 export type SessionSize = (typeof SESSION_SIZE_OPTIONS)[number]
 
+/** Daily goals (answers per day) that can be chosen in Settings. */
+export const DAILY_GOAL_OPTIONS = [10, 20, 30, 50] as const
+
+export type DailyGoal = (typeof DAILY_GOAL_OPTIONS)[number]
+
 export interface Settings {
   sessionSize: SessionSize
+  /** Answers per day the user aims for. */
+  dailyGoal: DailyGoal
   /** Color characters by the tone of their pronunciation. */
   toneColors: boolean
   /** Also show pinyin with tone numbers ("ni3 hao3"). */
@@ -25,6 +32,7 @@ export interface Settings {
 
 export const DEFAULT_SETTINGS: Settings = {
   sessionSize: DEFAULT_SESSION_SIZE,
+  dailyGoal: 20,
   toneColors: true,
   toneNumbers: false,
   writingExercises: true,
@@ -50,6 +58,7 @@ export function loadSettings(storage?: KeyValueStorage): Settings {
   if (!isRecord(saved) || saved.version !== CURRENT_VERSION) return DEFAULT_SETTINGS
   return {
     sessionSize: isSessionSize(saved.sessionSize) ? saved.sessionSize : DEFAULT_SETTINGS.sessionSize,
+    dailyGoal: DAILY_GOAL_OPTIONS.find((goal) => goal === saved.dailyGoal) ?? DEFAULT_SETTINGS.dailyGoal,
     toneColors: typeof saved.toneColors === 'boolean' ? saved.toneColors : DEFAULT_SETTINGS.toneColors,
     toneNumbers: typeof saved.toneNumbers === 'boolean' ? saved.toneNumbers : DEFAULT_SETTINGS.toneNumbers,
     writingExercises:
