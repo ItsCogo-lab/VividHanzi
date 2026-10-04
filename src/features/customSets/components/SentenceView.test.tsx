@@ -40,7 +40,7 @@ describe('SentenceView', () => {
     expect(screen.getByText('wǒ zài jī chǎng děng nǐ。')).toBeInTheDocument()
   })
 
-  it('marks uncertain characters with "?", without color, and explains it', () => {
+  it('leaves uncertain characters without color, without a "?", and explains it', () => {
     const container = renderSentence('他长得很高。')
 
     expect([...container.querySelectorAll('[data-tone]')].map((span) => span.textContent)).toEqual(['他', '很', '高'])
