@@ -12,11 +12,22 @@ import type { CustomSentence, SentenceToken } from '../types.ts'
 /**
  * A user sentence: the Chinese colored by tone (the same system as the rest
  * of the app) and the pinyin always below, so color is never the only cue.
- * Punctuation has no color, and neither does an uncertain character: it is
- * marked with "?".
+ * Punctuation has no color, and neither does an uncertain character; a note
+ * below says how many there are.
  */
 export function SentenceView({ sentence }: { sentence: CustomSentence }) {
-  return <AnnotatedSentence tokens={sentence.tokens} />
+  return (
+    <div className="flex flex-col gap-0.5">
+      <AnnotatedSentence tokens={sentence.tokens} />
+      <UncertainNote count={countUncertain(sentence.tokens)} />
+    </div>
+  )
+}
+
+/** Says how many pronunciations couldn't be determined (they have no tone color); nothing if there are none. */
+export function UncertainNote({ count }: { count: number }) {
+  if (count === 0) return null
+  return <p className="text-sm text-ink-muted">{tCount(count, 'custom.uncertainNoteOne', 'custom.uncertainNote')}</p>
 }
 
 /**
@@ -32,7 +43,6 @@ export interface SentenceWords {
 /** A sentence already run through the pinyin engine; also used by the dictionary's example sentences. */
 export function AnnotatedSentence({ tokens, links }: { tokens: readonly SentenceToken[]; links?: SentenceWords }) {
   const { toneColors, toneNumbers } = useSettings().settings
-  const uncertain = countUncertain(tokens)
   const pinyin = tokens.flatMap((token) => (token.pinyin ? [token.pinyin] : [])).join(' ')
   // The tone of each character, if it's colored
   const tones = tokens.flatMap((token) =>
@@ -58,9 +68,6 @@ export function AnnotatedSentence({ tokens, links }: { tokens: readonly Sentence
         )}
         {toneNumbers && pinyin && <span className="text-ink-muted"> ({toToneNumbers(pinyin)})</span>}
       </p>
-      {uncertain > 0 && (
-        <p className="text-sm text-ink-muted">{tCount(uncertain, 'custom.uncertainNoteOne', 'custom.uncertainNote')}</p>
-      )}
     </div>
   )
 }
@@ -155,8 +162,9 @@ function ToneCharacters({ text, tones }: { text: string; tones: readonly (Tone |
 }
 
 /**
- * The syllable of a character (with "?" if uncertain), colored by its tone
- * like the character, or punctuation as is, attached to what comes before.
+ * The syllable of a character, colored by its tone like the character
+ * (uncertain ones keep the plain color), or punctuation as is, attached to
+ * what comes before.
  */
 function PinyinPart({ token, first, toneColors }: { token: SentenceToken; first: boolean; toneColors: boolean }) {
   if (token.pinyin === undefined && !token.uncertain) {
@@ -173,12 +181,12 @@ function PinyinPart({ token, first, toneColors }: { token: SentenceToken; first:
       </>
     )
   }
+  if (token.pinyin === undefined) return <>{space}</>
   return (
     <>
       {space}
-      <span className="underline decoration-dotted underline-offset-4">
-        {token.pinyin ?? '?'}
-        <span aria-hidden="true">?</span>
+      <span>
+        {token.pinyin}
         <span className="sr-only"> ({t('custom.uncertainMark')})</span>
       </span>
     </>
