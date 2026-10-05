@@ -116,19 +116,41 @@ function Practice() {
 }
 
 /**
- * A session of one exercise type only, over all vocabulary, whatever the
- * Settings say. Items that can't be asked that way (了 in a tone question,
- * since it has two readings) are left out; otherwise the usual priorities
- * apply (see selectSessionItems).
+ * A session of one exercise type only, whatever the Settings say, over
+ * everything the user is studying: any item with progress (learned in a set,
+ * or known from their HSK level), never new vocabulary. Items that can't be
+ * asked that way (了 in a tone question, since it has two readings) are left
+ * out; otherwise the usual priorities apply (see selectSessionItems).
  */
 function TypePractice({ definition }: { definition: ExerciseDefinition }) {
+  const { progress } = useProgress()
+  const [itemIds] = useState(() =>
+    Object.values(progress.items)
+      .filter((item) => item !== undefined)
+      .map((item) => item.itemId),
+  )
+  const name = t(EXERCISE_TYPE_LABELS[definition.type])
+
+  return (
+    <>
+      <PageHeader title={t('practice.typeTitle', { type: name })} description={t('practice.typeDescription')} />
+      {/* A custom set item can be non-HSK: its entry is loaded first */}
+      <LoadEntries itemIds={itemIds}>
+        <TypeSession itemIds={itemIds} definition={definition} />
+      </LoadEntries>
+    </>
+  )
+}
+
+function TypeSession({ itemIds, definition }: { itemIds: readonly StudyItemId[]; definition: ExerciseDefinition }) {
   const dictionary = useDictionary()
   const { progress, recordResult } = useProgress()
   const { sessionSize } = useSettings().settings
-  const name = t(EXERCISE_TYPE_LABELS[definition.type])
   const createSession = (current: ProgressData) => {
     nextSessionId += 1
-    const pool = hskWordItems.filter((item) => definition.canBuild(item, hskStudyItems))
+    const pool = itemIds
+      .flatMap((itemId) => getStudyItem(dictionary, itemId) ?? [])
+      .filter((item) => definition.canBuild(item, hskStudyItems))
     const exercises = createSessionExercises(pool, {
       progress: current,
       size: sessionSize,
@@ -139,17 +161,25 @@ function TypePractice({ definition }: { definition: ExerciseDefinition }) {
   }
   const [session, setSession] = useState(() => createSession(progress))
 
+  if (session.exercises.length === 0) {
+    return (
+      <Card className="mx-auto flex max-w-xl flex-col items-start gap-4">
+        <p className="text-lg">{t('practice.typeEmpty')}</p>
+        <ButtonLink to="/study" variant="secondary">
+          {t('nav.study')}
+        </ButtonLink>
+      </Card>
+    )
+  }
+
   return (
-    <>
-      <PageHeader title={t('practice.typeTitle', { type: name })} description={t('practice.typeDescription')} />
-      <PracticeSession
-        key={session.id}
-        exercises={session.exercises}
-        dictionary={dictionary}
-        onResult={recordResult}
-        onRestart={() => setSession(createSession(progress))}
-      />
-    </>
+    <PracticeSession
+      key={session.id}
+      exercises={session.exercises}
+      dictionary={dictionary}
+      onResult={recordResult}
+      onRestart={() => setSession(createSession(progress))}
+    />
   )
 }
 

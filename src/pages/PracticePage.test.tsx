@@ -42,13 +42,32 @@ describe('PracticePage', () => {
 })
 
 describe('PracticePage: one exercise type', () => {
-  it('?type= only gives exercises of that type, whatever the Settings say', () => {
+  it('?type= only gives exercises of that type, whatever the Settings say', async () => {
     const storage = memoryStorage()
     saveSettings({ ...DEFAULT_SETTINGS, exerciseTypes: ['flashcard'] }, storage)
+    saveProgress(introduceItem(createEmptyProgress(), 'word:老师', new Date()), storage)
     renderWithProviders(<PracticePage />, { storage, path: '/study/practice?type=tone-choice' })
 
     expect(screen.getByRole('heading', { name: 'Tones practice' })).toBeInTheDocument()
-    expect(screen.getByRole('heading', { name: 'Which tones are right?' })).toBeInTheDocument()
+    expect(await screen.findByRole('heading', { name: 'Which tones are right?' })).toBeInTheDocument()
+  })
+
+  it('?type= only asks about what the user is studying, never new words', async () => {
+    const user = userEvent.setup()
+    const storage = memoryStorage()
+    let progress = createEmptyProgress()
+    for (const itemId of ['word:学生', 'word:谢谢', 'word:老师'] as const) progress = introduceItem(progress, itemId, new Date())
+    saveProgress(progress, storage)
+    renderWithProviders(<PracticePage />, { storage, path: '/study/practice?type=meaning-choice' })
+
+    expect(await screen.findByText(/^Card 1 of 3$/)).toBeInTheDocument()
+    await finishSession(user)
+    expect(Object.keys(loadProgress(storage).items).sort()).toEqual(['word:学生', 'word:老师', 'word:谢谢'])
+  })
+
+  it('?type= without anything studied says so', async () => {
+    renderWithProviders(<PracticePage />, { path: '/study/practice?type=meaning-choice' })
+    expect(await screen.findByText(/Nothing to practice yet/)).toBeInTheDocument()
   })
 
   it('an unknown type is not found', () => {
