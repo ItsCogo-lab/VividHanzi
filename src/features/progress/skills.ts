@@ -19,8 +19,13 @@ export const EXERCISE_SKILLS: Record<ExerciseType, Skill> = {
   'hanzi-choice': 'meaning',
   'pinyin-choice': 'pinyin',
   'tone-choice': 'tones',
+  'match-pinyin': 'pinyin',
+  'match-meaning': 'meaning',
   writing: 'writing',
 }
+
+/** How an answer went in each skill it tested: one skill for most exercises, two for a flashcard. */
+export type SkillResults = Partial<Record<RecognitionSkill, boolean>>
 
 /** One item's record for one skill. */
 export interface SkillStats {

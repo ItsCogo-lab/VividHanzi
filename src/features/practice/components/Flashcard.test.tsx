@@ -22,7 +22,7 @@ describe('Flashcard', () => {
 
     expect(screen.getByText('你好')).toBeInTheDocument()
     expect(screen.queryByText('nǐ hǎo')).not.toBeInTheDocument()
-    expect(screen.queryByRole('button', { name: 'I knew it' })).not.toBeInTheDocument()
+    expect(screen.queryByRole('button', { name: 'Both' })).not.toBeInTheDocument()
   })
 
   it('on reveal shows pinyin, meaning and the characters of the word', async () => {
@@ -52,20 +52,23 @@ describe('Flashcard', () => {
   })
 
   it.each([
-    ['I knew it', true],
-    ["I didn't know", false],
-  ])('"%s" answers %s', async (buttonName, expected) => {
+    ['Both', true, { pinyin: true, meaning: true }],
+    ['Only the pinyin', false, { pinyin: true, meaning: false }],
+    ['Only the meaning', false, { pinyin: false, meaning: true }],
+    ['Neither', false, { pinyin: false, meaning: false }],
+  ])('"%s" answers %s, with each skill apart', async (buttonName, expected, skills) => {
     const user = userEvent.setup()
     const onAnswer = vi.fn()
     renderWithProviders(<Flashcard exercise={wordExercise} dictionary={dictionary} onAnswer={onAnswer} onLookUp={() => {}} />)
 
     await user.click(screen.getByRole('button', { name: 'Show answer' }))
+    expect(screen.getByRole('group', { name: 'What did you know?' })).toBeInTheDocument()
     await user.click(screen.getByRole('button', { name: buttonName }))
 
-    expect(onAnswer).toHaveBeenCalledWith(expected)
+    expect(onAnswer).toHaveBeenCalledWith(expected, skills)
   })
 
-  it('Space shows the answer, 1 answers "I didn\'t know" and 2 "I knew it"', async () => {
+  it('Space shows the answer and keys 1-4 grade it (2: only the pinyin)', async () => {
     const user = userEvent.setup()
     const onAnswer = vi.fn()
     renderWithProviders(<Flashcard exercise={wordExercise} dictionary={dictionary} onAnswer={onAnswer} onLookUp={() => {}} />)
@@ -77,6 +80,6 @@ describe('Flashcard', () => {
     expect(screen.getByText('nǐ hǎo')).toBeInTheDocument()
 
     await user.keyboard('2')
-    expect(onAnswer).toHaveBeenCalledExactlyOnceWith(true)
+    expect(onAnswer).toHaveBeenCalledExactlyOnceWith(false, { pinyin: true, meaning: false })
   })
 })

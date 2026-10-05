@@ -97,4 +97,21 @@ describe('SettingsPage', () => {
     expect(screen.getByText(/CC BY-SA 4\.0\)/)).toBeInTheDocument()
     expect(screen.getByRole('link', { name: 'clem109/hsk-vocabulary' })).toBeInTheDocument()
   })
+
+  it('chooses the exercise types, keeping at least one besides writing', async () => {
+    const user = userEvent.setup()
+    const storage = memoryStorage()
+    renderWithProviders(<SettingsPage />, { storage })
+
+    const types = screen.getByRole('group', { name: 'Exercise types in Study sessions' })
+    await user.click(within(types).getByRole('checkbox', { name: /^Tones/ }))
+    expect(loadSettings(storage).exerciseTypes).not.toContain('tone-choice')
+
+    // Turn off every recognition type but Pinyin: its box can't be unchecked
+    for (const name of [/^Flashcards/, /^Meaning/, /^Hanzi/, /^Match pinyin/, /^Match meanings/]) {
+      await user.click(within(types).getByRole('checkbox', { name }))
+    }
+    expect(within(types).getByRole('checkbox', { name: /^Pinyin/ })).toBeDisabled()
+    expect(loadSettings(storage).exerciseTypes).toEqual(['pinyin-choice', 'writing'])
+  })
 })

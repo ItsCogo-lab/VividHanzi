@@ -61,7 +61,7 @@ describe('saveProgress / loadProgress', () => {
 describe('skills in saved progress', () => {
   it('keeps per-skill records and drops items whose skills are malformed', () => {
     const storage = memoryStorage()
-    const progress = recordAnswer(createEmptyProgress(), 'word:你好', true, new Date(), 'tones')
+    const progress = recordAnswer(createEmptyProgress(), 'word:你好', true, new Date(), { tones: true })
     saveProgress(progress, storage)
     expect(loadProgress(storage).items['word:你好']?.skills).toEqual({ tones: { correct: 1, wrong: 0, streak: 1 } })
 
