@@ -143,6 +143,21 @@ nowhere to take its meaning from. They are left out rather than made up.
 
 - 打篮球 [dá lán qiú] (HSK 2)
 
+## HSK 5 words left out of Today's Word
+
+No CC-CEDICT entry with that hanzi and pinyin, or no dictionary entry to open.
+
+- 除夕 [chú xī] (HSK 5)
+- 光滑 [guāng hua] (HSK 5)
+- 系领带 [jì lǐng dài] (HSK 5)
+- 礼拜天 [lǐ bài tiān] (HSK 5)
+- 面积 [miàn ji] (HSK 5)
+- 侵略 [qīn lvè] (HSK 5)
+- 扇子 [shān zi] (HSK 5)
+- 省略 [shěng lvè] (HSK 5)
+- 使劲儿 [shǐ jìn ér] (HSK 5)
+- 元旦 [yuán dàn] (HSK 5)
+
 ## Full dictionary: disagreements between sources
 
 Same as above, for the characters of the full dictionary (outside HSK 1-4).

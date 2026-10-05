@@ -8,7 +8,7 @@
  * - Everything is deterministic: same input order, same result.
  */
 import { getWordId } from '../../src/features/dictionary/dictionary.ts'
-import type { Character, HskLevel, Word } from '../../src/features/dictionary/types.ts'
+import type { Character, Hsk5Word, HskLevel, Word } from '../../src/features/dictionary/types.ts'
 import { findEntries, readingOf, traditionalOf, usableMeanings, type CedictEntry, type CedictIndex } from './sources/cedict.ts'
 import type { HskWord } from './sources/hsk.ts'
 import type { MakeMeAHanziCharacter } from './sources/makemeahanzi.ts'
@@ -315,4 +315,61 @@ export function buildFullEntries(cedict: CedictIndex, hsk: Pick<BaseEntries, 'ch
   })
 
   return { characters, words, leftOut }
+}
+
+export interface Hsk5Entries {
+  words: Hsk5Word[]
+  /** Words already in HSK 1-4 with the same pinyin, or repeated in the list. */
+  duplicates: string[]
+  /** Words with no CC-CEDICT entry or no dictionary entry to open (listed in docs/DATA_CONFLICTS.md). */
+  leftOut: string[]
+}
+
+/**
+ * HSK 5 words for Today's Word. Meanings come from CC-CEDICT (same
+ * findEntries as HSK 1-4) and each word points to the entry that already
+ * holds those CC-CEDICT entries: an HSK 1-4 word, a full-dictionary word, or,
+ * for a single character, its character entry. Nothing new is added to the
+ * dictionary, so its files stay the same.
+ */
+export function buildHsk5Words(
+  list: readonly HskWord[],
+  cedict: CedictIndex,
+  hsk: Pick<BaseEntries, 'characters' | 'words'>,
+  full: Pick<FullEntries, 'characters' | 'words'>,
+): Hsk5Entries {
+  const duplicates: string[] = []
+  const leftOut: string[] = []
+  const seen = new Set(hsk.words.map((word) => `${word.hanzi} ${word.pinyin}`))
+  const wordByEntry = new Map<CedictEntry, Word>()
+  for (const word of [...hsk.words, ...full.words]) {
+    for (const entry of findEntries(cedict, word.hanzi, word.pinyin)) {
+      if (!wordByEntry.has(entry)) wordByEntry.set(entry, word)
+    }
+  }
+  const characters = new Set([...hsk.characters, ...full.characters].map((character) => character.hanzi))
+
+  const words: Hsk5Word[] = []
+  for (const { hanzi, pinyin } of list) {
+    const key = `${hanzi} ${pinyin}`
+    if (seen.has(key)) {
+      duplicates.push(`${hanzi} [${pinyin}] (HSK 5)`)
+      continue
+    }
+    seen.add(key)
+    const entries = findEntries(cedict, hanzi, pinyin)
+    const meanings = usableMeanings(entries)
+    const word = entries.map((entry) => wordByEntry.get(entry)).find((found) => found !== undefined)
+    const entry = word
+      ? { kind: 'word' as const, id: word.id }
+      : Array.from(hanzi).length === 1 && characters.has(hanzi)
+        ? { kind: 'character' as const, id: hanzi }
+        : undefined
+    if (meanings.length === 0 || !entry) {
+      leftOut.push(`${hanzi} [${pinyin}] (HSK 5)`)
+      continue
+    }
+    words.push({ hanzi, pinyin, meanings: { en: meanings }, entry })
+  }
+  return { words, duplicates, leftOut }
 }
