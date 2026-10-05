@@ -18,7 +18,7 @@ import type { Character, ExampleSet, HskLevel, Word } from '../../src/features/d
 import { validateDictionaryData, validateExampleSet } from '../../src/features/dictionary/validation.ts'
 import { strokeFileName } from '../../src/features/dictionary/strokes.ts'
 import { CHUNK_COUNT, chunkFileName, getChunkIndex } from '../../src/features/dictionary/fullDictionary.ts'
-import { buildBaseEntries, buildFullEntries, crossCheckCharacter, enrichCharacter, type CharacterSources } from './fusion.ts'
+import { buildBaseEntries, buildFullEntries, buildHsk5Words, crossCheckCharacter, enrichCharacter, type CharacterSources } from './fusion.ts'
 import { DATA_RELEASE_DIR } from './dataRelease.ts'
 import { createCedictIndex } from './sources/cedict.ts'
 import { readStrokeData, type StrokeData } from './sources/hanziWriter.ts'
@@ -91,6 +91,9 @@ const hanziSet = new Set(base.characters.map((character) => character.hanzi))
 // The rest of CC-CEDICT, for the full dictionary (data repository, see dataRelease.ts)
 const full = buildFullEntries(cedict, base)
 const allHanzi = new Set([...hanziSet, ...full.characters.map((character) => character.hanzi)])
+
+// HSK 5: only for Today's Word, pointing to entries that already exist (see buildHsk5Words)
+const hsk5 = buildHsk5Words(parseHskList(readSource('hsk-level-5.json')), cedict, base, full)
 
 // --- Make Me a Hanzi: decomposition and etymology ------------------------
 
@@ -240,6 +243,18 @@ for (const level of LEVELS) {
   writeDataFile(level, 'Word', words)
 }
 
+const hsk5Lines = hsk5.words.map((word) => `  ${JSON.stringify(word)},`).join('\n')
+writeFileSync(
+  join(dataDir, 'hsk5/words.ts'),
+  `${header}import type { Hsk5Word } from '../../features/dictionary/types.ts'
+
+// HSK 5 is not a study set: these words are only used by Today's Word.
+export const hsk5Words: Hsk5Word[] = [
+${hsk5Lines}
+]
+`,
+)
+
 // Strokes: copied as is, one per character, to load them when the entry card opens.
 // The folder is deleted first so no files remain for characters that are gone.
 rmSync(strokesDir, { recursive: true, force: true })
@@ -286,6 +301,12 @@ nowhere to take its meaning from. They are left out rather than made up.
 
 ${leftOut.length === 0 ? 'None.' : leftOut.map((word) => `- ${word}`).join('\n')}
 
+## HSK 5 words left out of Today's Word
+
+No CC-CEDICT entry with that hanzi and pinyin, or no dictionary entry to open.
+
+${hsk5.leftOut.length === 0 ? 'None.' : hsk5.leftOut.map((word) => `- ${word}`).join('\n')}
+
 ## Full dictionary: disagreements between sources
 
 Same as above, for the characters of the full dictionary (outside HSK 1-4).
@@ -309,6 +330,7 @@ for (const level of LEVELS) {
   const count = (entries: readonly { hskLevel?: HskLevel }[]) => entries.filter((entry) => entry.hskLevel === level).length
   console.log(`HSK ${level}: ${count(words)} words and ${count(characters)} new characters.`)
 }
+console.log(`HSK 5 (Today's Word only): ${hsk5.words.length} words, ${hsk5.duplicates.length} already in HSK 1-4, ${hsk5.leftOut.length} left out.`)
 console.log(`Dataset generated: ${words.length} words and ${characters.length} characters.`)
 const unranked = [...words, ...characters].filter((entry) => entry.frequencyRank === undefined)
 console.log(`Entries without a wordfreq rank: ${unranked.length}${unranked.length > 0 ? ` (${unranked.map((entry) => entry.hanzi).join(', ')})` : ''}.`)

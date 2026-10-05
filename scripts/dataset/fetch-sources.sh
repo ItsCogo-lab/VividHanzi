@@ -7,10 +7,11 @@ CACHE_DIR="$(dirname "$0")/.cache"
 mkdir -p "$CACHE_DIR"
 cd "$CACHE_DIR"
 
-# HSK 2.0 lists, levels 1 to 4, with the exam's pinyin. MIT license.
-# Pinned to a commit so the result is reproducible.
+# HSK 2.0 lists, levels 1 to 5, with the exam's pinyin. MIT license.
+# Pinned to a commit so the result is reproducible. Levels 1-4 are study
+# sets; level 5 is only used by Today's Word (see build.ts).
 HSK_COMMIT=f3dc9d12ae00d04fa3676b0bd4c43cd58de2c264
-for level in 1 2 3 4; do
+for level in 1 2 3 4 5; do
   curl -sSfL -o "hsk-level-${level}.json" \
     "https://raw.githubusercontent.com/clem109/hsk-vocabulary/${HSK_COMMIT}/hsk-vocab-json/hsk-level-${level}.json"
 done

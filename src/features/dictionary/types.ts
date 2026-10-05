@@ -59,6 +59,20 @@ export interface Character {
   etymology?: Etymology
 }
 
+/**
+ * An HSK 5 word (HSK 2.0). Only Today's Word uses them: HSK 5 is not a study
+ * set. The word itself lives in the full dictionary, so `entry` says where
+ * to open it: its full-dictionary word, or its character if it is a
+ * single-character word.
+ */
+export interface Hsk5Word {
+  hanzi: string
+  /** Exam pinyin from the HSK list, like the HSK 1-4 words. */
+  pinyin: string
+  meanings: Translations
+  entry: { kind: 'character' | 'word'; id: string }
+}
+
 /** A vocabulary word, made of one or more characters. */
 export interface Word {
   /**

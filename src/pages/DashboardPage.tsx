@@ -18,6 +18,7 @@ import { SetSessionButtons } from '../features/studySets/components/SetSessionAc
 import { SetProgressBar } from '../features/studySets/components/SetProgressBar.tsx'
 import { getSetProgress } from '../features/studySets/setProgress.ts'
 import { getStudySet } from '../features/studySets/studySets.ts'
+import { TodaysWord } from '../features/todaysWord/TodaysWord.tsx'
 import { t, type MessageKey } from '../i18n/index.ts'
 
 /** My Studies sets shown on Home; the rest, in Study. */
@@ -60,6 +61,8 @@ export function DashboardPage() {
             <DailyGoal now={now} />
           </div>
         </Card>
+
+        <TodaysWord now={now} />
 
         <Card>
           <h2 className="text-lg font-semibold">{t('dashboard.practiceType')}</h2>

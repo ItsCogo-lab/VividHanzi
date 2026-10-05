@@ -3,7 +3,7 @@ import { ningCharacter, ningmengWord } from '../../src/features/dictionary/testD
 import { cedictFixture } from './fixtures/cedict.ts'
 import { makeMeAHanziFixture } from './fixtures/makemeahanzi.ts'
 import { cjkRadicalsFixture, unihanIrgSourcesFixture, unihanVariantsFixture } from './fixtures/unihan.ts'
-import { buildBaseEntries, buildFullEntries, crossCheckCharacter, enrichCharacter } from './fusion.ts'
+import { buildBaseEntries, buildFullEntries, buildHsk5Words, crossCheckCharacter, enrichCharacter } from './fusion.ts'
 import { createCedictIndex } from './sources/cedict.ts'
 import { parseMakeMeAHanzi } from './sources/makemeahanzi.ts'
 import { loadUnihan } from './sources/unihan.ts'
@@ -191,5 +191,42 @@ describe('buildFullEntries', () => {
   it('leaves out what it cannot teach, and says why', () => {
     expect(full.leftOut).toEqual(['々: CC-CEDICT does not know its reading', '宏碁 [Hóng jī]: no entry for 宏, 碁'])
     expect(full.words.map((word) => word.hanzi)).not.toContain('T恤')
+  })
+})
+
+describe('buildHsk5Words', () => {
+  const index = createCedictIndex(
+    JSON.stringify([
+      { traditional: '好', simplified: '好', pinyin: 'hao3', english: ['good'] },
+      { traditional: '好', simplified: '好', pinyin: 'hao4', english: ['to be fond of'] },
+      { traditional: '學', simplified: '学', pinyin: 'xue2', english: ['to learn'] },
+      { traditional: '生', simplified: '生', pinyin: 'sheng1', english: ['to be born'] },
+      { traditional: '學生', simplified: '学生', pinyin: 'xue2 sheng5', english: ['student'] },
+    ]),
+  )
+  const base = buildBaseEntries([{ level: 1, words: [{ hanzi: '好', pinyin: 'hǎo' }] }], index)
+  const full = buildFullEntries(index, base)
+  const hsk5 = buildHsk5Words(
+    [
+      { hanzi: '学生', pinyin: 'xué sheng' },
+      { hanzi: '好', pinyin: 'hào' },
+      { hanzi: '好', pinyin: 'hǎo' },
+      { hanzi: '好', pinyin: 'hā' },
+    ],
+    index,
+    base,
+    full,
+  )
+
+  it('takes CC-CEDICT meanings and points each word to the dictionary entry that holds it', () => {
+    expect(hsk5.words).toEqual([
+      { hanzi: '学生', pinyin: 'xué sheng', meanings: { en: ['student'] }, entry: { kind: 'word', id: '学生' } },
+      { hanzi: '好', pinyin: 'hào', meanings: { en: ['to be fond of'] }, entry: { kind: 'character', id: '好' } },
+    ])
+  })
+
+  it('skips words already in HSK 1-4 and leaves out the ones CC-CEDICT does not have', () => {
+    expect(hsk5.duplicates).toEqual(['好 [hǎo] (HSK 5)'])
+    expect(hsk5.leftOut).toEqual(['好 [hā] (HSK 5)'])
   })
 })

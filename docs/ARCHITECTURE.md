@@ -88,7 +88,7 @@ Four sections in the main navigation; Progress and Settings hang off the profile
 
 | Section | Route | Content |
 | --- | --- | --- |
-| Home | `/` | Overall progress, streak, pending reviews, sets being studied. |
+| Home | `/` | Overall progress, streak, pending reviews, Today's Word (one HSK 3-5 word per local day, never repeated until all have been shown; `features/todaysWord`), sets being studied. |
 | Study | `/study`, `/study/hsk`, `/study/topics`, `/study/custom` | My Studies, HSK, Topics and My sets tabs with set cards. `/study/custom/new` creates a set. |
 | Set | `/study/sets/:setId` | Learn and Study actions with their counts, progress (mastered, learning, not started) and vocabulary. |
 | Session | `/study/practice?set=:setId&mode=learn` or `&mode=study` | Learn (new vocabulary) or Study (review of what has been learned) for a set; without `set`, a mixed session of all vocabulary; `?focus=difficult`, only the difficult items. Dictionary button. |

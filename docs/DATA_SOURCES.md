@@ -237,6 +237,22 @@ The app uses it to put the most common vocabulary first: new items in a
 mixed session and the Learn order of HSK levels (topic and custom sets keep
 their own order). Character cards show the rank.
 
+## HSK 5 (Today's Word)
+
+HSK 5 is not a study set. The build reads the HSK 5 list from the same
+source as HSK 1-4 and writes `src/data/hsk5/words.ts` (`buildHsk5Words` in
+`fusion.ts`), which only Today's Word on Home uses:
+
+- **Pinyin** from the HSK list, **meanings** from CC-CEDICT, found with the
+  same `findEntries` as HSK 1-4.
+- **No new dictionary entries:** each word points to the entry that already
+  holds those CC-CEDICT entries (an HSK 1-4 word, a full-dictionary word, or
+  its character for single-character words), so tapping it opens the usual
+  entry page.
+- Words already in HSK 1-4 with the same pinyin are skipped; words with no
+  CC-CEDICT entry or nothing to open are left out and listed in
+  `DATA_CONFLICTS.md`.
+
 ## Full dictionary
 
 Besides HSK 1-4, the build generates all of CC-CEDICT in `data-release/dictionary/`

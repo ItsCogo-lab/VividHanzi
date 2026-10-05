@@ -1,7 +1,7 @@
 {
  "source": "Tatoeba",
  "license": "CC BY 2.0 FR",
- "exportDate": "2026-09-30",
+ "exportDate": "2026-10-05",
  "sentences": [
   {
    "tatoebaId": 43,
@@ -6491,16 +6491,6 @@
    ]
   },
   {
-   "tatoebaId": 1319923,
-   "zh": "这一年我下了决心写日记。",
-   "author": "shanghainese",
-   "en": "I resolved to keep a diary this year.",
-   "translationTatoebaId": 243173,
-   "words": [
-    "日记"
-   ]
-  },
-  {
    "tatoebaId": 1324868,
    "zh": "别让他失望。",
    "author": "vicch",
@@ -7114,17 +7104,6 @@
    "translationAuthor": "CK",
    "words": [
     "稍微"
-   ]
-  },
-  {
-   "tatoebaId": 1438343,
-   "zh": "辣点儿没关系。",
-   "author": "asosan",
-   "en": "I don't mind if it's hot.",
-   "translationTatoebaId": 1076309,
-   "translationAuthor": "CK",
-   "words": [
-    "辣"
    ]
   },
   {
@@ -15194,7 +15173,7 @@
   },
   {
    "tatoebaId": 12475711,
-   "zh": "听说最近失业者人数正在增加",
+   "zh": "听说最近失业者人数正在增加。",
    "author": "a15997853561",
    "en": "I hear that the number of the unemployed has been increasing recently.",
    "translationTatoebaId": 264947,
@@ -15822,17 +15801,6 @@
    ]
   },
   {
-   "tatoebaId": 13944531,
-   "zh": "这份沙拉不够酸。",
-   "author": "jan_OkulaJu",
-   "en": "This salad is not sour enough.",
-   "translationTatoebaId": 3931724,
-   "translationAuthor": "maaster",
-   "words": [
-    "酸"
-   ]
-  },
-  {
    "tatoebaId": 13949962,
    "zh": "我不知道他请假的原因。",
    "author": "jan_OkulaJu",
@@ -15899,17 +15867,6 @@
    ]
   },
   {
-   "tatoebaId": 14038300,
-   "zh": "真羡慕你。",
-   "author": "jan_OkulaJu",
-   "en": "I really envy you.",
-   "translationTatoebaId": 14038301,
-   "translationAuthor": "jan_OkulaJu",
-   "words": [
-    "羡慕"
-   ]
-  },
-  {
    "tatoebaId": 14038323,
    "zh": "工作进展顺利。",
    "author": "jan_OkulaJu",
@@ -15930,6 +15887,61 @@
    "words": [
     "拉",
     "群"
+   ]
+  },
+  {
+   "tatoebaId": 14061523,
+   "zh": "酸了。",
+   "author": "jan_OkulaJu",
+   "en": "I'm jealous.",
+   "translationTatoebaId": 2203045,
+   "translationAuthor": "CK",
+   "words": [
+    "酸"
+   ]
+  },
+  {
+   "tatoebaId": 14061530,
+   "zh": "羡慕了。",
+   "author": "jan_OkulaJu",
+   "en": "I'm jealous.",
+   "translationTatoebaId": 2203045,
+   "translationAuthor": "CK",
+   "words": [
+    "羡慕"
+   ]
+  },
+  {
+   "tatoebaId": 14062660,
+   "zh": "辣！",
+   "author": "jan_OkulaJu",
+   "en": "It's spicy!",
+   "translationTatoebaId": 14062662,
+   "translationAuthor": "jan_OkulaJu",
+   "words": [
+    "辣"
+   ]
+  },
+  {
+   "tatoebaId": 14062667,
+   "zh": "裙带关系在中国很普遍。",
+   "author": "jan_OkulaJu",
+   "en": "Nepotism is quite common in China.",
+   "translationTatoebaId": 14062668,
+   "translationAuthor": "jan_OkulaJu",
+   "words": [
+    "普遍"
+   ]
+  },
+  {
+   "tatoebaId": 14067875,
+   "zh": "我小时候每天都写日记。",
+   "author": "CanonNi",
+   "en": "I used to keep a diary every day when I was young.",
+   "translationTatoebaId": 272191,
+   "translationAuthor": "CK",
+   "words": [
+    "日记"
    ]
   }
  ]
