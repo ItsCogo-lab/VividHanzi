@@ -4,7 +4,10 @@ import { getStudyItemId, listStudyItems, type StudyItem } from '../dictionary/st
 import { testCharacters, testWords } from '../dictionary/testData.ts'
 import { seededRandom } from '../../test/random.ts'
 import type { ExerciseDefinition } from './exerciseDefinitions.ts'
-import { applyHskLevel, createEmptyProgress, recordAnswer, recordWritingAnswer } from '../progress/progress.ts'
+import { applyHskLevel, createEmptyProgress, introduceItem, recordAnswer, recordWritingAnswer } from '../progress/progress.ts'
+import type { ProgressData } from '../progress/types.ts'
+import { hskStudyItems } from '../dictionary/hskDictionary.ts'
+import { matchMeaningDefinition } from './matchExercises.ts'
 import {
   createSessionExercises,
   createSessionState,
@@ -51,6 +54,39 @@ describe('createSessionExercises', () => {
 
     expect(exercises).toHaveLength(testWords.length)
     expect(exercises.every((exercise) => exercise.item.kind === 'word')).toBe(true)
+  })
+})
+
+describe('createSessionExercises with matching', () => {
+  const learnedIds = ['word:学生', 'word:老师', 'word:朋友', 'word:医生', 'word:谢谢', 'word:飞机'] as const
+  const learnedItems = hskStudyItems.filter((item) => (learnedIds as readonly string[]).includes(getStudyItemId(item)))
+  const options = (progress: ProgressData) => ({
+    progress,
+    size: 10,
+    random: seededRandom(2),
+    distractorPool: hskStudyItems,
+    definitions: [matchMeaningDefinition],
+  })
+
+  it('takes the other three words from what the user has learned', () => {
+    let progress = createEmptyProgress()
+    for (const itemId of learnedIds) progress = introduceItem(progress, itemId, new Date())
+    const exercises = createSessionExercises(learnedItems, options(progress))
+
+    expect(exercises).toHaveLength(learnedIds.length)
+    for (const exercise of exercises) {
+      if (exercise.type !== 'match-meaning') throw new Error('expected a matching exercise')
+      expect(exercise.items.every((item) => progress.items[getStudyItemId(item)] !== undefined)).toBe(true)
+    }
+  })
+
+  it('falls back to all the vocabulary when too little is learned', () => {
+    const [item] = learnedItems
+    const progress = introduceItem(createEmptyProgress(), getStudyItemId(item!), new Date())
+    const [exercise] = createSessionExercises([item!], options(progress))
+
+    expect(exercise?.type).toBe('match-meaning')
+    expect(exercise?.type === 'match-meaning' && exercise.items).toHaveLength(4)
   })
 })
 
