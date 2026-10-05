@@ -492,8 +492,9 @@ so the weaker one comes up more in later sessions.
 
 **Which types.** `settings.exerciseTypes` picks the types Study sessions may
 use (`getDefinitions`), always with one besides writing. `?type=<type>` on the
-practice page runs a session of that type only, whatever the settings; Home
-lists one button per type.
+practice page runs a session of that type only, whatever the settings, over
+everything with progress (learned in a set or known from the HSK level, never
+new words); Home lists one button per type.
 
 **Skills.** Every exercise type trains one skill (`EXERCISE_SKILLS` in
 `progress/skills.ts`): meaning (flashcard, meaning and hanzi choice), pinyin,
