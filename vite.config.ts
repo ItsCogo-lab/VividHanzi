@@ -13,7 +13,8 @@ export default defineConfig({
           groups: [
             // The dataset (src/data) goes in its own file: it rarely changes, so
             // the browser reuses it from its cache even when the code changes.
-            { name: 'dataset', test: /[\\/]src[\\/]data[\\/]/ },
+            // HSK 5 stays out: only Today's Word loads it, on demand.
+            { name: 'dataset', test: /[\\/]src[\\/]data[\\/](?!hsk5[\\/])/ },
           ],
         },
       },

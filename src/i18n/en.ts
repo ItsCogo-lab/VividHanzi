@@ -452,6 +452,8 @@ export const en = {
   'exerciseType.writingHint': 'Once you can read a word, write it stroke by stroke.',
   'settings.exerciseTypes': 'Exercise types in Study sessions',
   'settings.exerciseTypesHint': 'Keep at least one besides writing. Home has buttons to practice any single type, whatever you pick here.',
+  'todaysWord.title': "Today's Word",
+  'todaysWord.loading': "Choosing today's word…",
   'dashboard.practiceType': 'Practice one type',
   'dashboard.practiceTypeDescription': 'A session with only the exercise you choose.',
 } as const

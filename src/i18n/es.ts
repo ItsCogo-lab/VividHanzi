@@ -452,6 +452,8 @@ export const es: Record<MessageKey, string> = {
   'exerciseType.writingHint': 'Cuando ya sabes leer una palabra, escríbela trazo a trazo.',
   'settings.exerciseTypes': 'Tipos de ejercicio en las sesiones de Study',
   'settings.exerciseTypesHint': 'Deja al menos uno además de escritura. En Inicio hay botones para practicar un solo tipo, elijas lo que elijas aquí.',
+  'todaysWord.title': 'Palabra del día',
+  'todaysWord.loading': 'Eligiendo la palabra de hoy…',
   'dashboard.practiceType': 'Practicar un tipo',
   'dashboard.practiceTypeDescription': 'Una sesión solo con el ejercicio que elijas.',
 }
