@@ -424,6 +424,7 @@ export const es: Record<MessageKey, string> = {
   'practice.knewPinyin': 'Solo el pinyin',
   'practice.knewMeaning': 'Solo el significado',
   'practice.knewBoth': 'Las dos cosas',
+  'practice.otherWords': 'Las otras palabras',
   'practice.match.pinyinQuestion': 'Une cada hanzi con su pinyin',
   'practice.match.meaningQuestion': 'Une cada hanzi con su significado',
   'practice.match.hanziSide': 'Hanzi',

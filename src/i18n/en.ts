@@ -424,6 +424,7 @@ export const en = {
   'practice.knewPinyin': 'Only the pinyin',
   'practice.knewMeaning': 'Only the meaning',
   'practice.knewBoth': 'Both',
+  'practice.otherWords': 'The other words',
   'practice.match.pinyinQuestion': 'Match each hanzi with its pinyin',
   'practice.match.meaningQuestion': 'Match each hanzi with its meaning',
   'practice.match.hanziSide': 'Hanzi',

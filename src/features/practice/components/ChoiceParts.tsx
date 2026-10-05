@@ -3,7 +3,7 @@ import { Button } from '../../../components/ui/Button.tsx'
 import { Kbd } from '../../../components/ui/Kbd.tsx'
 import { t } from '../../../i18n/index.ts'
 import { formatPinyin, type Dictionary } from '../../dictionary/dictionary.ts'
-import type { StudyItem } from '../../dictionary/studyItem.ts'
+import { getStudyItemId, type StudyItem } from '../../dictionary/studyItem.ts'
 import { PinyinText } from '../../dictionary/components/PinyinText.tsx'
 import { ToneHanzi } from '../../dictionary/components/ToneHanzi.tsx'
 import { getMeaningLabel } from '../choiceExercises.ts'
@@ -73,6 +73,8 @@ type AnswerFeedbackProps = {
   dictionary: Dictionary
   onLookUp: (item: StudyItem) => void
   onContinue: () => void
+  /** The other words of the question (matching), listed with their answers too. */
+  otherItems?: readonly StudyItem[]
 }
 
 /**
@@ -82,7 +84,7 @@ type AnswerFeedbackProps = {
  * description for screen readers. This way you can also keep going with the
  * keyboard only.
  */
-export function AnswerFeedback({ item, isCorrect, dictionary, onLookUp, onContinue }: AnswerFeedbackProps) {
+export function AnswerFeedback({ item, isCorrect, dictionary, onLookUp, onContinue, otherItems = [] }: AnswerFeedbackProps) {
   const continueRef = useRef<HTMLButtonElement>(null)
   const feedbackId = useId()
   useEffect(() => continueRef.current?.focus(), [])
@@ -101,6 +103,28 @@ export function AnswerFeedback({ item, isCorrect, dictionary, onLookUp, onContin
         </p>
       </div>
       <LookUpButtons item={item} dictionary={dictionary} onLookUp={onLookUp} />
+      {otherItems.length > 0 && (
+        <div className="w-full border-t border-line pt-4">
+          <h3 className="mb-2 text-sm text-ink-muted">{t('practice.otherWords')}</h3>
+          <ul className="flex flex-col gap-2">
+            {otherItems.map((other) => (
+              <li key={getStudyItemId(other)}>
+                {/* Tapping a word opens it in the dictionary, like the look-up buttons */}
+                <button
+                  type="button"
+                  onClick={() => onLookUp(other)}
+                  aria-label={t('practice.lookUpItem', { hanzi: other.entry.hanzi })}
+                  className="flex w-full flex-wrap items-baseline justify-center gap-x-3 gap-y-1 rounded-lg bg-paper px-3 py-2 hover:bg-accent-soft"
+                >
+                  <ToneHanzi entry={other.entry} className="text-xl" />{' '}
+                  <PinyinText pinyin={formatPinyin(other.entry)} className="text-accent-strong" />{' '}
+                  <span className="text-ink-muted">{getMeaningLabel(other)}</span>
+                </button>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
       <Button
         ref={continueRef}
         aria-describedby={feedbackId}
