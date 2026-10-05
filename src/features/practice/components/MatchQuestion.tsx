@@ -118,7 +118,14 @@ export function MatchQuestion({ exercise, dictionary, onAnswer, onLookUp }: Matc
       </div>
 
       {isFinished && (
-        <AnswerFeedback item={item} isCorrect={isCorrect} dictionary={dictionary} onLookUp={onLookUp} onContinue={next} />
+        <AnswerFeedback
+          item={item}
+          isCorrect={isCorrect}
+          dictionary={dictionary}
+          onLookUp={onLookUp}
+          onContinue={next}
+          otherItems={items.filter((other) => getStudyItemId(other) !== itemId)}
+        />
       )}
     </Card>
   )
