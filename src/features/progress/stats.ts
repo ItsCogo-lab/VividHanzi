@@ -1,4 +1,4 @@
-import { addDays, toDateKey, type DateKey } from '../../lib/dates.ts'
+import { addDays, startOfDay, toDateKey, type DateKey } from '../../lib/dates.ts'
 import { getStudyItemId, type StudyItem, type StudyItemId } from '../dictionary/studyItem.ts'
 import { getItemStatus, isDue } from './progress.ts'
 import type { DailyActivity, ItemProgress, ProgressData } from './types.ts'
@@ -129,4 +129,81 @@ export function getDifficultItems(progress: ProgressData): ItemProgress[] {
     .filter((item) => item !== undefined)
     .filter(isDifficult)
     .toSorted((a, b) => b.timesWrong - a.timesWrong || accuracy(a) - accuracy(b))
+}
+
+/** Monday (00:00) of the week of `date`. */
+function startOfWeek(date: Date): Date {
+  const day = startOfDay(date)
+  // getDay: 0 is Sunday; weeks start on Monday
+  return addDays(day, -((day.getDay() + 6) % 7))
+}
+
+export interface CalendarDay extends DayActivity {
+  /** After today: drawn empty so the current week keeps its shape. */
+  future: boolean
+}
+
+/**
+ * The last `weeks` weeks for the activity calendar, Monday to Sunday, the
+ * current week last.
+ */
+export function getActivityCalendar(activity: Record<DateKey, DailyActivity>, today: Date, weeks = 26): CalendarDay[][] {
+  const first = addDays(startOfWeek(today), -7 * (weeks - 1))
+  const todayKey = toDateKey(today)
+  return Array.from({ length: weeks }, (_, week) =>
+    Array.from({ length: 7 }, (_, weekday) => {
+      const date = toDateKey(addDays(first, week * 7 + weekday))
+      return { date, future: date > todayKey, ...(activity[date] ?? { answers: 0, correct: 0 }) }
+    }),
+  )
+}
+
+export interface WeekAccuracy {
+  /** Monday of the week. */
+  weekStart: DateKey
+  answers: number
+  /** `undefined` for a week without answers: the chart leaves a gap rather than a 0%. */
+  accuracy: number | undefined
+}
+
+/** Share of correct answers per week over the last `weeks` weeks, the current one last. */
+export function getWeeklyAccuracy(activity: Record<DateKey, DailyActivity>, today: Date, weeks = 12): WeekAccuracy[] {
+  return getActivityCalendar(activity, today, weeks).map((days) => {
+    const answers = days.reduce((sum, day) => sum + day.answers, 0)
+    const correct = days.reduce((sum, day) => sum + day.correct, 0)
+    return { weekStart: days[0]!.date, answers, accuracy: answers > 0 ? correct / answers : undefined }
+  })
+}
+
+export interface DayCount {
+  date: DateKey
+  count: number
+}
+
+/**
+ * Reviews coming up on each of the next `days` days, today first. Today
+ * includes everything overdue. Basic items are never due, so they don't count.
+ */
+export function getReviewForecast(progress: ProgressData, now: Date, days = 7): DayCount[] {
+  const forecast = Array.from({ length: days }, (_, index) => ({ date: toDateKey(addDays(now, index)), count: 0 }))
+  const today = forecast[0]!.date
+  for (const item of Object.values(progress.items)) {
+    if (!item || item.basic) continue
+    const due = toDateKey(new Date(item.nextReviewAt))
+    const day = forecast.find((entry) => entry.date === (due < today ? today : due))
+    if (day) day.count += 1
+  }
+  return forecast
+}
+
+/** Days in a row, up to today, on which the daily goal was met (today counts once met; until then, from yesterday). */
+export function getGoalStreak(activity: Record<DateKey, DailyActivity>, today: Date, goal: number): number {
+  const met = (date: Date) => (activity[toDateKey(date)]?.answers ?? 0) >= goal
+  let day = met(today) ? today : addDays(today, -1)
+  let streak = 0
+  while (met(day)) {
+    streak += 1
+    day = addDays(day, -1)
+  }
+  return streak
 }

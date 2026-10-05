@@ -5,7 +5,7 @@ import { DEFAULT_SETTINGS, isSessionSize, loadSettings, saveSettings } from './s
 describe('saveSettings / loadSettings', () => {
   it('saves and loads settings', () => {
     const storage = memoryStorage()
-    const settings = { sessionSize: 20, toneColors: false, toneNumbers: true, writingExercises: false, theme: 'dark', hskLevel: 3 } as const
+    const settings = { sessionSize: 20, dailyGoal: 50, toneColors: false, toneNumbers: true, writingExercises: false, theme: 'dark', hskLevel: 3 } as const
     saveSettings(settings, storage)
 
     expect(loadSettings(storage)).toEqual(settings)
@@ -17,7 +17,7 @@ describe('saveSettings / loadSettings', () => {
 
   it('settings saved before tones existed take the default values', () => {
     const storage = memoryStorage({ 'hanzivocab.settings': JSON.stringify({ version: 1, sessionSize: 5 }) })
-    expect(loadSettings(storage)).toEqual({ sessionSize: 5, toneColors: true, toneNumbers: false, writingExercises: true, theme: 'system', hskLevel: null })
+    expect(loadSettings(storage)).toEqual({ sessionSize: 5, dailyGoal: 20, toneColors: true, toneNumbers: false, writingExercises: true, theme: 'system', hskLevel: null })
   })
 
   it('ignores invalid values', () => {

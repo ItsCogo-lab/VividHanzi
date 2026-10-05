@@ -6,6 +6,7 @@ import { ProgressBar } from '../components/ui/ProgressBar.tsx'
 import { StatCard } from '../components/ui/StatCard.tsx'
 import { hskCharacterItems, hskWordItems } from '../features/dictionary/hskDictionary.ts'
 import { useMyStudies } from '../features/myStudies/myStudiesContext.ts'
+import { DailyGoal } from '../features/progress/components/DailyGoal.tsx'
 import { useProgress } from '../features/progress/progressContext.ts'
 import { summarizeCharacters, summarizeItems, type ItemsSummary } from '../features/progress/stats.ts'
 import { getCurrentStreak } from '../features/progress/streak.ts'
@@ -58,6 +59,9 @@ export function DashboardPage() {
         <Card>
           <h2 className="text-lg font-semibold">{t('dashboard.today')}</h2>
           <p className="mt-1 text-ink-muted">{t(getTodayMessage(summary))}</p>
+          <div className="mt-4 border-t border-line pt-4">
+            <DailyGoal now={now} />
+          </div>
         </Card>
 
         <section aria-labelledby="dashboard-overview">

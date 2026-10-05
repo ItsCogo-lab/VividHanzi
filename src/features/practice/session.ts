@@ -1,5 +1,6 @@
 import { compareByFrequency, getStudyItemId, type StudyItem } from '../dictionary/studyItem.ts'
 import { createEmptyProgress, isDue } from '../progress/progress.ts'
+import { EXERCISE_SKILLS, getSkillStreak } from '../progress/skills.ts'
 import type { ProgressData } from '../progress/types.ts'
 import { shuffle, type RandomFn } from '../../lib/random.ts'
 import { EXERCISE_DEFINITIONS, type ExerciseDefinition } from './exerciseDefinitions.ts'
@@ -29,7 +30,8 @@ interface CreateSessionOptions {
  * Creates the exercises of a session: picks the items based on progress
  * (see selectSessionItems) and, for each one, the exercise. If writing is on
  * and it is time to write the item (isWritingDue), it is written; otherwise,
- * a random recognition type among those that can be built.
+ * a recognition type among those that can be built, at random but leaning
+ * towards the item's weaker skills (see pickDefinition).
  *
  * So writing reviews happen when the item comes up in a session, and a
  * miss while writing only affects the writing progress.
@@ -53,10 +55,32 @@ export function createSessionExercises(
       continue
     }
     const candidates = definitions.filter((definition) => definition.canBuild(item, distractorPool))
-    const definition = candidates[Math.floor(random() * candidates.length)]
+    const definition = pickDefinition(candidates, item, progress, random)
     if (definition) exercises.push(definition.build(item, distractorPool, random))
   }
   return exercises
+}
+
+/**
+ * Picks an exercise type for an item. Each type weighs 1 / (1 + correct
+ * answers in a row of its skill): a skill never practiced or just missed
+ * comes up more often than one the item already knows well, but every type
+ * keeps some chance.
+ */
+export function pickDefinition(
+  candidates: readonly ExerciseDefinition[],
+  item: StudyItem,
+  progress: ProgressData,
+  random: RandomFn,
+): ExerciseDefinition | undefined {
+  const itemId = getStudyItemId(item)
+  const weights = candidates.map((definition) => 1 / (1 + getSkillStreak(progress, itemId, EXERCISE_SKILLS[definition.type])))
+  let target = random() * weights.reduce((sum, weight) => sum + weight, 0)
+  for (const [index, weight] of weights.entries()) {
+    target -= weight
+    if (target < 0) return candidates[index]
+  }
+  return candidates.at(-1)
 }
 
 /**
@@ -151,9 +175,20 @@ export function sessionReducer(state: SessionState, action: SessionAction): Sess
  * one place, so the answer can't be found by remembering where it was.
  */
 export function createRetryExercise(exercise: Exercise): Exercise {
-  if (exercise.type === 'flashcard' || exercise.type === 'writing') return exercise
-  const [first, ...rest] = exercise.options
-  return { ...exercise, options: first ? [...rest, first] : rest }
+  switch (exercise.type) {
+    case 'flashcard':
+    case 'writing':
+      return exercise
+    case 'tone-choice':
+      return { ...exercise, options: rotate(exercise.options) }
+    default:
+      return { ...exercise, options: rotate(exercise.options) }
+  }
+}
+
+function rotate<T>(items: readonly T[]): T[] {
+  const [first, ...rest] = items
+  return first === undefined ? rest : [...rest, first]
 }
 
 /** Is the current exercise a retry of one missed earlier in the session? */

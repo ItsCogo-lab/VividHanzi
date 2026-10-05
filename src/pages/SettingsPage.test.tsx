@@ -1,4 +1,4 @@
-import { screen } from '@testing-library/react'
+import { screen, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { describe, expect, it } from 'vitest'
 import { createEmptyProgress, recordAnswer } from '../features/progress/progress.ts'
@@ -14,11 +14,24 @@ describe('SettingsPage', () => {
     const storage = memoryStorage()
     renderWithProviders(<SettingsPage />, { storage })
 
-    expect(screen.getByRole('radio', { name: '10' })).toBeChecked()
-    await user.click(screen.getByRole('radio', { name: '20' }))
+    const sessionSize = screen.getByRole('group', { name: 'Exercises per session' })
+    expect(within(sessionSize).getByRole('radio', { name: '10' })).toBeChecked()
+    await user.click(within(sessionSize).getByRole('radio', { name: '20' }))
 
-    expect(screen.getByRole('radio', { name: '20' })).toBeChecked()
+    expect(within(sessionSize).getByRole('radio', { name: '20' })).toBeChecked()
     expect(loadSettings(storage).sessionSize).toBe(20)
+  })
+
+  it('changes and saves the daily goal', async () => {
+    const user = userEvent.setup()
+    const storage = memoryStorage()
+    renderWithProviders(<SettingsPage />, { storage })
+
+    const dailyGoal = screen.getByRole('group', { name: 'Daily goal (answers)' })
+    expect(within(dailyGoal).getByRole('radio', { name: '20' })).toBeChecked()
+    await user.click(within(dailyGoal).getByRole('radio', { name: '50' }))
+
+    expect(loadSettings(storage).dailyGoal).toBe(50)
   })
 
   it('changes the theme and applies it to the page', async () => {

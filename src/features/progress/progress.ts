@@ -2,6 +2,7 @@ import { toDateKey } from '../../lib/dates.ts'
 import type { HskLevel } from '../dictionary/types.ts'
 import type { StudyItemId } from '../dictionary/studyItem.ts'
 import { isReviewDue, MAX_MASTERY_LEVEL, scheduleFirstReview, scheduleKnownItem, scheduleNextReview, type ReviewSchedule } from '../srs/srs.ts'
+import { nextSkillStats, type RecognitionSkill } from './skills.ts'
 import type { ItemProgress, ProgressData } from './types.ts'
 
 /**
@@ -18,13 +19,20 @@ export function createEmptyProgress(): ProgressData {
 
 /**
  * Records an answer: updates the item's counters, schedules its next review
- * and adds the answer to the day's activity. Returns a new object without
+ * and adds the answer to the day's activity. With `skill`, the answer also
+ * counts for that skill (see skills.ts). Returns a new object without
  * modifying the previous one (so React detects the change).
  */
-export function recordAnswer(progress: ProgressData, itemId: StudyItemId, correct: boolean, now: Date): ProgressData {
+export function recordAnswer(
+  progress: ProgressData,
+  itemId: StudyItemId,
+  correct: boolean,
+  now: Date,
+  skill?: RecognitionSkill,
+): ProgressData {
   return {
     ...progress,
-    items: { ...progress.items, [itemId]: answeredRecord(progress.items[itemId], itemId, correct, now) },
+    items: { ...progress.items, [itemId]: answeredRecord(progress.items[itemId], itemId, correct, now, skill) },
     activity: addToActivity(progress.activity, correct, now),
   }
 }
@@ -43,7 +51,14 @@ export function recordWritingAnswer(progress: ProgressData, itemId: StudyItemId,
 }
 
 /** The record after an answer. Without the `basic` or `fromLevel` flags: answered items are the user's own progress. */
-function answeredRecord(previous: ItemProgress | undefined, itemId: StudyItemId, correct: boolean, now: Date): ItemProgress {
+function answeredRecord(
+  previous: ItemProgress | undefined,
+  itemId: StudyItemId,
+  correct: boolean,
+  now: Date,
+  skill?: RecognitionSkill,
+): ItemProgress {
+  const skills = skill ? { ...previous?.skills, [skill]: nextSkillStats(previous?.skills?.[skill], correct) } : previous?.skills
   return {
     itemId,
     timesSeen: (previous?.timesSeen ?? 0) + 1,
@@ -51,6 +66,7 @@ function answeredRecord(previous: ItemProgress | undefined, itemId: StudyItemId,
     timesWrong: (previous?.timesWrong ?? 0) + (correct ? 0 : 1),
     lastReviewedAt: now.toISOString(),
     ...scheduleNextReview(previous?.masteryLevel ?? 0, correct, now),
+    ...(skills && { skills }),
   }
 }
 

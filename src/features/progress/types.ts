@@ -1,5 +1,6 @@
 import type { DateKey } from '../../lib/dates.ts'
 import type { StudyItemId } from '../dictionary/studyItem.ts'
+import type { RecognitionSkill, SkillStats } from './skills.ts'
 
 /** What is known about a character or word the user has already studied. */
 export interface ItemProgress {
@@ -23,6 +24,11 @@ export interface ItemProgress {
    * the user lowers their level, it is deleted and the item becomes new again.
    */
   fromLevel?: true
+  /**
+   * Answers per skill (see skills.ts). Older records and items only marked
+   * in Learn have none. Writing keeps its own record in ProgressData.writing.
+   */
+  skills?: Partial<Record<RecognitionSkill, SkillStats>>
 }
 
 /** A day's answers, for the streak and statistics. */
