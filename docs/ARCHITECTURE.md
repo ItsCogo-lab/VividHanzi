@@ -483,7 +483,9 @@ the option buttons and feedback are shared with `ChoiceQuestion`
 `MatchQuestion`) show four hanzi and their pinyin or meanings shuffled, to pair
 up. They are built around the session's item plus the three distractors a
 pinyin or meaning question would use (so every pair has one answer), and only
-that item is graded: correct if it was never in a wrong pair.
+that item is graded: correct if it was never in a wrong pair. Since all four
+words are shown, the three extra ones come from learned items when there are
+enough (`createSessionExercises`), and from the whole vocabulary otherwise.
 
 **Flashcard grades.** After revealing, the user says what they knew: neither,
 only the pinyin, only the meaning, or both. Only "both" is correct for spaced

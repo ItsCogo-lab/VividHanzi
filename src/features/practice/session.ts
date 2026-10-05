@@ -4,10 +4,12 @@ import { EXERCISE_SKILLS, getSkillStreak, type SkillResults } from '../progress/
 import type { ProgressData } from '../progress/types.ts'
 import { shuffle, type RandomFn } from '../../lib/random.ts'
 import { EXERCISE_DEFINITIONS, type ExerciseDefinition } from './exerciseDefinitions.ts'
-import type { Exercise, ExerciseResult } from './types.ts'
+import type { Exercise, ExerciseResult, ExerciseType } from './types.ts'
 import { isWritingDue } from './writing.ts'
 
 export const DEFAULT_SESSION_SIZE = 10
+
+const MATCH_TYPES: ReadonlySet<ExerciseType> = new Set(['match-pinyin', 'match-meaning'])
 
 interface CreateSessionOptions {
   size?: number
@@ -49,6 +51,11 @@ export function createSessionExercises(
   }: CreateSessionOptions = {},
 ): Exercise[] {
   const exercises: Exercise[] = []
+  // A matching exercise shows its three extra words in full, so they come
+  // from what the user has learned whenever there are enough of them
+  const learnedPool = [...new Set([...pool, ...distractorPool])].filter(
+    (candidate) => progress.items[getStudyItemId(candidate)] !== undefined,
+  )
   for (const item of selectSessionItems(pool, progress, now, size, random)) {
     if (writing && isWritingDue(item, progress, now)) {
       exercises.push({ type: 'writing', item })
@@ -56,7 +63,9 @@ export function createSessionExercises(
     }
     const candidates = definitions.filter((definition) => definition.canBuild(item, distractorPool))
     const definition = pickDefinition(candidates, item, progress, random)
-    if (definition) exercises.push(definition.build(item, distractorPool, random))
+    if (!definition) continue
+    const prefersLearned = MATCH_TYPES.has(definition.type) && definition.canBuild(item, learnedPool)
+    exercises.push(definition.build(item, prefersLearned ? learnedPool : distractorPool, random))
   }
   return exercises
 }
