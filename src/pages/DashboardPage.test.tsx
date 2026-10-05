@@ -60,4 +60,12 @@ describe('DashboardPage', () => {
     expect(screen.getByRole('progressbar', { name: 'Daily goal: 5 of 20 answers' })).toBeInTheDocument()
     expect(screen.getByText(/15 more to reach it/)).toBeInTheDocument()
   })
+
+  it('offers a session of each single exercise type', () => {
+    renderDashboard()
+
+    expect(screen.getByRole('link', { name: 'Tones' })).toHaveAttribute('href', '/study/practice?type=tone-choice')
+    expect(screen.getByRole('link', { name: 'Match meanings' })).toHaveAttribute('href', '/study/practice?type=match-meaning')
+    expect(screen.getByRole('link', { name: 'Writing' })).toHaveAttribute('href', '/study/practice?type=writing')
+  })
 })

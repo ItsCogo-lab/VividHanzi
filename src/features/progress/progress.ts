@@ -2,7 +2,7 @@ import { toDateKey } from '../../lib/dates.ts'
 import type { HskLevel } from '../dictionary/types.ts'
 import type { StudyItemId } from '../dictionary/studyItem.ts'
 import { isReviewDue, MAX_MASTERY_LEVEL, scheduleFirstReview, scheduleKnownItem, scheduleNextReview, type ReviewSchedule } from '../srs/srs.ts'
-import { nextSkillStats, type RecognitionSkill } from './skills.ts'
+import { nextSkillStats, type RecognitionSkill, type SkillResults } from './skills.ts'
 import type { ItemProgress, ProgressData } from './types.ts'
 
 /**
@@ -19,8 +19,8 @@ export function createEmptyProgress(): ProgressData {
 
 /**
  * Records an answer: updates the item's counters, schedules its next review
- * and adds the answer to the day's activity. With `skill`, the answer also
- * counts for that skill (see skills.ts). Returns a new object without
+ * and adds the answer to the day's activity. With `skills`, the answer also
+ * counts for each skill it tested (see skills.ts). Returns a new object without
  * modifying the previous one (so React detects the change).
  */
 export function recordAnswer(
@@ -28,11 +28,11 @@ export function recordAnswer(
   itemId: StudyItemId,
   correct: boolean,
   now: Date,
-  skill?: RecognitionSkill,
+  skills?: SkillResults,
 ): ProgressData {
   return {
     ...progress,
-    items: { ...progress.items, [itemId]: answeredRecord(progress.items[itemId], itemId, correct, now, skill) },
+    items: { ...progress.items, [itemId]: answeredRecord(progress.items[itemId], itemId, correct, now, skills) },
     activity: addToActivity(progress.activity, correct, now),
   }
 }
@@ -56,9 +56,12 @@ function answeredRecord(
   itemId: StudyItemId,
   correct: boolean,
   now: Date,
-  skill?: RecognitionSkill,
+  skillResults: SkillResults = {},
 ): ItemProgress {
-  const skills = skill ? { ...previous?.skills, [skill]: nextSkillStats(previous?.skills?.[skill], correct) } : previous?.skills
+  let skills = previous?.skills
+  for (const [skill, skillCorrect] of Object.entries(skillResults) as [RecognitionSkill, boolean][]) {
+    skills = { ...skills, [skill]: nextSkillStats(skills?.[skill], skillCorrect) }
+  }
   return {
     itemId,
     timesSeen: (previous?.timesSeen ?? 0) + 1,

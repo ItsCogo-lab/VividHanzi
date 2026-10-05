@@ -1,6 +1,8 @@
 import { isRecord, readJson, writeJson, type KeyValueStorage } from '../../lib/storage.ts'
 import type { HskLevel } from '../dictionary/types.ts'
+import { EXERCISE_TYPES } from '../practice/exerciseDefinitions.ts'
 import { DEFAULT_SESSION_SIZE } from '../practice/session.ts'
+import type { ExerciseType } from '../practice/types.ts'
 import { HSK_LEVELS } from '../studySets/studySets.ts'
 import { isThemePreference, type ThemePreference } from './theme.ts'
 
@@ -22,8 +24,11 @@ export interface Settings {
   toneColors: boolean
   /** Also show pinyin with tone numbers ("ni3 hao3"). */
   toneNumbers: boolean
-  /** Include writing exercises in Study sessions. */
-  writingExercises: boolean
+  /**
+   * Exercise types that can come up in Study sessions. Always at least one
+   * besides writing, which only comes up when an item's writing is due.
+   */
+  exerciseTypes: readonly ExerciseType[]
   /** Color theme: system, light or dark. */
   theme: ThemePreference
   /** HSK level the user says they have (see applyHskLevel), or `null` if they haven't given one. */
@@ -35,7 +40,7 @@ export const DEFAULT_SETTINGS: Settings = {
   dailyGoal: 20,
   toneColors: true,
   toneNumbers: false,
-  writingExercises: true,
+  exerciseTypes: EXERCISE_TYPES,
   theme: 'system',
   hskLevel: null,
 }
@@ -61,8 +66,7 @@ export function loadSettings(storage?: KeyValueStorage): Settings {
     dailyGoal: DAILY_GOAL_OPTIONS.find((goal) => goal === saved.dailyGoal) ?? DEFAULT_SETTINGS.dailyGoal,
     toneColors: typeof saved.toneColors === 'boolean' ? saved.toneColors : DEFAULT_SETTINGS.toneColors,
     toneNumbers: typeof saved.toneNumbers === 'boolean' ? saved.toneNumbers : DEFAULT_SETTINGS.toneNumbers,
-    writingExercises:
-      typeof saved.writingExercises === 'boolean' ? saved.writingExercises : DEFAULT_SETTINGS.writingExercises,
+    exerciseTypes: loadExerciseTypes(saved),
     theme: isThemePreference(saved.theme) ? saved.theme : DEFAULT_SETTINGS.theme,
     hskLevel: HSK_LEVELS.find((level) => level === saved.hskLevel) ?? DEFAULT_SETTINGS.hskLevel,
   }
@@ -70,4 +74,22 @@ export function loadSettings(storage?: KeyValueStorage): Settings {
 
 export function isSessionSize(value: unknown): value is SessionSize {
   return SESSION_SIZE_OPTIONS.some((option) => option === value)
+}
+
+/** Can a session be built with only these types? It needs one besides writing. */
+export function hasRecognitionType(types: readonly ExerciseType[]): boolean {
+  return types.some((type) => type !== 'writing')
+}
+
+/**
+ * The saved exercise types, in EXERCISE_TYPES order. Settings saved before
+ * they existed only had a writing switch (`writingExercises`): everything is
+ * on except writing if it was off.
+ */
+function loadExerciseTypes(saved: Record<string, unknown>): readonly ExerciseType[] {
+  if (Array.isArray(saved.exerciseTypes)) {
+    const types = EXERCISE_TYPES.filter((type) => (saved.exerciseTypes as unknown[]).includes(type))
+    return hasRecognitionType(types) ? types : DEFAULT_SETTINGS.exerciseTypes
+  }
+  return saved.writingExercises === false ? EXERCISE_TYPES.filter((type) => type !== 'writing') : EXERCISE_TYPES
 }

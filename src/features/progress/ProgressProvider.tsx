@@ -26,12 +26,12 @@ export function ProgressProvider({ children, storage }: ProgressProviderProps) {
     () => ({
       progress,
       recordAnswer: (itemId, correct) => setProgress((current) => recordAnswer(current, itemId, correct, new Date())),
-      recordResult: ({ itemId, exerciseType, correct }) => {
+      recordResult: ({ itemId, exerciseType, correct, skills }) => {
         const skill = EXERCISE_SKILLS[exerciseType]
         setProgress((current) =>
           skill === 'writing'
             ? recordWritingAnswer(current, itemId, correct, new Date())
-            : recordAnswer(current, itemId, correct, new Date(), skill),
+            : recordAnswer(current, itemId, correct, new Date(), skills ?? { [skill]: correct }),
         )
       },
       introduceItem: (itemId) => setProgress((current) => introduceItem(current, itemId, new Date())),

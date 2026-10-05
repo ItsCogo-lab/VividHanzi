@@ -13,6 +13,7 @@ import { hskDictionary } from '../features/dictionary/hskDictionary.ts'
 import { getStudyItem } from '../features/dictionary/studyItem.ts'
 import { loadProgress } from '../features/progress/storage.ts'
 import type { KeyValueStorage } from '../lib/storage.ts'
+import { answerCurrentExercise } from '../test/answerExercise.ts'
 import { createChunkLoader } from '../test/dictionaryChunks.ts'
 import { memoryStorage } from '../test/memoryStorage.ts'
 import { paragraphWithText } from '../test/text.ts'
@@ -43,18 +44,6 @@ function renderAt(path: string, storage: KeyValueStorage) {
       </AppProviders>
     </MemoryRouter>,
   )
-}
-
-async function answerCurrentExercise(user: ReturnType<typeof userEvent.setup>) {
-  const showAnswer = screen.queryByRole('button', { name: 'Show answer' })
-  if (showAnswer) {
-    await user.click(showAnswer)
-    await user.click(screen.getByRole('button', { name: 'I knew it' }))
-    return
-  }
-  const [firstOption] = within(screen.getByRole('list', { name: 'Options' })).getAllByRole('button')
-  await user.click(firstOption!)
-  await user.click(screen.getByRole('button', { name: 'Continue' }))
 }
 
 /** Answers until the session ends: a missed choice question comes back at the end. */

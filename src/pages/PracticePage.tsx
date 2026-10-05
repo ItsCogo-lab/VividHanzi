@@ -13,6 +13,8 @@ import { getStudyItem, getStudyItemId, type StudyItem, type StudyItemId } from '
 import { useMyStudies } from '../features/myStudies/myStudiesContext.ts'
 import { LearnSession } from '../features/practice/components/LearnSession.tsx'
 import { PracticeSession } from '../features/practice/components/PracticeSession.tsx'
+import { EXERCISE_DEFINITIONS, getDefinitions, type ExerciseDefinition } from '../features/practice/exerciseDefinitions.ts'
+import { EXERCISE_TYPE_LABELS } from '../features/practice/exerciseLabels.ts'
 import { createSessionExercises } from '../features/practice/session.ts'
 import { selectWritingItems, WRITING_MIN_LEVEL } from '../features/practice/writing.ts'
 import { useProgress } from '../features/progress/progressContext.ts'
@@ -38,7 +40,8 @@ function createPracticeSession(pool: readonly StudyItem[], progress: ProgressDat
     progress,
     size: settings.sessionSize,
     distractorPool: hskStudyItems,
-    writing: settings.writingExercises,
+    definitions: getDefinitions(settings.exerciseTypes),
+    writing: settings.exerciseTypes.includes('writing'),
   })
   return { id: nextSessionId, exercises }
 }
@@ -48,7 +51,8 @@ function createPracticeSession(pool: readonly StudyItem[], progress: ProgressDat
  * /study/practice?set=hsk-1&mode=learn (new vocabulary) or &mode=study
  * (review of what was learned; &scope=all includes what is not due yet).
  * With ?focus=difficult, a session with the difficult items (see isDifficult);
- * with ?focus=writing, a writing-only session (see selectWritingItems).
+ * with ?focus=writing, a writing-only session (see selectWritingItems); with
+ * ?type=pinyin-choice (or any other type), a session of that type only.
  * Without a set, the mixed session over all vocabulary. The `key` makes
  * changing set or type create a new session.
  */
@@ -57,7 +61,12 @@ export function PracticePage() {
   const studySets = useStudySets()
   const setId = searchParams.get('set')
   if (searchParams.get('focus') === 'difficult') return <DifficultPractice />
-  if (searchParams.get('focus') === 'writing') return <WritingPractice />
+  const type = searchParams.get('type')
+  if (searchParams.get('focus') === 'writing' || type === 'writing') return <WritingPractice />
+  if (type !== null) {
+    const definition = EXERCISE_DEFINITIONS.find((candidate) => candidate.type === type)
+    return definition ? <TypePractice key={type} definition={definition} /> : <NotFoundPage />
+  }
   if (setId === null) return <Practice />
 
   const set = getStudySet(studySets, setId)
@@ -101,6 +110,44 @@ function Practice() {
         dictionary={dictionary}
         onResult={recordResult}
         onRestart={() => setSession(createPracticeSession(hskWordItems, progress, settings))}
+      />
+    </>
+  )
+}
+
+/**
+ * A session of one exercise type only, over all vocabulary, whatever the
+ * Settings say. Items that can't be asked that way (了 in a tone question,
+ * since it has two readings) are left out; otherwise the usual priorities
+ * apply (see selectSessionItems).
+ */
+function TypePractice({ definition }: { definition: ExerciseDefinition }) {
+  const dictionary = useDictionary()
+  const { progress, recordResult } = useProgress()
+  const { sessionSize } = useSettings().settings
+  const name = t(EXERCISE_TYPE_LABELS[definition.type])
+  const createSession = (current: ProgressData) => {
+    nextSessionId += 1
+    const pool = hskWordItems.filter((item) => definition.canBuild(item, hskStudyItems))
+    const exercises = createSessionExercises(pool, {
+      progress: current,
+      size: sessionSize,
+      distractorPool: hskStudyItems,
+      definitions: [definition],
+    })
+    return { id: nextSessionId, exercises }
+  }
+  const [session, setSession] = useState(() => createSession(progress))
+
+  return (
+    <>
+      <PageHeader title={t('practice.typeTitle', { type: name })} description={t('practice.typeDescription')} />
+      <PracticeSession
+        key={session.id}
+        exercises={session.exercises}
+        dictionary={dictionary}
+        onResult={recordResult}
+        onRestart={() => setSession(createSession(progress))}
       />
     </>
   )

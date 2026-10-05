@@ -6,6 +6,8 @@ import { ProgressBar } from '../components/ui/ProgressBar.tsx'
 import { StatCard } from '../components/ui/StatCard.tsx'
 import { hskCharacterItems, hskWordItems } from '../features/dictionary/hskDictionary.ts'
 import { useMyStudies } from '../features/myStudies/myStudiesContext.ts'
+import { EXERCISE_TYPES } from '../features/practice/exerciseDefinitions.ts'
+import { EXERCISE_TYPE_LABELS } from '../features/practice/exerciseLabels.ts'
 import { DailyGoal } from '../features/progress/components/DailyGoal.tsx'
 import { useProgress } from '../features/progress/progressContext.ts'
 import { summarizeCharacters, summarizeItems, type ItemsSummary } from '../features/progress/stats.ts'
@@ -46,12 +48,7 @@ export function DashboardPage() {
         title={t('nav.dashboard')}
         description={t('dashboard.description')}
         actions={
-          <div className="flex flex-wrap gap-2">
-            <ButtonLink to="/study/practice?focus=writing" variant="secondary">
-              {t('dashboard.practiceWriting')}
-            </ButtonLink>
-            <ButtonLink to="/study/practice">{t('dashboard.startSession')}</ButtonLink>
-          </div>
+          <ButtonLink to="/study/practice">{t('dashboard.startSession')}</ButtonLink>
         }
       />
 
@@ -62,6 +59,20 @@ export function DashboardPage() {
           <div className="mt-4 border-t border-line pt-4">
             <DailyGoal now={now} />
           </div>
+        </Card>
+
+        <Card>
+          <h2 className="text-lg font-semibold">{t('dashboard.practiceType')}</h2>
+          <p className="mt-1 mb-4 text-ink-muted">{t('dashboard.practiceTypeDescription')}</p>
+          <ul className="flex flex-wrap gap-2">
+            {EXERCISE_TYPES.map((type) => (
+              <li key={type}>
+                <ButtonLink to={`/study/practice?type=${type}`} variant="secondary">
+                  {t(EXERCISE_TYPE_LABELS[type])}
+                </ButtonLink>
+              </li>
+            ))}
+          </ul>
         </Card>
 
         <section aria-labelledby="dashboard-overview">

@@ -479,6 +479,22 @@ strings, so it has its own `ToneExercise` type and `ToneQuestion` component;
 the option buttons and feedback are shared with `ChoiceQuestion`
 (`ChoiceParts.tsx`, `choiceState.ts`).
 
+**Matching.** `match-pinyin` and `match-meaning` (`matchExercises.ts`,
+`MatchQuestion`) show four hanzi and their pinyin or meanings shuffled, to pair
+up. They are built around the session's item plus the three distractors a
+pinyin or meaning question would use (so every pair has one answer), and only
+that item is graded: correct if it was never in a wrong pair.
+
+**Flashcard grades.** After revealing, the user says what they knew: neither,
+only the pinyin, only the meaning, or both. Only "both" is correct for spaced
+repetition, but the result carries each skill apart (`ExerciseResult.skills`),
+so the weaker one comes up more in later sessions.
+
+**Which types.** `settings.exerciseTypes` picks the types Study sessions may
+use (`getDefinitions`), always with one besides writing. `?type=<type>` on the
+practice page runs a session of that type only, whatever the settings; Home
+lists one button per type.
+
 **Skills.** Every exercise type trains one skill (`EXERCISE_SKILLS` in
 `progress/skills.ts`): meaning (flashcard, meaning and hanzi choice), pinyin,
 tones and writing. Spaced repetition stays one recognition level per item

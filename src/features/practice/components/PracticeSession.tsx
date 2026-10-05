@@ -56,9 +56,9 @@ export function PracticeSession({ exercises, dictionary, onResult, onRestart }: 
             key={state.currentIndex}
             exercise={exercise}
             dictionary={dictionary}
-            onAnswer={(correct) => {
-              onResult(createExerciseResult(exercise, correct))
-              dispatch({ type: 'answer', correct })
+            onAnswer={(correct, skills) => {
+              onResult(createExerciseResult(exercise, correct, skills))
+              dispatch({ type: 'answer', correct, skills })
             }}
             onSkip={() => dispatch({ type: 'skip' })}
             onLookUp={lookUp}

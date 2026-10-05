@@ -5,7 +5,9 @@ import { PageHeader } from '../components/ui/PageHeader.tsx'
 import { InstallSetting } from '../features/install/components/InstallSetting.tsx'
 import { ToneLegend } from '../features/dictionary/components/ToneLegend.tsx'
 import { useProgress } from '../features/progress/progressContext.ts'
-import { DAILY_GOAL_OPTIONS, SESSION_SIZE_OPTIONS } from '../features/settings/settings.ts'
+import { EXERCISE_TYPES } from '../features/practice/exerciseDefinitions.ts'
+import { EXERCISE_TYPE_HINTS, EXERCISE_TYPE_LABELS } from '../features/practice/exerciseLabels.ts'
+import { DAILY_GOAL_OPTIONS, hasRecognitionType, SESSION_SIZE_OPTIONS } from '../features/settings/settings.ts'
 import { useSettings } from '../features/settings/settingsContext.ts'
 import { THEME_OPTIONS } from '../features/settings/theme.ts'
 import { t } from '../i18n/index.ts'
@@ -58,7 +60,7 @@ export function SettingsPage() {
           <div className="flex flex-col gap-4">
             <SessionSizeSetting />
             <DailyGoalSetting />
-            <ToggleSetting setting="writingExercises" label={t('settings.writing')} hint={t('settings.writingHint')} />
+            <ExerciseTypesSetting />
           </div>
         </SettingsSection>
         <SettingsSection title={t('settings.appearance')}>
@@ -200,8 +202,41 @@ function ThemeSetting() {
   )
 }
 
+/**
+ * Which exercise types can come up in Study sessions. The last one besides
+ * writing can't be turned off: writing alone can't make a session.
+ */
+function ExerciseTypesSetting() {
+  const { settings, updateSettings } = useSettings()
+  const enabled = settings.exerciseTypes
+  return (
+    <fieldset>
+      <legend className="mb-2 text-ink-muted">{t('settings.exerciseTypes')}</legend>
+      <div className="flex flex-col gap-3">
+        {EXERCISE_TYPES.map((type) => {
+          const checked = enabled.includes(type)
+          const without = enabled.filter((other) => other !== type)
+          return (
+            <CheckboxRow
+              key={type}
+              checked={checked}
+              disabled={checked && !hasRecognitionType(without)}
+              onChange={(on) =>
+                updateSettings({ exerciseTypes: EXERCISE_TYPES.filter((other) => (other === type ? on : enabled.includes(other))) })
+              }
+              label={t(EXERCISE_TYPE_LABELS[type])}
+              hint={t(EXERCISE_TYPE_HINTS[type])}
+            />
+          )
+        })}
+      </div>
+      <p className="mt-3 text-sm text-ink-muted">{t('settings.exerciseTypesHint')}</p>
+    </fieldset>
+  )
+}
+
 type ToggleSettingProps = {
-  setting: 'toneColors' | 'toneNumbers' | 'writingExercises'
+  setting: 'toneColors' | 'toneNumbers'
   label: string
   hint: string
 }
@@ -210,11 +245,31 @@ type ToggleSettingProps = {
 function ToggleSetting({ setting, label, hint }: ToggleSettingProps) {
   const { settings, updateSettings } = useSettings()
   return (
-    <label className="flex cursor-pointer items-start gap-3">
+    <CheckboxRow
+      checked={settings[setting]}
+      onChange={(checked) => updateSettings({ [setting]: checked })}
+      label={label}
+      hint={hint}
+    />
+  )
+}
+
+type CheckboxRowProps = {
+  checked: boolean
+  disabled?: boolean
+  onChange: (checked: boolean) => void
+  label: string
+  hint: string
+}
+
+function CheckboxRow({ checked, disabled = false, onChange, label, hint }: CheckboxRowProps) {
+  return (
+    <label className={`flex items-start gap-3 ${disabled ? 'cursor-not-allowed' : 'cursor-pointer'}`}>
       <input
         type="checkbox"
-        checked={settings[setting]}
-        onChange={(event) => updateSettings({ [setting]: event.target.checked })}
+        checked={checked}
+        disabled={disabled}
+        onChange={(event) => onChange(event.target.checked)}
         className="mt-1 size-5 shrink-0 accent-accent"
       />
       <span>

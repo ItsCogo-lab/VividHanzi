@@ -1,6 +1,6 @@
 import { compareByFrequency, getStudyItemId, type StudyItem } from '../dictionary/studyItem.ts'
 import { createEmptyProgress, isDue } from '../progress/progress.ts'
-import { EXERCISE_SKILLS, getSkillStreak } from '../progress/skills.ts'
+import { EXERCISE_SKILLS, getSkillStreak, type SkillResults } from '../progress/skills.ts'
 import type { ProgressData } from '../progress/types.ts'
 import { shuffle, type RandomFn } from '../../lib/random.ts'
 import { EXERCISE_DEFINITIONS, type ExerciseDefinition } from './exerciseDefinitions.ts'
@@ -136,7 +136,7 @@ export interface SessionState {
  * - `skip`: it couldn't be done (a writing exercise without stroke data, when
  *   offline): it leaves the session without counting as an answer.
  */
-export type SessionAction = { type: 'answer'; correct: boolean } | { type: 'skip' }
+export type SessionAction = { type: 'answer'; correct: boolean; skills?: SkillResults } | { type: 'skip' }
 
 export function createSessionState(exercises: readonly Exercise[]): SessionState {
   return { exercises, currentIndex: 0, results: [], firstAttemptCount: exercises.length }
@@ -157,7 +157,7 @@ export function sessionReducer(state: SessionState, action: SessionAction): Sess
 
   switch (action.type) {
     case 'answer': {
-      const result = createExerciseResult(exercise, action.correct)
+      const result = createExerciseResult(exercise, action.correct, action.skills)
       const exercises = action.correct ? state.exercises : [...state.exercises, createRetryExercise(exercise)]
       return { ...state, exercises, currentIndex: state.currentIndex + 1, results: [...state.results, result] }
     }
@@ -181,6 +181,9 @@ export function createRetryExercise(exercise: Exercise): Exercise {
       return exercise
     case 'tone-choice':
       return { ...exercise, options: rotate(exercise.options) }
+    case 'match-pinyin':
+    case 'match-meaning':
+      return { ...exercise, answers: rotate(exercise.answers) }
     default:
       return { ...exercise, options: rotate(exercise.options) }
   }
@@ -201,8 +204,8 @@ export function getFirstAttemptResults(state: SessionState): readonly ExerciseRe
   return state.results.slice(0, state.firstAttemptCount)
 }
 
-export function createExerciseResult(exercise: Exercise, correct: boolean): ExerciseResult {
-  return { itemId: getStudyItemId(exercise.item), exerciseType: exercise.type, correct }
+export function createExerciseResult(exercise: Exercise, correct: boolean, skills?: SkillResults): ExerciseResult {
+  return { itemId: getStudyItemId(exercise.item), exerciseType: exercise.type, correct, ...(skills && { skills }) }
 }
 
 export function getCurrentExercise(state: SessionState): Exercise | undefined {

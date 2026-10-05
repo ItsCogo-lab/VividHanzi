@@ -1,15 +1,18 @@
 import type { Dictionary } from '../../dictionary/dictionary.ts'
 import type { StudyItem } from '../../dictionary/studyItem.ts'
+import type { SkillResults } from '../../progress/skills.ts'
 import type { Exercise } from '../types.ts'
 import { ChoiceQuestion } from './ChoiceQuestion.tsx'
 import { Flashcard } from './Flashcard.tsx'
+import { MatchQuestion } from './MatchQuestion.tsx'
 import { ToneQuestion } from './ToneQuestion.tsx'
 import { WritingExercise } from './WritingExercise.tsx'
 
 type ExerciseViewProps = {
   exercise: Exercise
   dictionary: Dictionary
-  onAnswer: (correct: boolean) => void
+  /** `skills` only from a flashcard, which tests pinyin and meaning separately. */
+  onAnswer: (correct: boolean, skills?: SkillResults) => void
   /** Leaves an exercise that can't be done without counting it (see WritingExercise). */
   onSkip: () => void
   /** Opens an item in the dictionary without leaving the session. */
@@ -31,6 +34,9 @@ export function ExerciseView({ exercise, dictionary, onAnswer, onSkip, onLookUp 
       return <ChoiceQuestion exercise={exercise} dictionary={dictionary} onAnswer={onAnswer} onLookUp={onLookUp} />
     case 'tone-choice':
       return <ToneQuestion exercise={exercise} dictionary={dictionary} onAnswer={onAnswer} onLookUp={onLookUp} />
+    case 'match-pinyin':
+    case 'match-meaning':
+      return <MatchQuestion exercise={exercise} dictionary={dictionary} onAnswer={onAnswer} onLookUp={onLookUp} />
     case 'writing':
       return (
         <WritingExercise exercise={exercise} dictionary={dictionary} onAnswer={onAnswer} onSkip={onSkip} onLookUp={onLookUp} />

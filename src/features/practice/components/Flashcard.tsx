@@ -2,9 +2,10 @@ import { useEffect, useRef, useState } from 'react'
 import { Button } from '../../../components/ui/Button.tsx'
 import { Card } from '../../../components/ui/Card.tsx'
 import { Kbd } from '../../../components/ui/Kbd.tsx'
-import { t } from '../../../i18n/index.ts'
+import { t, type MessageKey } from '../../../i18n/index.ts'
 import { formatPinyin, getMeanings, type Dictionary } from '../../dictionary/dictionary.ts'
 import { getRelatedItems, type StudyItem } from '../../dictionary/studyItem.ts'
+import type { SkillResults } from '../../progress/skills.ts'
 import { useSessionShortcuts } from '../shortcuts.ts'
 import type { FlashcardExercise } from '../types.ts'
 import { LookUpButtons } from './LookUpButtons.tsx'
@@ -17,17 +18,33 @@ const MAX_RELATED_ITEMS = 4
 type FlashcardProps = {
   exercise: FlashcardExercise
   dictionary: Dictionary
-  onAnswer: (correct: boolean) => void
+  /** Correct only if both were known; `skills` says which one was. */
+  onAnswer: (correct: boolean, skills: SkillResults) => void
   onLookUp: (item: StudyItem) => void
 }
+
+/**
+ * The four self-grading buttons, in key order. Knowing only one of the two
+ * counts as a miss for spaced repetition, but each skill keeps its own
+ * result, so later sessions test the weaker one more (see pickDefinition).
+ */
+const GRADES = [
+  { label: 'practice.knewNeither', pinyin: false, meaning: false },
+  { label: 'practice.knewPinyin', pinyin: true, meaning: false },
+  { label: 'practice.knewMeaning', pinyin: false, meaning: true },
+  { label: 'practice.knewBoth', pinyin: true, meaning: true },
+] as const satisfies readonly { label: MessageKey; pinyin: boolean; meaning: boolean }[]
 
 export function Flashcard({ exercise, dictionary, onAnswer, onLookUp }: FlashcardProps) {
   const [isRevealed, setIsRevealed] = useState(false)
   const answerRef = useRef<HTMLDivElement>(null)
   const { item } = exercise
   const reveal = () => setIsRevealed(true)
+  const grade = ({ pinyin, meaning }: (typeof GRADES)[number]) => onAnswer(pinyin && meaning, { pinyin, meaning })
   useSessionShortcuts(
-    isRevealed ? { '1': () => onAnswer(false), '2': () => onAnswer(true) } : { ' ': reveal, Enter: reveal },
+    isRevealed
+      ? Object.fromEntries(GRADES.map((option, index) => [String(index + 1), () => grade(option)]))
+      : { ' ': reveal, Enter: reveal },
   )
 
   // On reveal, the "Show answer" button disappears: we move focus to the
@@ -54,14 +71,21 @@ export function Flashcard({ exercise, dictionary, onAnswer, onLookUp }: Flashcar
         >
           <FlashcardAnswer item={item} dictionary={dictionary} />
           <LookUpButtons item={item} dictionary={dictionary} onLookUp={onLookUp} />
-          <div className="grid w-full gap-3 sm:grid-cols-2">
-            <Button variant="secondary" aria-keyshortcuts="1" onClick={() => onAnswer(false)}>
-              {t('practice.didNotKnow')} <Kbd>1</Kbd>
-            </Button>
-            <Button aria-keyshortcuts="2" onClick={() => onAnswer(true)}>
-              {t('practice.knewIt')} <Kbd>2</Kbd>
-            </Button>
-          </div>
+          <fieldset className="w-full">
+            <legend className="mb-3 w-full text-center text-ink-muted">{t('practice.whatDidYouKnow')}</legend>
+            <div className="grid w-full grid-cols-2 gap-3">
+              {GRADES.map((option, index) => (
+                <Button
+                  key={option.label}
+                  variant={option.pinyin && option.meaning ? 'primary' : 'secondary'}
+                  aria-keyshortcuts={String(index + 1)}
+                  onClick={() => grade(option)}
+                >
+                  {t(option.label)} <Kbd>{String(index + 1)}</Kbd>
+                </Button>
+              ))}
+            </div>
+          </fieldset>
         </div>
       ) : (
         <Button className="w-full sm:w-auto" aria-keyshortcuts="Space" onClick={reveal}>

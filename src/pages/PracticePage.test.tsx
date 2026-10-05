@@ -10,19 +10,7 @@ import { DEFAULT_SETTINGS, saveSettings } from '../features/settings/settings.ts
 import { memoryStorage } from '../test/memoryStorage.ts'
 import { renderWithProviders } from '../test/renderWithProviders.tsx'
 import { PracticePage } from './PracticePage.tsx'
-
-/** Answers the current exercise, whatever its type (the type is random). */
-async function answerCurrentExercise(user: ReturnType<typeof userEvent.setup>) {
-  const showAnswer = screen.queryByRole('button', { name: 'Show answer' })
-  if (showAnswer) {
-    await user.click(showAnswer)
-    await user.click(screen.getByRole('button', { name: 'I knew it' }))
-    return
-  }
-  const [firstOption] = within(screen.getByRole('list', { name: 'Options' })).getAllByRole('button')
-  await user.click(firstOption!)
-  await user.click(screen.getByRole('button', { name: 'Continue' }))
-}
+import { answerCurrentExercise } from '../test/answerExercise.ts'
 
 /** Answers until the session ends: a missed choice question comes back at the end. */
 async function finishSession(user: ReturnType<typeof userEvent.setup>) {
@@ -50,6 +38,22 @@ describe('PracticePage', () => {
 
     expect(screen.getByText(/^Card 3 of \d+$/)).toBeInTheDocument()
     expect(Object.keys(loadProgress(storage).items)).toHaveLength(2)
+  })
+})
+
+describe('PracticePage: one exercise type', () => {
+  it('?type= only gives exercises of that type, whatever the Settings say', () => {
+    const storage = memoryStorage()
+    saveSettings({ ...DEFAULT_SETTINGS, exerciseTypes: ['flashcard'] }, storage)
+    renderWithProviders(<PracticePage />, { storage, path: '/study/practice?type=tone-choice' })
+
+    expect(screen.getByRole('heading', { name: 'Tones practice' })).toBeInTheDocument()
+    expect(screen.getByRole('heading', { name: 'Which tones are right?' })).toBeInTheDocument()
+  })
+
+  it('an unknown type is not found', () => {
+    renderWithProviders(<PracticePage />, { path: '/study/practice?type=karaoke' })
+    expect(screen.queryByText(/^Card 1/)).not.toBeInTheDocument()
   })
 })
 

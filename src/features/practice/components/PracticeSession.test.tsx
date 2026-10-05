@@ -39,7 +39,7 @@ describe('PracticeSession', () => {
     expect(screen.getByText('Card 1 of 2')).toBeInTheDocument()
     expect(screen.getByText('你')).toBeInTheDocument()
 
-    await answer(user, 'I knew it')
+    await answer(user, 'Both')
 
     expect(screen.getByText('Card 2 of 2')).toBeInTheDocument()
     expect(screen.getByText('谢谢')).toBeInTheDocument()
@@ -51,12 +51,12 @@ describe('PracticeSession', () => {
     const user = userEvent.setup()
     renderSession()
 
-    await answer(user, 'I knew it')
-    await answer(user, "I didn't know")
+    await answer(user, 'Both')
+    await answer(user, 'Neither')
     // The missed card comes back at the end; the retry doesn't change the score
     expect(screen.getByText('Once more: you missed this one earlier.')).toBeInTheDocument()
     expect(screen.getByText('Card 3 of 3')).toBeInTheDocument()
-    await answer(user, 'I knew it')
+    await answer(user, 'Both')
 
     expect(screen.getByRole('heading', { name: 'Session complete' })).toBeInTheDocument()
     expect(screen.getByText('You knew 1 of 2.')).toBeInTheDocument()
@@ -70,15 +70,21 @@ describe('PracticeSession', () => {
     const onResult = vi.fn()
     renderSession({ onResult })
 
-    await answer(user, "I didn't know")
-    expect(onResult).toHaveBeenLastCalledWith({ itemId: 'char:你', exerciseType: 'flashcard', correct: false })
+    await answer(user, 'Neither')
+    const both = { pinyin: true, meaning: true }
+    expect(onResult).toHaveBeenLastCalledWith({
+      itemId: 'char:你',
+      exerciseType: 'flashcard',
+      correct: false,
+      skills: { pinyin: false, meaning: false },
+    })
 
-    await answer(user, 'I knew it')
-    expect(onResult).toHaveBeenLastCalledWith({ itemId: 'word:谢谢', exerciseType: 'flashcard', correct: true })
+    await answer(user, 'Both')
+    expect(onResult).toHaveBeenLastCalledWith({ itemId: 'word:谢谢', exerciseType: 'flashcard', correct: true, skills: both })
 
     // The retry of 你 is an answer too
-    await answer(user, 'I knew it')
-    expect(onResult).toHaveBeenLastCalledWith({ itemId: 'char:你', exerciseType: 'flashcard', correct: true })
+    await answer(user, 'Both')
+    expect(onResult).toHaveBeenLastCalledWith({ itemId: 'char:你', exerciseType: 'flashcard', correct: true, skills: both })
     expect(onResult).toHaveBeenCalledTimes(3)
   })
 
@@ -101,8 +107,8 @@ describe('PracticeSession', () => {
     const onRestart = vi.fn()
     renderSession({ onRestart })
 
-    await answer(user, 'I knew it')
-    await answer(user, 'I knew it')
+    await answer(user, 'Both')
+    await answer(user, 'Both')
     expect(screen.getByText('You knew all of them. Great job!')).toBeInTheDocument()
 
     await user.click(screen.getByRole('button', { name: 'Practice again' }))
@@ -126,7 +132,7 @@ describe('PracticeSession: dictionary without leaving the session', () => {
   it('opens the dictionary, searches a character and on close stays on the same card', async () => {
     const user = userEvent.setup()
     renderSession()
-    await answer(user, 'I knew it') // moves to card 2: 谢谢
+    await answer(user, 'Both') // moves to card 2: 谢谢
     await user.click(screen.getByRole('button', { name: 'Show answer' }))
 
     await user.click(screen.getByRole('button', { name: 'Dictionary' }))
@@ -145,7 +151,7 @@ describe('PracticeSession: dictionary without leaving the session', () => {
     expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
     // The session is exactly the same: card 2, with the answer revealed
     expect(screen.getByText('Card 2 of 2')).toBeInTheDocument()
-    expect(screen.getByRole('button', { name: 'I knew it' })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Both' })).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'Dictionary' })).toHaveFocus()
   })
 

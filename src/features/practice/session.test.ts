@@ -243,7 +243,7 @@ describe('pickDefinition', () => {
 
   it('leans towards the weaker skill', () => {
     let progress = createEmptyProgress()
-    for (let index = 0; index < 3; index++) progress = recordAnswer(progress, itemId, true, new Date(), 'meaning')
+    for (let index = 0; index < 3; index++) progress = recordAnswer(progress, itemId, true, new Date(), { meaning: true })
     // Weights: meaning 1/4, tones 1 → meaning only below 0.2
     expect(pickDefinition(definitions, item, progress, () => 0.19)?.type).toBe('meaning-choice')
     expect(pickDefinition(definitions, item, progress, () => 0.21)?.type).toBe('tone-choice')
