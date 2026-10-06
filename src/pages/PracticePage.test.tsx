@@ -1,9 +1,9 @@
-import { screen, within } from '@testing-library/react'
+import { cleanup, screen, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { topicDefinitions } from '../data/topics.ts'
 import { loadMyStudies } from '../features/myStudies/storage.ts'
-import { createEmptyProgress, getItemStatus, introduceItem, isDue, recordAnswer } from '../features/progress/progress.ts'
+import { createEmptyProgress, getItemStatus, introduceItem, isDue, isExcluded, recordAnswer } from '../features/progress/progress.ts'
 import { loadProgress, saveProgress } from '../features/progress/storage.ts'
 import type { ProgressData } from '../features/progress/types.ts'
 import { DEFAULT_SETTINGS, saveSettings } from '../features/settings/settings.ts'
@@ -156,7 +156,7 @@ describe('PracticePage: Learn and Study of a set', () => {
     expect(screen.getByText('Learn new vocabulary')).toBeInTheDocument()
     expect(screen.getByText('Item 1 of 6')).toBeInTheDocument()
     const shown: string[] = []
-    for (const action of ["I've learned it", 'Skip for now', "I've learned it"]) {
+    for (const action of ["I've learned it", "Don't learn", "I've learned it"]) {
       shown.push(currentLearnHanzi()!)
       await user.click(screen.getByRole('button', { name: action }))
     }
@@ -183,7 +183,25 @@ describe('PracticePage: Learn and Study of a set', () => {
     expect(isDue(item, new Date())).toBe(false)
   })
 
-  it('Learn also works with the keys 1 (skip), 2 (already know it) and 3 (learned)', async () => {
+  it("Learn's \"Don't learn\" leaves the item out of later Learn sessions, without learning it", async () => {
+    const user = userEvent.setup()
+    const storage = renderSession('mode=learn')
+
+    const total = Number(screen.getByText(/^Item 1 of/).textContent!.split(' of ')[1])
+    const excluded = currentLearnHanzi()!
+    await user.click(screen.getByRole('button', { name: "Don't learn" }))
+
+    const progress = loadProgress(storage)
+    expect(progress.items[`word:${excluded}`]).toBeUndefined()
+    expect(isExcluded(progress, `word:${excluded}`)).toBe(true)
+
+    // A new Learn session has one item less
+    cleanup()
+    renderSession('mode=learn', progress)
+    expect(screen.getByText(`Item 1 of ${total - 1}`)).toBeInTheDocument()
+  })
+
+  it("Learn also works with the keys 1 (don't learn), 2 (already know it) and 3 (learned)", async () => {
     const user = userEvent.setup()
     const storage = renderSession('mode=learn')
 
@@ -194,8 +212,9 @@ describe('PracticePage: Learn and Study of a set', () => {
     const learned = currentLearnHanzi()!
     await user.keyboard('3')
 
-    const { items } = loadProgress(storage)
+    const { items, excluded } = loadProgress(storage)
     expect(items[`word:${skipped}`]).toBeUndefined()
+    expect(excluded[`word:${skipped}`]?.excluded).toBe(true)
     expect(getItemStatus(items[`word:${known}`])).toBe('mastered')
     expect(getItemStatus(items[`word:${learned}`])).toBe('learning')
   })

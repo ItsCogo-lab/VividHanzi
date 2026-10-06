@@ -3,8 +3,8 @@ import userEvent from '@testing-library/user-event'
 import { describe, expect, it } from 'vitest'
 import { AppRoutes } from '../app/AppRoutes.tsx'
 import { allCharacters, allWords } from '../data/index.ts'
-import { createEmptyProgress, recordAnswer } from '../features/progress/progress.ts'
-import { saveProgress } from '../features/progress/storage.ts'
+import { createEmptyProgress, isExcluded, recordAnswer, setItemExcluded } from '../features/progress/progress.ts'
+import { loadProgress, saveProgress } from '../features/progress/storage.ts'
 import { memoryStorage } from '../test/memoryStorage.ts'
 import { renderWithProviders } from '../test/renderWithProviders.tsx'
 
@@ -113,6 +113,19 @@ describe('EntryDetailPage', () => {
     expect(screen.getByText('Times seen').nextElementSibling).toHaveTextContent('1')
     expect(screen.getByText('Mistakes').nextElementSibling).toHaveTextContent('1')
     expect(screen.getByText('Next review').nextElementSibling).toHaveTextContent('Now')
+  })
+
+  it('a word the user chose not to learn says so and can be brought back to Learn', async () => {
+    const user = userEvent.setup()
+    const storage = memoryStorage()
+    saveProgress(setItemExcluded(createEmptyProgress(), 'word:苹果', true, new Date()), storage)
+    renderWithProviders(<AppRoutes />, { path: '/vocabulary/苹果', storage })
+
+    expect(screen.getByText("You chose not to learn this, so Learn won't offer it.")).toBeInTheDocument()
+    await user.click(screen.getByRole('button', { name: 'Learn it after all' }))
+
+    expect(isExcluded(loadProgress(storage), 'word:苹果')).toBe(false)
+    expect(screen.getByText('Not studied yet. It will come up in your practice sessions.')).toBeInTheDocument()
   })
 
   it('a nonexistent entry shows "Page not found" after looking it up in the full dictionary', async () => {

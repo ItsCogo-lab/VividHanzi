@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { memoryStorage } from '../../test/memoryStorage.ts'
-import { createEmptyProgress, recordAnswer, recordWritingAnswer } from './progress.ts'
+import { createEmptyProgress, recordAnswer, recordWritingAnswer, setItemExcluded } from './progress.ts'
 import { loadProgress, PROGRESS_STORAGE_KEY, saveProgress } from './storage.ts'
 
 const now = new Date(2026, 8, 28, 10, 0)
@@ -25,6 +25,16 @@ describe('saveProgress / loadProgress', () => {
   it('progress saved before writing existed loads with no writing records', () => {
     const storage = memoryStorage({ 'hanzivocab.progress': JSON.stringify({ version: 1, items: {}, activity: {} }) })
     expect(loadProgress(storage)).toEqual(createEmptyProgress())
+  })
+
+  it('also keeps the items the user chose not to learn, dropping malformed ones', () => {
+    const progress = setItemExcluded(createEmptyProgress(), 'word:谢谢', true, now)
+    const storage = memoryStorage()
+    saveProgress(progress, storage)
+    expect(loadProgress(storage)).toEqual(progress)
+
+    const saved = { version: 1, items: {}, activity: {}, excluded: { ...progress.excluded, 'word:你': { excluded: 'yes' } } }
+    expect(loadProgress(memoryStorage({ 'hanzivocab.progress': JSON.stringify(saved) }))).toEqual(progress)
   })
 
   it('saves the format version', () => {

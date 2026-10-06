@@ -7,7 +7,7 @@
  */
 import type { CustomSet } from '../customSets/types.ts'
 import type { MyStudies } from '../myStudies/myStudies.ts'
-import type { DailyActivity, ItemProgress, ProgressData } from '../progress/types.ts'
+import type { DailyActivity, ExcludedItem, ItemProgress, ProgressData } from '../progress/types.ts'
 
 export function mergeProgress(local: ProgressData, remote: ProgressData): ProgressData {
   const items = mergeRecords(local.items, remote.items)
@@ -20,7 +20,13 @@ export function mergeProgress(local: ProgressData, remote: ProgressData): Progre
     const other = activity[day]
     if (!other || value.answers >= other.answers) activity[day] = value
   }
-  return { items, writing, activity }
+  // Excluding a word and undoing it: the most recent choice wins
+  const excluded: ProgressData['excluded'] = { ...remote.excluded }
+  for (const [id, value] of Object.entries(local.excluded) as [keyof ProgressData['excluded'], ExcludedItem][]) {
+    const other = excluded[id]
+    if (!other || value.changedAt >= other.changedAt) excluded[id] = value
+  }
+  return { items, writing, activity, excluded }
 }
 
 type ProgressRecords = ProgressData['items']

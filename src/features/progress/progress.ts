@@ -13,8 +13,11 @@ export const MASTERED_LEVEL = 4
 
 export type ItemStatus = 'new' | 'learning' | 'mastered'
 
+/** The state shown to the user: like ItemStatus, plus `excluded` for a new item the user chose not to learn. */
+export type DisplayStatus = ItemStatus | 'excluded'
+
 export function createEmptyProgress(): ProgressData {
-  return { items: {}, writing: {}, activity: {} }
+  return { items: {}, writing: {}, activity: {}, excluded: {} }
 }
 
 /**
@@ -168,6 +171,19 @@ function addItem(progress: ProgressData, itemId: StudyItemId, now: Date, schedul
 }
 
 /**
+ * Marks an item as one the user doesn't want to learn (`excluded: true`), or
+ * undoes it. An excluded item is left out of Learn; it has no SRS record, so
+ * it never comes up in Study either.
+ */
+export function setItemExcluded(progress: ProgressData, itemId: StudyItemId, excluded: boolean, now: Date): ProgressData {
+  return { ...progress, excluded: { ...progress.excluded, [itemId]: { excluded, changedAt: now.toISOString() } } }
+}
+
+export function isExcluded(progress: ProgressData, itemId: StudyItemId): boolean {
+  return progress.excluded[itemId]?.excluded === true
+}
+
+/**
  * An item is learned if it already has a spaced repetition record: it was
  * marked in Learn or has been answered at least once. This is the same as
  * saying its state is not 'new' (see getItemStatus).
@@ -179,6 +195,11 @@ export function isLearned(progress: ProgressData, itemId: StudyItemId): boolean 
 export function getItemStatus(item: ItemProgress | undefined): ItemStatus {
   if (!item) return 'new'
   return item.masteryLevel >= MASTERED_LEVEL ? 'mastered' : 'learning'
+}
+
+export function getDisplayStatus(progress: ProgressData, itemId: StudyItemId): DisplayStatus {
+  const item = progress.items[itemId]
+  return !item && isExcluded(progress, itemId) ? 'excluded' : getItemStatus(item)
 }
 
 /** Is this item due for review? New and basic items don't count as due. */

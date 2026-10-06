@@ -151,6 +151,10 @@ it does not count toward activity or the streak. "I already know it" calls
 `markItemKnown`: the record enters at the maximum level (mastered) with the first
 review after 30 days (`scheduleKnownItem`). It still shows up in Study, but very
 rarely; if it is answered wrong, it goes back to level 0 like any other.
+"Don't learn" calls `setItemExcluded`: the item gets no SRS record, only an
+entry in `ProgressData.excluded`, and Learn stops offering it. Its dictionary
+page says so and has "Learn it after all" to undo it. Undoing keeps the entry
+with `excluded: false` and its date, so a sync keeps the latest choice.
 
 In Profile the user can set their HSK level (`settings.hskLevel`).
 Saving it calls `applyHskLevel`: anything with no record up to that level
@@ -403,6 +407,7 @@ interface ItemProgress {
 interface ProgressData {
   items: Partial<Record<StudyItemId, ItemProgress>>
   activity: Record<string, { answers: number; correct: number }> // per day "2026-09-28"
+  excluded: Partial<Record<StudyItemId, { excluded: boolean; changedAt: string }>> // "Don't learn"
 }
 ```
 

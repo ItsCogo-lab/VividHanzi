@@ -9,6 +9,7 @@ import { LoadEntries } from '../features/dictionary/components/LoadEntries.tsx'
 import { useDictionary } from '../features/dictionary/dictionaryContext.ts'
 import { getStudyItem, getStudyItemId, type StudyItem, type StudyItemId } from '../features/dictionary/studyItem.ts'
 import { ItemProgressCard } from '../features/progress/components/ItemProgressCard.tsx'
+import { isExcluded } from '../features/progress/progress.ts'
 import { useProgress } from '../features/progress/progressContext.ts'
 import { useStudySets } from '../features/studySets/useStudySets.ts'
 import { getSetPath } from '../features/studySets/setPaths.ts'
@@ -33,7 +34,7 @@ export function EntryDetailPage({ kind }: { kind: StudyItem['kind'] }) {
 
 function Entry({ itemId }: { itemId: StudyItemId }) {
   const dictionary = useDictionary()
-  const { progress } = useProgress()
+  const { progress, setItemExcluded } = useProgress()
   // Opened from a custom set (?set=custom-...): also shows the user's notes in that set
   const [searchParams] = useSearchParams()
   const customSet = useCustomSet(searchParams.get('set') ?? undefined)
@@ -63,7 +64,11 @@ function Entry({ itemId }: { itemId: StudyItemId }) {
       <div className="flex max-w-3xl flex-col gap-4 sm:gap-6">
         <EntryDetails item={item} dictionary={dictionary} opener={{ getHref: getEntryPath }} />
         {customSet?.itemIds.includes(getStudyItemId(item)) && <CustomNotesView set={customSet} item={item} />}
-        <ItemProgressCard item={progress.items[getStudyItemId(item)]} now={new Date()} />
+        <ItemProgressCard
+          item={progress.items[itemId]}
+          now={new Date()}
+          excluded={isExcluded(progress, itemId) ? { onLearnAfterAll: () => setItemExcluded(itemId, false) } : undefined}
+        />
         <StudySetsOfItem item={item} />
       </div>
     </>

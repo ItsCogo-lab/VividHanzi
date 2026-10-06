@@ -1,6 +1,6 @@
 import { isRecord, readJson, writeJson, type KeyValueStorage } from '../../lib/storage.ts'
 import { createEmptyProgress } from './progress.ts'
-import type { DailyActivity, ItemProgress, ProgressData } from './types.ts'
+import type { DailyActivity, ExcludedItem, ItemProgress, ProgressData } from './types.ts'
 
 export const PROGRESS_STORAGE_KEY = 'hanzivocab.progress'
 
@@ -32,6 +32,8 @@ export function loadProgress(storage?: KeyValueStorage): ProgressData {
     // Writing progress came later: data saved before it has none, and that's fine
     writing: isRecord(saved.writing) ? keepValid(saved.writing, isItemProgress) : {},
     activity: keepValid(saved.activity, isDailyActivity),
+    // Same for the items the user chose not to learn
+    excluded: isRecord(saved.excluded) ? keepValid(saved.excluded, isExcludedItem) : {},
   }
 }
 
@@ -57,6 +59,10 @@ function isItemProgress(value: unknown): value is ItemProgress {
 
 function isDailyActivity(value: unknown): value is DailyActivity {
   return isRecord(value) && typeof value.answers === 'number' && typeof value.correct === 'number'
+}
+
+function isExcludedItem(value: unknown): value is ExcludedItem {
+  return isRecord(value) && typeof value.excluded === 'boolean' && typeof value.changedAt === 'string'
 }
 
 function isSkills(value: unknown): boolean {

@@ -19,6 +19,8 @@ type LearnSessionProps = {
   onLearned: (item: StudyItem) => void
   /** Called when the user already knew the item: it comes back in Study only very occasionally. */
   onKnown: (item: StudyItem) => void
+  /** Called when the user doesn't want to learn the item: Learn stops offering it. */
+  onExcluded: (item: StudyItem) => void
   /** Actions of the final summary (e.g. review what was learned). */
   summaryActions: ReactNode
   /** Extra content below the entry, e.g. the user's notes in a custom set. */
@@ -35,12 +37,14 @@ export function LearnSession({
   dictionary,
   onLearned,
   onKnown,
+  onExcluded,
   summaryActions,
   renderExtra,
 }: LearnSessionProps) {
   const [currentIndex, setCurrentIndex] = useState(0)
-  // What was learned in the session; `known` says whether the user already knew it
+  // What the user chose for each item, except the ones they decided not to learn
   const [learned, setLearned] = useState<readonly { item: StudyItem; known: boolean }[]>([])
+  const [excluded, setExcluded] = useState<readonly StudyItem[]>([])
   const item = items[currentIndex]
 
   if (!item) {
@@ -52,12 +56,18 @@ export function LearnSession({
             {t('learn.summary.count', { learned: learned.length, total: items.length })}
           </p>
         </div>
-        {learned.length > 0 && (
+        {learned.length + excluded.length > 0 && (
           <ul className="divide-y divide-line">
             {learned.map(({ item: learnedItem, known }) => (
               <li key={getStudyItemId(learnedItem)} className="flex items-center justify-between gap-3 py-2">
                 <EntryLabel entry={learnedItem.entry} withMeaning />
                 {known && <StatusBadge status="mastered" />}
+              </li>
+            ))}
+            {excluded.map((excludedItem) => (
+              <li key={getStudyItemId(excludedItem)} className="flex items-center justify-between gap-3 py-2">
+                <EntryLabel entry={excludedItem.entry} withMeaning />
+                <StatusBadge status="excluded" />
               </li>
             ))}
           </ul>
@@ -68,9 +78,14 @@ export function LearnSession({
   }
 
   const next = (choice: LearnChoice) => {
-    if (choice === 'learned') onLearned(item)
-    if (choice === 'known') onKnown(item)
-    if (choice !== 'skip') setLearned([...learned, { item, known: choice === 'known' }])
+    if (choice === 'exclude') {
+      onExcluded(item)
+      setExcluded([...excluded, item])
+    } else {
+      if (choice === 'learned') onLearned(item)
+      else onKnown(item)
+      setLearned([...learned, { item, known: choice === 'known' }])
+    }
     setCurrentIndex(currentIndex + 1)
   }
 
@@ -96,17 +111,17 @@ export function LearnSession({
   )
 }
 
-type LearnChoice = 'skip' | 'learned' | 'known'
+type LearnChoice = 'exclude' | 'learned' | 'known'
 
 /** The three Learn buttons, also with the keys 1, 2 and 3. */
 function LearnActions({ onChoice }: { onChoice: (choice: LearnChoice) => void }) {
-  useSessionShortcuts({ '1': () => onChoice('skip'), '2': () => onChoice('known'), '3': () => onChoice('learned') })
+  useSessionShortcuts({ '1': () => onChoice('exclude'), '2': () => onChoice('known'), '3': () => onChoice('learned') })
 
   return (
     // On mobile "I already know it" takes its own row above the other two
     <div className="sticky bottom-(--mobile-nav-height) -mx-1 grid grid-cols-2 gap-3 bg-paper px-1 py-3 sm:grid-cols-3 md:bottom-0">
-      <Button variant="secondary" aria-keyshortcuts="1" onClick={() => onChoice('skip')}>
-        {t('learn.skip')} <Kbd>1</Kbd>
+      <Button variant="secondary" aria-keyshortcuts="1" onClick={() => onChoice('exclude')}>
+        {t('learn.dontLearn')} <Kbd>1</Kbd>
       </Button>
       <Button
         variant="secondary"
