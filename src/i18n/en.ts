@@ -402,6 +402,7 @@ export const en = {
   'charts.calendarCaption': '{studied} days studied, goal reached on {goalDays}',
   'charts.dayAnswers': '{day}: {count} answers',
   'charts.less': 'Less',
+  'charts.doubleGoal': 'Double',
   'charts.goalMet': 'Goal',
   'charts.goalLine': 'Goal {goal}',
   'charts.accuracyByWeek': 'Accuracy by week',

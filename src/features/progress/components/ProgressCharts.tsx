@@ -1,6 +1,8 @@
-import { formatDayMonth, formatMonth, formatPercent, formatShortDay, t } from '../../../i18n/index.ts'
-import { fromDateKey, type DateKey } from '../../../lib/dates.ts'
-import type { CalendarDay, WeekAccuracy } from '../stats.ts'
+import { formatDayMonth, formatMonth, formatPercent, formatShortDay, formatWeekday, t } from '../../../i18n/index.ts'
+import { addDays, fromDateKey, type DateKey } from '../../../lib/dates.ts'
+import { useElementWidth } from '../../../lib/useElementWidth.ts'
+import { getActivityCalendar, getGoalLevel, type CalendarDay, type GoalLevel, type WeekAccuracy } from '../stats.ts'
+import type { DailyActivity } from '../types.ts'
 
 /**
  * Charts for the Progress page, drawn with plain HTML and SVG (no chart
@@ -10,67 +12,124 @@ import type { CalendarDay, WeekAccuracy } from '../stats.ts'
 
 // --- Activity calendar -------------------------------------------------------
 
-/** How strongly a day is colored, from what was done compared to the daily goal. */
-function getCalendarLevel(answers: number, goal: number): 0 | 1 | 2 | 3 {
-  if (answers === 0) return 0
-  if (answers >= goal) return 3
-  return answers >= goal / 2 ? 2 : 1
+/** Fill of a day (or a bar) for each goal level: stronger as the day goes past the goal. */
+const GOAL_LEVEL_CLASSES: Record<GoalLevel, string> = {
+  0: 'bg-line',
+  1: 'bg-accent/30',
+  2: 'bg-accent/60',
+  3: 'bg-accent',
+  4: 'bg-goal-over',
+  5: 'bg-goal-double',
 }
 
-const CALENDAR_LEVEL_CLASSES = ['bg-line', 'bg-accent/30', 'bg-accent/60', 'bg-accent'] as const
+const CELL_PX = 14
+const GAP_PX = 3
+/** Column for the weekday names. */
+const LABEL_PX = 28
+/** Weeks shown: as many as fit, between a couple of months and a year. */
+const MIN_WEEKS = 8
+const MAX_WEEKS = 53
+/** Before the width is known (first render, tests). */
+const DEFAULT_WEEKS = 26
+/** Rows with a weekday name: Monday, Wednesday and Friday, like GitHub. */
+const LABELED_WEEKDAYS = [0, 2, 4]
 
 type ActivityCalendarProps = {
-  weeks: readonly (readonly CalendarDay[])[]
+  activity: Record<DateKey, DailyActivity>
+  today: Date
   goal: number
 }
 
-/** One square per day, one column per week (Monday on top), like GitHub's contribution graph. */
-export function ActivityCalendar({ weeks, goal }: ActivityCalendarProps) {
+/**
+ * One square per day, one column per week (Monday on top), like GitHub's
+ * contribution graph. Squares keep their size; the calendar shows as many
+ * weeks as fit in its width, today in the last column.
+ */
+export function ActivityCalendar({ activity, today, goal }: ActivityCalendarProps) {
+  const [frameRef, width] = useElementWidth<HTMLDivElement>()
+  const fitting = width === undefined ? DEFAULT_WEEKS : Math.floor((width - LABEL_PX) / (CELL_PX + GAP_PX))
+  const weeks = getActivityCalendar(activity, today, Math.min(MAX_WEEKS, Math.max(MIN_WEEKS, fitting)))
   const days = weeks.flat().filter((day) => !day.future)
   const studied = days.filter((day) => day.answers > 0).length
   const goalDays = days.filter((day) => day.answers >= goal).length
-  const columns = { gridTemplateColumns: `repeat(${weeks.length}, minmax(0, 1fr))` }
+  const firstMonday = fromDateKey(weeks[0]![0]!.date)
 
   return (
-    // Capped width: on a wide screen 26 columns would make huge squares
-    <figure className="flex max-w-xl flex-col gap-2">
-      {/* Month names over the first week that starts in each month */}
-      <div aria-hidden="true" className="grid gap-[3px] text-xs text-ink-muted" style={columns}>
-        {weeks.map((week, index) => {
-          const monday = fromDateKey(week[0]!.date)
-          return (
-            <span key={week[0]!.date} className="overflow-visible whitespace-nowrap">
-              {(index === 0 || monday.getDate() <= 7) && index < weeks.length - 1 ? formatMonth(monday) : ''}
+    <figure className="flex flex-col gap-3">
+      <div ref={frameRef} className="w-full overflow-hidden">
+        <div
+          role="img"
+          aria-label={t('charts.calendarSummary', { studied, days: days.length, goalDays })}
+          className="grid w-max"
+          style={{
+            gridTemplateColumns: `${LABEL_PX}px repeat(${weeks.length}, ${CELL_PX}px)`,
+            gridTemplateRows: `auto repeat(7, ${CELL_PX}px)`,
+            gap: GAP_PX,
+          }}
+        >
+          {/* Month names over the first week that starts in each month */}
+          {weeks.map((week, index) => {
+            const monday = fromDateKey(week[0]!.date)
+            if (!showsMonth(weeks, index)) return null
+            return (
+              <span
+                key={`month-${week[0]!.date}`}
+                className="pb-1 text-xs whitespace-nowrap text-ink-muted"
+                style={{ gridRow: 1, gridColumn: `${index + 2} / span ${Math.min(3, weeks.length - index)}` }}
+              >
+                {formatMonth(monday)}
+              </span>
+            )
+          })}
+          {LABELED_WEEKDAYS.map((weekday) => (
+            <span
+              key={`weekday-${weekday}`}
+              className="text-[10px] leading-[14px] text-ink-muted"
+              style={{ gridRow: weekday + 2, gridColumn: 1 }}
+            >
+              {formatWeekday(addDays(firstMonday, weekday))}
             </span>
-          )
-        })}
-      </div>
-      <div
-        role="img"
-        aria-label={t('charts.calendarSummary', { studied, days: days.length, goalDays })}
-        className="grid grid-flow-col grid-rows-7 gap-[3px]"
-        style={columns}
-      >
-        {weeks.flat().map((day) => (
-          <span
-            key={day.date}
-            title={day.future ? undefined : t('charts.dayAnswers', { day: formatShortDay(fromDateKey(day.date)), count: day.answers })}
-            className={`aspect-square rounded-[3px] ${day.future ? '' : CALENDAR_LEVEL_CLASSES[getCalendarLevel(day.answers, goal)]}`}
-          />
-        ))}
+          ))}
+          {weeks.map((week, index) =>
+            week.map((day, weekday) => (
+              <span
+                key={day.date}
+                title={day.future ? undefined : t('charts.dayAnswers', { day: formatShortDay(fromDateKey(day.date)), count: day.answers })}
+                className={`rounded-[3px] ${day.future ? '' : GOAL_LEVEL_CLASSES[getGoalLevel(day.answers, goal)]}`}
+                style={{ gridRow: weekday + 2, gridColumn: index + 2 }}
+              />
+            )),
+          )}
+        </div>
       </div>
       <figcaption className="flex flex-wrap items-center justify-between gap-2 text-xs text-ink-muted">
         <span>{t('charts.calendarCaption', { studied, goalDays })}</span>
+        {/* Under the goal, the goal, then the stronger shades for going past it */}
         <span aria-hidden="true" className="flex items-center gap-1">
           {t('charts.less')}
-          {CALENDAR_LEVEL_CLASSES.map((className) => (
-            <span key={className} className={`size-3 rounded-[3px] ${className}`} />
-          ))}
-          {t('charts.goalMet')}
+          <LegendSquares levels={[0, 1, 2]} />
+          <span className="ml-1">{t('charts.goalMet')}</span>
+          <LegendSquares levels={[3, 4, 5]} />
+          {t('charts.doubleGoal')}
         </span>
       </figcaption>
     </figure>
   )
+}
+
+const startsMonth = (week: readonly CalendarDay[]) => fromDateKey(week[0]!.date).getDate() <= 7
+
+/**
+ * Whether a week gets its month's name. The first column gets it even
+ * mid-month, unless the next month's name comes so soon they would overlap.
+ */
+function showsMonth(weeks: readonly (readonly CalendarDay[])[], index: number): boolean {
+  if (index > 0) return startsMonth(weeks[index]!)
+  return startsMonth(weeks[0]!) || !weeks.slice(1, 3).some(startsMonth)
+}
+
+function LegendSquares({ levels }: { levels: readonly GoalLevel[] }) {
+  return levels.map((level) => <span key={level} className={`size-3 rounded-[3px] ${GOAL_LEVEL_CLASSES[level]}`} />)
 }
 
 // --- Bar chart ---------------------------------------------------------------
@@ -94,6 +153,13 @@ type BarChartProps = {
 
 const BAR_CHART_HEIGHT = 'h-32'
 
+/** Bars against a goal: under it in a lighter shade, past it in the calendar's stronger ones. */
+const BAR_LEVEL_CLASSES: Record<GoalLevel, string> = {
+  ...GOAL_LEVEL_CLASSES,
+  1: 'bg-accent/50',
+  2: 'bg-accent/50',
+}
+
 /** Vertical bars from a baseline, one per day. */
 export function BarChart({ bars, label, valueLabel, goal, goalLabel, formatEdge = formatDayEdge }: BarChartProps) {
   const max = Math.max(...bars.map((bar) => bar.value), goal ?? 0, 1)
@@ -103,13 +169,12 @@ export function BarChart({ bars, label, valueLabel, goal, goalLabel, formatEdge 
   return (
     <figure className="flex flex-col gap-1">
       <div aria-hidden="true" className={`relative flex ${BAR_CHART_HEIGHT} items-end gap-0.5 border-b border-line`}>
+        {/* Drawn over the bars; its label goes under the chart, where it hides nothing */}
         {goal !== undefined && (
           <div
-            className="pointer-events-none absolute inset-x-0 border-t-2 border-dashed border-ink-muted/50"
+            className="pointer-events-none absolute inset-x-0 z-10 border-t-2 border-dashed border-ink-muted/60"
             style={{ bottom: `${(goal / max) * 100}%` }}
-          >
-            <span className="absolute -top-5 right-0 bg-surface px-1 text-xs text-ink-muted">{goalLabel}</span>
-          </div>
+          />
         )}
         {bars.map((bar) => (
           // Full-height column so the tooltip is easy to hit even for short bars
@@ -119,15 +184,21 @@ export function BarChart({ bars, label, valueLabel, goal, goalLabel, formatEdge 
             className="flex h-full min-w-0 flex-1 items-end justify-center"
           >
             <div
-              className="w-full max-w-10 rounded-t bg-accent"
+              className={`w-full max-w-10 rounded-t ${goal === undefined ? 'bg-accent' : BAR_LEVEL_CLASSES[getGoalLevel(bar.value, goal)]}`}
               style={{ height: `${(bar.value / max) * 100}%`, minHeight: bar.value > 0 ? 2 : 0 }}
             />
           </div>
         ))}
       </div>
       {first && last && (
-        <div aria-hidden="true" className="flex justify-between text-xs text-ink-muted">
+        <div aria-hidden="true" className="flex items-center justify-between gap-2 text-xs text-ink-muted">
           <span>{formatEdge(first.date)}</span>
+          {goal !== undefined && (
+            <span className="flex items-center gap-1.5">
+              <span className="w-4 border-t-2 border-dashed border-ink-muted/60" />
+              {goalLabel}
+            </span>
+          )}
           <span>{formatEdge(last.date)}</span>
         </div>
       )}

@@ -5,6 +5,7 @@ import { testCharacters, testWords } from '../dictionary/testData.ts'
 import { createEmptyProgress, MASTERED_LEVEL, recordAnswer, recordWritingAnswer } from './progress.ts'
 import {
   getActivityCalendar,
+  getGoalLevel,
   getAnswerTotals,
   getGoalStreak,
   getReviewForecast,
@@ -138,6 +139,14 @@ describe('summarizeWriting', () => {
     let progress = recordAnswer(createEmptyProgress(), 'char:好', true, monday)
     progress = recordWritingAnswer(progress, 'char:你', false, monday)
     expect(summarizeWriting(progress)).toEqual({ learning: 1, mastered: 0 })
+  })
+})
+
+describe('getGoalLevel', () => {
+  it('grows with the answers, with two extra levels over the goal', () => {
+    expect([0, 5, 10, 19, 20, 29, 30, 39, 40, 100].map((answers) => getGoalLevel(answers, 20))).toEqual([
+      0, 1, 2, 2, 3, 3, 4, 4, 5, 5,
+    ])
   })
 })
 
