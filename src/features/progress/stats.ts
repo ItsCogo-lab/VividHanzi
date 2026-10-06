@@ -147,6 +147,21 @@ export interface CalendarDay extends DayActivity {
  * The last `weeks` weeks for the activity calendar, Monday to Sunday, the
  * current week last.
  */
+/**
+ * How a day went compared with the daily goal: 0 nothing, 1 under half of
+ * it, 2 under the goal, 3 goal met, 4 one and a half times the goal, 5 double
+ * or more. The calendar and the daily bars color days by this level.
+ */
+export type GoalLevel = 0 | 1 | 2 | 3 | 4 | 5
+
+export function getGoalLevel(answers: number, goal: number): GoalLevel {
+  if (answers <= 0) return 0
+  if (answers >= goal * 2) return 5
+  if (answers >= goal * 1.5) return 4
+  if (answers >= goal) return 3
+  return answers >= goal / 2 ? 2 : 1
+}
+
 export function getActivityCalendar(activity: Record<DateKey, DailyActivity>, today: Date, weeks = 26): CalendarDay[][] {
   const first = addDays(startOfWeek(today), -7 * (weeks - 1))
   const todayKey = toDateKey(today)

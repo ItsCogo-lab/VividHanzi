@@ -13,7 +13,6 @@ import { AccuracyChart, ActivityCalendar, BarChart } from '../features/progress/
 import { summarizeSkills, type Skill } from '../features/progress/skills.ts'
 import { useSettings } from '../features/settings/settingsContext.ts'
 import {
-  getActivityCalendar,
   getAnswerTotals,
   getDifficultItems,
   getRecentActivity,
@@ -94,7 +93,7 @@ function Statistics({ progress, totals, now }: StatisticsProps) {
       </section>
 
       <StatsSection id="stats-calendar" title={t('charts.calendar')}>
-        <ActivityCalendar weeks={getActivityCalendar(progress.activity, now)} goal={dailyGoal} />
+        <ActivityCalendar activity={progress.activity} today={now} goal={dailyGoal} />
       </StatsSection>
 
       <div className="grid gap-4 sm:gap-6 lg:grid-cols-2">

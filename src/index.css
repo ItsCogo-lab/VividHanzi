@@ -18,6 +18,9 @@
   --color-accent: #b4412f;
   --color-accent-strong: #8f3222;
   --color-accent-soft: #f6e4df;
+  /* Stronger shades for days well over the daily goal (calendar and charts) */
+  --color-goal-over: #8f2414;
+  --color-goal-double: #66150a;
   /* Text on a colored background (buttons, the particle chip) */
   --color-on-accent: #ffffff;
   /* Scrim behind a panel that opens over the content */
@@ -63,6 +66,8 @@ html[data-theme='dark'] {
   --color-accent: #e57a63;
   --color-accent-strong: #f4a08c;
   --color-accent-soft: #3a241e;
+  --color-goal-over: #ff4a1c;
+  --color-goal-double: #ff1f3d;
   --color-on-accent: #1b1210;
   --color-backdrop: rgb(0 0 0 / 0.6);
 

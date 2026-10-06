@@ -402,6 +402,7 @@ export const es: Record<MessageKey, string> = {
   'charts.calendarCaption': '{studied} días de estudio, meta cumplida en {goalDays}',
   'charts.dayAnswers': '{day}: {count} respuestas',
   'charts.less': 'Menos',
+  'charts.doubleGoal': 'Doble',
   'charts.goalMet': 'Meta',
   'charts.goalLine': 'Meta {goal}',
   'charts.accuracyByWeek': 'Aciertos por semana',

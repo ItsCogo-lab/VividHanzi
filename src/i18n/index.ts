@@ -52,6 +52,11 @@ export function formatMonth(date: Date): string {
   return new Intl.DateTimeFormat(ACTIVE_UI_LOCALE, { month: 'short' }).format(date)
 }
 
+/** Short weekday in the active language: "Mon". */
+export function formatWeekday(date: Date): string {
+  return new Intl.DateTimeFormat(ACTIVE_UI_LOCALE, { weekday: 'short' }).format(date)
+}
+
 /** Day and month in the active language: "Sep 28". */
 export function formatDayMonth(date: Date): string {
   return new Intl.DateTimeFormat(ACTIVE_UI_LOCALE, { month: 'short', day: 'numeric' }).format(date)
