@@ -11,6 +11,7 @@
  *
  * No sentence is generated or modified: they are copied as is.
  */
+import { rankExamples } from '../../../src/features/dictionary/exampleChoice.ts'
 import type { ExampleSentence } from '../../../src/features/dictionary/types.ts'
 
 export interface TatoebaSentence {
@@ -72,8 +73,9 @@ export interface ExampleInputs {
 
 /**
  * Chooses up to MAX_EXAMPLES_PER_WORD sentences per word. Deterministic
- * criterion: shortest first and, at equal length, the one with the lowest
- * id. The translation with the lowest id is used.
+ * criterion: sentences that show the word in context first (rankExamples),
+ * then shortest first and, at equal length, the one with the lowest id. The
+ * translation with the lowest id is used.
  */
 export function selectExamples(inputs: ExampleInputs): ExampleSentence[] {
   const { words, knownCharacters, chinese, english, translations } = inputs
@@ -95,7 +97,8 @@ export function selectExamples(inputs: ExampleInputs): ExampleSentence[] {
 
   const selected = new Map<number, ExampleSentence>()
   for (const word of words) {
-    const examples = candidates.filter(({ sentence }) => sentence.text.includes(word)).slice(0, MAX_EXAMPLES_PER_WORD)
+    const matching = candidates.filter(({ sentence }) => sentence.text.includes(word))
+    const examples = rankExamples(matching, word, ({ sentence }) => sentence.text).slice(0, MAX_EXAMPLES_PER_WORD)
     for (const { sentence, translation } of examples) {
       const existing = selected.get(sentence.id)
       if (existing) {

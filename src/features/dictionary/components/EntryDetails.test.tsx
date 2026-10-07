@@ -126,22 +126,33 @@ describe('EntryDetails for a character', () => {
     renderCharacter(ningCharacter, fake.fetch)
 
     expect(await screen.findByRole('heading', { name: 'Example sentences' })).toBeInTheDocument()
-    await expectSentenceWithPinyin('柠檬很酸。', 'níng méng hěn suān。')
-    // The direct translation with the lowest id
-    expect(screen.getByText('Lemon is sour.')).toBeInTheDocument()
+    await expectSentenceWithPinyin('柠檬是黄色的。', 'níng méng shì huáng sè de。')
+    expect(screen.getByText('The lemon is yellow.')).toBeInTheDocument()
+    // 柠檬很酸。 is the shortest, but the three longer ones show 柠 in more context
+    expect(screen.queryByText('Lemon is sour.')).not.toBeInTheDocument()
     // Sentences in traditional don't contain 柠 as is
     expect(screen.queryByText('檸檬是酸的。')).not.toBeInTheDocument()
     expect(screen.getAllByRole('listitem').filter((li) => li.textContent?.includes('Tatoeba #'))).toHaveLength(3)
-    expect(screen.getByRole('link', { name: 'Tatoeba #8934441 by iiujik' })).toHaveAttribute(
+    expect(screen.getByRole('link', { name: 'Tatoeba #8934444 by iiujik' })).toHaveAttribute(
       'href',
-      'https://tatoeba.org/en/sentences/show/8934441',
+      'https://tatoeba.org/en/sentences/show/8934444',
     )
     expect(screen.getByText(/licensed CC BY 2.0 FR/)).toBeInTheDocument()
     expect(fake.requested).not.toContain('/examples/hsk1.json')
   })
 
+  it('shows the direct translation with the lowest id', async () => {
+    const sourOnly = { ...ningResponse, data: ningResponse.data.slice(0, 1) }
+    const fake = createFakeFetch([['https://api.tatoeba.org/v1/sentences?', jsonResponse(sourOnly)]])
+    renderCharacter(ningCharacter, fake.fetch)
+
+    await expectSentenceWithPinyin('柠檬很酸。', 'níng méng hěn suān。')
+    expect(screen.getByText('Lemon is sour.')).toBeInTheDocument()
+  })
+
   it('splits example sentences into dictionary words that open their entry', async () => {
-    const fake = createFakeFetch([['https://api.tatoeba.org/v1/sentences?', jsonResponse(ningResponse)]])
+    const sourOnly = { ...ningResponse, data: ningResponse.data.slice(0, 1) }
+    const fake = createFakeFetch([['https://api.tatoeba.org/v1/sentences?', jsonResponse(sourOnly)]])
     renderCharacter(ningCharacter, fake.fetch)
 
     // The app's dictionary is HSK 1-4 plus the (empty, in tests) full dictionary: 柠檬 isn't in it

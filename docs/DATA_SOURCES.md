@@ -172,8 +172,13 @@ It is the same source the etymology in the Tofu Learn app came from.
 Selection criteria (deterministic): Chinese sentences with an author, at most 16
 characters, without Latin letters or digits and whose Chinese characters are
 all of the same HSK level or a lower one (someone studying HSK 1 can
-read a whole HSK 1 sentence). Per word, the 3 shortest (for equal length, the
-one with the lowest id), with the English translation with the lowest id. Sentences are copied
+read a whole HSK 1 sentence). Per word, 3 sentences: first those that add at
+least 4 Chinese characters to the word, so they show it in use (完成了！ alone
+says little), then the rest; within each group the shortest first (for equal
+length, the one with the lowest id). Sentences that only differ in punctuation
+count once. Each comes with the English translation with the lowest id. The
+same order is used for the sentences fetched from the Tatoeba API at runtime
+(`src/features/dictionary/exampleChoice.ts`). Sentences are copied
 as they are. Their pinyin is generated in the browser (see "Pinyin of the
 example sentences").
 
