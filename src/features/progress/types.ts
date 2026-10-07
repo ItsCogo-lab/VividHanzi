@@ -31,6 +31,17 @@ export interface ItemProgress {
   skills?: Partial<Record<RecognitionSkill, SkillStats>>
 }
 
+/**
+ * A word the user chose not to learn in Learn (see setItemExcluded). Undoing
+ * it keeps the entry with `excluded: false` instead of deleting it, so a sync
+ * with another device knows which of the two choices is more recent.
+ */
+export interface ExcludedItem {
+  excluded: boolean
+  /** Date in ISO 8601 format. */
+  changedAt: string
+}
+
 /** A day's answers, for the streak and statistics. */
 export interface DailyActivity {
   answers: number
@@ -51,4 +62,6 @@ export interface ProgressData {
    */
   writing: Partial<Record<StudyItemId, ItemProgress>>
   activity: Record<DateKey, DailyActivity>
+  /** Items the user chose not to learn: Learn no longer offers them. */
+  excluded: Partial<Record<StudyItemId, ExcludedItem>>
 }

@@ -3,7 +3,7 @@ import { createDictionary } from '../dictionary/dictionary.ts'
 import { hskDictionary } from '../dictionary/hskDictionary.ts'
 import { getStudyItemId, type StudyItem, type StudyItemId } from '../dictionary/studyItem.ts'
 import { testCharacters, testWords } from '../dictionary/testData.ts'
-import { createEmptyProgress, introduceItem, recordAnswer } from '../progress/progress.ts'
+import { createEmptyProgress, introduceItem, recordAnswer, setItemExcluded } from '../progress/progress.ts'
 import type { ProgressData } from '../progress/types.ts'
 import { getLearnableItems, getReviewItems, getSetSessionCounts } from './sessionItems.ts'
 import type { StudySet } from './types.ts'
@@ -65,6 +65,16 @@ describe('Learn and Study of a set', () => {
     expect(ids(due)).toEqual(['word:我', 'word:好'])
     expect(ids(upToDate)).toEqual(['word:你'])
     expect(getSetSessionCounts(set, progress, now)).toMatchObject({ learned: 3, due: 2 })
+  })
+
+  it('Learn leaves out the items the user chose not to learn, until that is undone', () => {
+    const excluded = setItemExcluded(learnFirst(2), 'word:是', true, now)
+
+    expect(ids(getLearnableItems(set, hskDictionary, excluded))).not.toContain('word:是')
+    expect(getSetSessionCounts(set, excluded, now)).toEqual({ learnable: 7, learned: 2, due: 2 })
+
+    const undone = setItemExcluded(excluded, 'word:是', false, now)
+    expect(ids(getLearnableItems(set, hskDictionary, undone))).toContain('word:是')
   })
 
   it('only counts the set items, even if others have been learned', () => {

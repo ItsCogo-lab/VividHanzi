@@ -2,14 +2,17 @@ import { describe, expect, it } from 'vitest'
 import {
   applyHskLevel,
   createEmptyProgress,
+  getDisplayStatus,
   getItemStatus,
   introduceItem,
   isDue,
+  isExcluded,
   isLearned,
   markItemKnown,
   MASTERED_LEVEL,
   recordAnswer,
   recordWritingAnswer,
+  setItemExcluded,
 } from './progress.ts'
 
 const monday = new Date(2026, 8, 28, 10, 0)
@@ -139,6 +142,27 @@ describe('markItemKnown', () => {
     const progress = introduceItem(createEmptyProgress(), 'word:你好', now)
 
     expect(markItemKnown(progress, 'word:你好', now)).toBe(progress)
+  })
+})
+
+describe('setItemExcluded', () => {
+  it('excludes an item without creating an SRS record, and can be undone', () => {
+    const excluded = setItemExcluded(createEmptyProgress(), 'word:谢谢', true, monday)
+
+    expect(isExcluded(excluded, 'word:谢谢')).toBe(true)
+    expect(isLearned(excluded, 'word:谢谢')).toBe(false)
+    expect(getDisplayStatus(excluded, 'word:谢谢')).toBe('excluded')
+
+    const undone = setItemExcluded(excluded, 'word:谢谢', false, tuesday)
+    expect(isExcluded(undone, 'word:谢谢')).toBe(false)
+    expect(getDisplayStatus(undone, 'word:谢谢')).toBe('new')
+    // Kept as a record of the choice, for syncing (see mergeProgress)
+    expect(undone.excluded['word:谢谢']).toEqual({ excluded: false, changedAt: tuesday.toISOString() })
+  })
+
+  it('an item that is being studied shows its real status even if it was excluded', () => {
+    const progress = introduceItem(setItemExcluded(createEmptyProgress(), 'word:谢谢', true, monday), 'word:谢谢', tuesday)
+    expect(getDisplayStatus(progress, 'word:谢谢')).toBe('learning')
   })
 })
 

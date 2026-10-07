@@ -4,7 +4,7 @@ import { t } from '../../../i18n/index.ts'
 import { EntryLabel } from '../../dictionary/components/EntryLabel.tsx'
 import { getStudyItemId, type StudyItem } from '../../dictionary/studyItem.ts'
 import { StatusBadge } from '../../progress/components/StatusBadge.tsx'
-import { getItemStatus } from '../../progress/progress.ts'
+import { getDisplayStatus } from '../../progress/progress.ts'
 import { useProgress } from '../../progress/progressContext.ts'
 import type { StudySet } from '../../studySets/types.ts'
 import { useCustomSet, useCustomSets } from '../customSetsContext.ts'
@@ -33,7 +33,7 @@ export function CustomItemList({ set, items }: { set: StudySet; items: readonly 
               <li key={itemId} className="flex flex-col gap-3 px-4 py-3">
                 <div className="flex flex-wrap items-center justify-between gap-3">
                   <EntryLabel entry={item.entry} withMeaning />
-                  <StatusBadge status={getItemStatus(progress.items[itemId])} />
+                  <StatusBadge status={getDisplayStatus(progress, itemId)} />
                 </div>
                 {customSet && <CustomItemNotes set={customSet} item={item} />}
                 <div className="flex flex-wrap gap-2">

@@ -1,3 +1,4 @@
+import { Button } from '../../../components/ui/Button.tsx'
 import { Card } from '../../../components/ui/Card.tsx'
 import { formatDate, t } from '../../../i18n/index.ts'
 import { getItemStatus, isDue } from '../progress.ts'
@@ -8,15 +9,18 @@ type ItemProgressCardProps = {
   /** `undefined` if the item hasn't been studied yet. */
   item: ItemProgress | undefined
   now: Date
+  /** The user chose not to learn it in Learn; `onLearnAfterAll` undoes that. */
+  excluded?: { onLearnAfterAll: () => void }
 }
 
 /** How the user is doing with a specific character or word. */
-export function ItemProgressCard({ item, now }: ItemProgressCardProps) {
+export function ItemProgressCard({ item, now, excluded }: ItemProgressCardProps) {
+  const isExcluded = !item && excluded !== undefined
   return (
     <Card className="flex flex-col gap-4">
       <div className="flex items-center justify-between gap-4">
         <h2 className="text-lg font-semibold">{t('dictionary.yourProgress')}</h2>
-        <StatusBadge status={getItemStatus(item)} />
+        <StatusBadge status={isExcluded ? 'excluded' : getItemStatus(item)} />
       </div>
       {item ? (
         <dl className="grid grid-cols-2 gap-x-6 gap-y-3 sm:grid-cols-4">
@@ -34,6 +38,13 @@ export function ItemProgressCard({ item, now }: ItemProgressCardProps) {
             }
           />
         </dl>
+      ) : isExcluded ? (
+        <div className="flex flex-wrap items-center gap-3">
+          <p className="text-ink-muted">{t('dictionary.excluded')}</p>
+          <Button variant="secondary" onClick={excluded.onLearnAfterAll}>
+            {t('dictionary.learnAfterAll')}
+          </Button>
+        </div>
       ) : (
         <p className="text-ink-muted">{t('dictionary.notStudied')}</p>
       )}

@@ -14,7 +14,7 @@ import { AddVocabulary } from '../../features/customSets/components/AddVocabular
 import { CustomItemList } from '../../features/customSets/components/CustomItemList.tsx'
 import { CustomSetSettings } from '../../features/customSets/components/CustomSetSettings.tsx'
 import { StatusBadge } from '../../features/progress/components/StatusBadge.tsx'
-import { getItemStatus } from '../../features/progress/progress.ts'
+import { getDisplayStatus } from '../../features/progress/progress.ts'
 import { useProgress } from '../../features/progress/progressContext.ts'
 import type { ProgressData } from '../../features/progress/types.ts'
 import { useStudySets } from '../../features/studySets/useStudySets.ts'
@@ -119,7 +119,7 @@ function ItemList({ title, items, progress }: ItemListProps) {
           <li key={getStudyItemId(item)}>
             <Link to={getEntryPath(item)} className="flex items-center justify-between gap-3 px-3 py-2.5 hover:bg-paper sm:gap-4 sm:px-4 sm:py-3">
               <EntryLabel entry={item.entry} withMeaning />
-              <StatusBadge status={getItemStatus(progress.items[getStudyItemId(item)])} />
+              <StatusBadge status={getDisplayStatus(progress, getStudyItemId(item))} />
             </Link>
           </li>
         ))}

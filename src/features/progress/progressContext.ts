@@ -14,6 +14,8 @@ export interface ProgressContextValue {
   introduceItem: (itemId: StudyItemId) => void
   /** Marks an item as already mastered (Learn session): it comes up again only very occasionally. */
   markItemKnown: (itemId: StudyItemId) => void
+  /** Marks an item as one the user doesn't want to learn, or undoes it (see setItemExcluded). */
+  setItemExcluded: (itemId: StudyItemId, excluded: boolean) => void
   /** Applies the user's HSK level to those items (see applyHskLevel in progress.ts). */
   applyHskLevel: (items: readonly LeveledItem[], level: HskLevel | null) => void
   resetProgress: () => void

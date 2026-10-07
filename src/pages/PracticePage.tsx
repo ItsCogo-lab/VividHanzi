@@ -353,7 +353,7 @@ function StudyPractice({ set, reviewAll }: { set: StudySet; reviewAll: boolean }
 /** Learn: introduces set items that have not been learned yet. */
 function LearnPractice({ set }: { set: StudySet }) {
   const dictionary = useDictionary()
-  const { progress, introduceItem, markItemKnown } = useProgress()
+  const { progress, introduceItem, markItemKnown, setItemExcluded } = useProgress()
   // In a custom set, the user's notes accompany the entry
   const customSet = useCustomSet(set.type === 'custom' ? set.id : undefined)
   const { sessionSize } = useSettings().settings
@@ -386,6 +386,7 @@ function LearnPractice({ set }: { set: StudySet }) {
         markItemKnown(getStudyItemId(item))
         markStudied(session.id)
       }}
+      onExcluded={(item) => setItemExcluded(getStudyItemId(item), true)}
       renderExtra={customSet && ((item) => <CustomNotesView set={customSet} item={item} />)}
       summaryActions={
         <>
