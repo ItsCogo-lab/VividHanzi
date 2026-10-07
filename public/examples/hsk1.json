@@ -169,6 +169,15 @@
    ]
   },
   {
+   "tatoebaId": 333772,
+   "zh": "他和我一样高。",
+   "author": "fucongcong",
+   "en": "He is as tall as I.",
+   "translationTatoebaId": 297431,
+   "words": [],
+   "grammarOnly": true
+  },
+  {
    "tatoebaId": 333784,
    "zh": "我们是同学。",
    "author": "fucongcong",
@@ -485,6 +494,16 @@
     "会",
     "来"
    ]
+  },
+  {
+   "tatoebaId": 346836,
+   "zh": "下雨了。",
+   "author": "fucongcong",
+   "en": "It is raining.",
+   "translationTatoebaId": 1862,
+   "translationAuthor": "CK",
+   "words": [],
+   "grammarOnly": true
   },
   {
    "tatoebaId": 346883,
@@ -1169,6 +1188,16 @@
    ]
   },
   {
+   "tatoebaId": 480305,
+   "zh": "你想一起去吗？",
+   "author": "minshirui",
+   "en": "Do you want to come along?",
+   "translationTatoebaId": 27693,
+   "translationAuthor": "CK",
+   "words": [],
+   "grammarOnly": true
+  },
+  {
    "tatoebaId": 480581,
    "zh": "他有很多钱。",
    "author": "biglion",
@@ -1410,6 +1439,16 @@
    "words": [
     "下"
    ]
+  },
+  {
+   "tatoebaId": 691992,
+   "zh": "你呢？",
+   "author": "sysko",
+   "en": "How about you?",
+   "translationTatoebaId": 16491,
+   "translationAuthor": "CK",
+   "words": [],
+   "grammarOnly": true
   },
   {
    "tatoebaId": 697642,
@@ -1781,6 +1820,16 @@
     "看",
     "小"
    ]
+  },
+  {
+   "tatoebaId": 841845,
+   "zh": "天气冷了。",
+   "author": "eastasiastudent",
+   "en": "The weather is cold now.",
+   "translationTatoebaId": 841847,
+   "translationAuthor": "sundown",
+   "words": [],
+   "grammarOnly": true
   },
   {
    "tatoebaId": 841853,
@@ -2329,6 +2378,16 @@
    ]
   },
   {
+   "tatoebaId": 2680906,
+   "zh": "那我呢?",
+   "author": "issiao1024",
+   "en": "What about me?",
+   "translationTatoebaId": 2549675,
+   "translationAuthor": "CK",
+   "words": [],
+   "grammarOnly": true
+  },
+  {
    "tatoebaId": 2777865,
    "zh": "猫在哪里睡觉？",
    "author": "GlossaMatik",
@@ -2825,6 +2884,16 @@
    ]
   },
   {
+   "tatoebaId": 5580848,
+   "zh": "她在睡觉。",
+   "author": "grindeldore",
+   "en": "She is sleeping.",
+   "translationTatoebaId": 7213191,
+   "translationAuthor": "TracyPoff",
+   "words": [],
+   "grammarOnly": true
+  },
+  {
    "tatoebaId": 5580940,
    "zh": "你们在读书。",
    "author": "grindeldore",
@@ -3270,6 +3339,16 @@
    ]
   },
   {
+   "tatoebaId": 9007523,
+   "zh": "她睡了几小时。",
+   "author": "jacintoo",
+   "en": "She slept for a few hours.",
+   "translationTatoebaId": 1532049,
+   "translationAuthor": "LittleBoy",
+   "words": [],
+   "grammarOnly": true
+  },
+  {
    "tatoebaId": 9475958,
    "zh": "我想和他说话。",
    "author": "BobbyLee",
@@ -3538,6 +3617,16 @@
     "火车站",
     "前面"
    ]
+  },
+  {
+   "tatoebaId": 10966817,
+   "zh": "你妈妈呢？",
+   "author": "xjjAstrus",
+   "en": "Where's your mom?",
+   "translationTatoebaId": 2254687,
+   "translationAuthor": "CK",
+   "words": [],
+   "grammarOnly": true
   },
   {
    "tatoebaId": 10966840,
