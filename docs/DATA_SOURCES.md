@@ -481,7 +481,7 @@ Criteria:
 - **Where they appear:** on the character's card always; on a word, only if
   its toneless pinyin is that of the use (得 "de" yes, 得 "děi" no). A pair
   also shows on its second word through `alsoShownOn` (但是 shows
-  虽然...但是); 或者 has its own point rather than sharing 还是's). A test checks that every point shows on an HSK 1-4 word.
+  虽然...但是); 或者 has its own point instead of sharing 还是's. A test checks that every point shows on an HSK 1-4 word.
 
 ## Generated files
 
