@@ -12,6 +12,7 @@ import { HskLevelCard } from '../features/progress/components/HskLevelCard.tsx'
 import { useProgress } from '../features/progress/progressContext.ts'
 import { getAnswerTotals, summarizeCharacters, summarizeItems } from '../features/progress/stats.ts'
 import { getCurrentStreak } from '../features/progress/streak.ts'
+import { SupportCard } from '../features/support/SupportCard.tsx'
 import { useStudySets } from '../features/studySets/useStudySets.ts'
 import { getSetPath } from '../features/studySets/setPaths.ts'
 import { SetProgressBar } from '../features/studySets/components/SetProgressBar.tsx'
@@ -117,6 +118,8 @@ export function ProfilePage() {
             </ul>
           )}
         </Card>
+
+        <SupportCard />
 
         <div className="flex flex-wrap gap-2">
           <ButtonLink to="/progress" variant="secondary">

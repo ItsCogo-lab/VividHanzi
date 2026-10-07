@@ -8,6 +8,7 @@ import { useProgress } from '../features/progress/progressContext.ts'
 import { EXERCISE_TYPES } from '../features/practice/exerciseDefinitions.ts'
 import { EXERCISE_TYPE_HINTS, EXERCISE_TYPE_LABELS } from '../features/practice/exerciseLabels.ts'
 import { DAILY_GOAL_OPTIONS, hasRecognitionType, SESSION_SIZE_OPTIONS } from '../features/settings/settings.ts'
+import { SupportCard } from '../features/support/SupportCard.tsx'
 import { useSettings } from '../features/settings/settingsContext.ts'
 import { THEME_OPTIONS } from '../features/settings/theme.ts'
 import { t } from '../i18n/index.ts'
@@ -79,6 +80,7 @@ export function SettingsPage() {
         <SettingsSection title={t('settings.data')}>
           <ResetProgress />
         </SettingsSection>
+        <SupportCard />
         <SettingsSection title={t('settings.about')}>
           <ul className="flex flex-col gap-2">
             {DATA_SOURCES.map((source) => (
