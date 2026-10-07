@@ -419,7 +419,6 @@ export const grammarPoints: readonly GrammarPoint[] = [
     id: 'haishi-huozhe',
     word: '还是',
     pinyin: 'hai shi',
-    alsoShownOn: ['或者'],
     title: '"Or" in questions: 还是 vs 或者',
     pattern: 'A + 还是 + B？',
     explanation:
@@ -427,7 +426,21 @@ export const grammarPoints: readonly GrammarPoint[] = [
     examples: [
       { tatoebaId: 1477275, zh: '你吃面条还是吃饭？', en: 'Do you want to eat noodles or rice?', author: 'GlossaMatik' },
       { tatoebaId: 813434, zh: '这是报纸还是杂志？', en: 'Is this a newspaper or a magazine?', author: 'eastasiastudent' },
+    ],
+    reference: { title: 'Comparing "haishi" and "huozhe"', url: `${WIKI}ASGQJ5IC` },
+  },
+  {
+    id: 'huozhe',
+    word: '或者',
+    pinyin: 'huo zhe',
+    title: '"Or" in statements with 或者',
+    pattern: 'A + 或者 + B',
+    explanation:
+      '或者 joins two options when either one is fine or you are not sure which: "on foot or by bike". It can also offer options in a 吗 question ("milk or sugar?"). To ask someone to choose between A and B, use 还是 instead.',
+    examples: [
       { tatoebaId: 791438, zh: '他走路或者骑车过来。', en: "He'll come on foot or by bicycle.", author: 'fucongcong' },
+      { tatoebaId: 1878278, zh: '你或者我会被选中。', en: 'You or I will be chosen.', author: 'sadhen' },
+      { tatoebaId: 13901003, zh: '要加点牛奶或者糖吗？', en: 'Any milk or sugar?', author: 'jan_OkulaJu' },
     ],
     reference: { title: 'Comparing "haishi" and "huozhe"', url: `${WIKI}ASGQJ5IC` },
   },

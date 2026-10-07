@@ -457,7 +457,7 @@ Transportation, Nature, Technology, Work, Animals, Colors). Criteria:
 ## Grammar notes
 
 `src/data/grammar.ts`, written by hand. The card for the most common function
-words of HSK 1-4 shows a Grammar section with their uses (30 points):
+words of HSK 1-4 shows a Grammar section with their uses (31 points):
 
 - Particles: 的 (possession and modifiers), 了 (completed action and change of
   state), 吗, 呢 ("and you?"), 吧 (suggestions and softening), 过, 着, 得, 地
@@ -481,7 +481,7 @@ Criteria:
 - **Where they appear:** on the character's card always; on a word, only if
   its toneless pinyin is that of the use (得 "de" yes, 得 "děi" no). A pair
   also shows on its second word through `alsoShownOn` (但是 shows
-  虽然...但是). A test checks that every point shows on an HSK 1-4 word.
+  虽然...但是); 或者 has its own point rather than sharing 还是's). A test checks that every point shows on an HSK 1-4 word.
 
 ## Generated files
 
