@@ -19,6 +19,12 @@ describe('ProfilePage', () => {
     expect(screen.getByText('No study sessions with a set yet.')).toBeInTheDocument()
   })
 
+  it('links to the Support page', () => {
+    renderWithProviders(<ProfilePage />)
+
+    expect(screen.getByRole('link', { name: /Support me on Ko-fi/ })).toHaveAttribute('href', '/support')
+  })
+
   it('summarizes saved progress, the sets being studied and the recent ones', () => {
     const storage = memoryStorage()
     const now = new Date()
