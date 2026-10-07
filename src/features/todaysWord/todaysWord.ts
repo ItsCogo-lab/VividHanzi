@@ -1,12 +1,12 @@
 import type { Hsk5Word, Word } from '../dictionary/types.ts'
 import { getEntryPathById } from '../dictionary/entryPaths.ts'
 import type { DateKey } from '../../lib/dates.ts'
-import { isRecord, readJson, writeJson, type KeyValueStorage } from '../../lib/storage.ts'
-import type { RandomFn } from '../../lib/random.ts'
+import { seededRandom, shuffle } from '../../lib/random.ts'
 
 /**
- * Today's Word: one HSK 3-5 word per local calendar day, never repeated
- * until every word in the pool has been shown once.
+ * Today's Word: one HSK 3-5 word per calendar day, the same for everyone.
+ * The words go in a fixed shuffled order and each day takes the next one,
+ * so none repeats until the whole list has been shown (about 6 years).
  */
 
 export interface DailyWord {
@@ -18,15 +18,6 @@ export interface DailyWord {
   /** Entry page to open it in the dictionary. */
   path: string
 }
-
-/** What is saved: today's word and every word already shown. */
-export interface TodaysWordState {
-  date: DateKey
-  key: string
-  seen: string[]
-}
-
-export const TODAYS_WORD_STORAGE_KEY = 'hanzivocab.todaysWord'
 
 /** HSK 3 and 4 words from the bundled dataset, plus the HSK 5 list. */
 export function createDailyWordPool(words: readonly Word[], hsk5Words: readonly Hsk5Word[]): DailyWord[] {
@@ -51,40 +42,28 @@ export function createDailyWordPool(words: readonly Word[], hsk5Words: readonly 
   return pool
 }
 
-/**
- * Today's word and the state to save. The same day always gives the same
- * word; a new day picks at random among the words not shown yet. When all
- * have been shown, it starts over (without repeating yesterday's word).
- */
-export function chooseTodaysWord(
-  pool: readonly DailyWord[],
-  saved: TodaysWordState | undefined,
-  today: DateKey,
-  random: RandomFn = Math.random,
-): { word: DailyWord; state: TodaysWordState } | undefined {
-  const byKey = new Map(pool.map((word) => [word.key, word]))
-  const current = saved && byKey.get(saved.key)
-  if (saved && current && saved.date === today) return { word: current, state: saved }
+/** Day the order starts at: its first word is shown on this date. */
+const FIRST_DAY = '2026-10-05'
+/** Fixed seed: changing it changes everyone's word. */
+const ORDER_SEED = 20261005
 
-  let seen = new Set((saved?.seen ?? []).filter((key) => byKey.has(key)))
-  let unseen = pool.filter((word) => !seen.has(word.key))
-  if (unseen.length === 0) {
-    seen = new Set()
-    unseen = pool.length > 1 ? pool.filter((word) => word.key !== saved?.key) : [...pool]
+/** Whole days between two "YYYY-MM-DD" keys (computed in UTC, so daylight saving changes don't matter). */
+function daysBetween(from: DateKey, to: DateKey): number {
+  const toUtc = (key: DateKey) => {
+    const [year = 0, month = 1, day = 1] = key.split('-').map(Number)
+    return Date.UTC(year, month - 1, day)
   }
-  const word = unseen[Math.floor(random() * unseen.length)]
-  if (!word) return undefined
-  return { word, state: { date: today, key: word.key, seen: [...seen, word.key] } }
+  return Math.round((toUtc(to) - toUtc(from)) / 86_400_000)
 }
 
-export function loadTodaysWord(storage?: KeyValueStorage): TodaysWordState | undefined {
-  const saved = readJson(TODAYS_WORD_STORAGE_KEY, storage)
-  if (!isRecord(saved)) return undefined
-  const { date, key, seen } = saved
-  if (typeof date !== 'string' || typeof key !== 'string' || !Array.isArray(seen)) return undefined
-  return { date, key, seen: seen.filter((item): item is string => typeof item === 'string') }
-}
-
-export function saveTodaysWord(state: TodaysWordState, storage?: KeyValueStorage): boolean {
-  return writeJson(TODAYS_WORD_STORAGE_KEY, state, storage)
+/**
+ * The word for a date. It depends only on the date and the pool, so every
+ * user sees the same word on the same day (their local calendar day). If
+ * the word lists change when the dataset is regenerated, the order changes too.
+ */
+export function getTodaysWord(pool: readonly DailyWord[], today: DateKey): DailyWord | undefined {
+  if (pool.length === 0) return undefined
+  const order = shuffle(pool, seededRandom(ORDER_SEED))
+  const index = daysBetween(FIRST_DAY, today) % order.length
+  return order[(index + order.length) % order.length]
 }

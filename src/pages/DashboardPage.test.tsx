@@ -1,10 +1,9 @@
-import { screen } from '@testing-library/react'
+import { screen, within } from '@testing-library/react'
 import { describe, expect, it } from 'vitest'
 import { hskWordItems } from '../features/dictionary/hskDictionary.ts'
 import { createEmptyProgress, recordAnswer } from '../features/progress/progress.ts'
 import { saveProgress } from '../features/progress/storage.ts'
 import type { ProgressData } from '../features/progress/types.ts'
-import { toDateKey } from '../lib/dates.ts'
 import { memoryStorage } from '../test/memoryStorage.ts'
 import { renderWithProviders } from '../test/renderWithProviders.tsx'
 import { DashboardPage } from './DashboardPage.tsx'
@@ -71,14 +70,11 @@ describe('DashboardPage', () => {
   })
 
   it("shows today's word and opens it in the dictionary", async () => {
-    localStorage.setItem(
-      'hanzivocab.todaysWord',
-      JSON.stringify({ date: toDateKey(new Date()), key: '唉 āi', seen: ['唉 āi'] }),
-    )
     renderDashboard()
 
-    const link = await screen.findByRole('link', { name: /to sigh/ })
-    expect(link).toHaveAttribute('href', `/characters/${encodeURIComponent('唉')}`)
-    expect(screen.getByText('HSK 5')).toBeInTheDocument()
+    const card = (await screen.findByRole('heading', { name: "Today's Word" })).closest('div')!.parentElement!
+    const link = await within(card).findByRole('link')
+    expect(link.getAttribute('href')).toMatch(/^\/(vocabulary|characters)\//)
+    expect(within(card).getByText(/^HSK [345]$/)).toBeInTheDocument()
   })
 })
