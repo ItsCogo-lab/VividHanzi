@@ -1,5 +1,7 @@
 # VividHanzi
 
+[![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/E1B223H5ZR)
+
 A web app for learning and practicing Chinese characters (hanzi) and vocabulary:
 recognition, pinyin, meaning, spaced repetition and, later, writing
 and pronunciation.
