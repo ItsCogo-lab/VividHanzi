@@ -99,7 +99,7 @@ export const hsk3Words: Word[] = [
   {"id":"关于","hanzi":"关于","pinyin":"guān yú","meanings":{"en":["pertaining to","concerning","with regard to","about","a matter of"]},"hskLevel":3,"traditional":"關於","frequencyRank":285},
   {"id":"国家","hanzi":"国家","pinyin":"guó jiā","meanings":{"en":["country; nation; state"]},"hskLevel":3,"traditional":"國家","frequencyRank":53},
   {"id":"果汁","hanzi":"果汁","pinyin":"guǒ zhī","meanings":{"en":["fruit juice"]},"hskLevel":3,"traditional":"果汁","frequencyRank":14391},
-  {"id":"过去","hanzi":"过去","pinyin":"guò qu","meanings":{"en":["(verb suffix)"]},"hskLevel":3,"traditional":"過去","frequencyRank":311},
+  {"id":"过去","hanzi":"过去","pinyin":"guò qù","meanings":{"en":["(in the) past; former; previous","to go over; to pass by"]},"hskLevel":3,"traditional":"過去","frequencyRank":311},
   {"id":"还是","hanzi":"还是","pinyin":"hái shi","meanings":{"en":["still (as before)","had better","unexpectedly","or"]},"hskLevel":3,"traditional":"還是","frequencyRank":183},
   {"id":"害怕","hanzi":"害怕","pinyin":"hài pà","meanings":{"en":["to be afraid; to be scared"]},"hskLevel":3,"traditional":"害怕","frequencyRank":1369},
   {"id":"河","hanzi":"河","pinyin":"hé","meanings":{"en":["river","(bound form) the Yellow River","(bound form) the Milky Way","(bound form) (on restaurant menus) rice noodles 河粉"]},"hskLevel":3,"traditional":"河","frequencyRank":2195},
