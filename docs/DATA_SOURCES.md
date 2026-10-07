@@ -476,7 +476,9 @@ Criteria:
   text nor its sentences are copied, and each point only **links** to its page.
 - **Examples:** Tatoeba sentences (CC BY 2.0 FR) that are already in
   `public/examples/`, copied as they are with their id and author. A test checks
-  that they exist there unchanged and that they contain the word. A use without sentences
+  that they exist there unchanged and that they contain the word. The build
+  always keeps the sentences a note quotes, in the first level that can read
+  them, even when no word picks them; those are marked `grammarOnly`. A use without sentences
   in Tatoeba is not included (the progressive-action 呢, the 是...的 emphasis).
 - **Where they appear:** on the character's card always; on a word, only if
   its toneless pinyin is that of the use (得 "de" yes, 得 "děi" no). A pair
