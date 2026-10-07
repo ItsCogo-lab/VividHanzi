@@ -19,12 +19,10 @@ describe('ProfilePage', () => {
     expect(screen.getByText('No study sessions with a set yet.')).toBeInTheDocument()
   })
 
-  it('links to Ko-fi in a new tab', () => {
+  it('links to the Support page', () => {
     renderWithProviders(<ProfilePage />)
 
-    const link = screen.getByRole('link', { name: /Support me on Ko-fi/ })
-    expect(link).toHaveAttribute('href', 'https://ko-fi.com/cogo8')
-    expect(link).toHaveAttribute('target', '_blank')
+    expect(screen.getByRole('link', { name: /Support me on Ko-fi/ })).toHaveAttribute('href', '/support')
   })
 
   it('summarizes saved progress, the sets being studied and the recent ones', () => {

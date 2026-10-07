@@ -7,6 +7,7 @@ import { PracticePage } from '../pages/PracticePage.tsx'
 import { ProfilePage } from '../pages/ProfilePage.tsx'
 import { ProgressPage } from '../pages/ProgressPage.tsx'
 import { SettingsPage } from '../pages/SettingsPage.tsx'
+import { SupportPage } from '../pages/SupportPage.tsx'
 import { CreateCustomSetPage } from '../pages/study/CreateCustomSetPage.tsx'
 import { CustomSetListPage } from '../pages/study/CustomSetListPage.tsx'
 import { ImportCustomSetPage } from '../pages/study/ImportCustomSetPage.tsx'
@@ -41,6 +42,7 @@ export function AppRoutes() {
         <Route path="profile" element={<ProfilePage />} />
         <Route path="progress" element={<ProgressPage />} />
         <Route path="settings" element={<SettingsPage />} />
+        <Route path="support" element={<SupportPage />} />
         {/* Old URLs: they still work */}
         <Route path="practice" element={<Navigate to="/study/practice" replace />} />
         <Route path="vocabulary" element={<Navigate to="/dictionary?kind=word" replace />} />
