@@ -205,6 +205,14 @@ Rules when merging the levels (`buildBaseEntries` in `fusion.ts`):
 6. **No CC-CEDICT entry:** the word is left out (there is nowhere to get
    its meaning from) and appears in `DATA_CONFLICTS.md`. Today it is only
    打篮球 (HSK 2), which CC-CEDICT does not have as an entry.
+7. **Pinyin fixes:** the list's pinyin decides which CC-CEDICT entry is
+   used, so a neutral tone can pick a different word. The list writes 过去
+   *guò qu*, which in CC-CEDICT is only "(verb suffix)", while the list's
+   own translations ("(in the) past, former, to pass by") are CC-CEDICT's
+   *guò qù* entry. `PINYIN_FIXES` in `sources/hsk.ts` corrects it to
+   *guò qù*. Every other neutral-tone word with a toned CC-CEDICT entry
+   (东西, 地方, 故事, 告诉, 起来...) was checked: the list's translations
+   match the neutral-tone entry, so they stay as they are.
 
 That is why the levels do not have exactly the official number of words
 (150/150/300/600): HSK 1 has 150, HSK 2 149, HSK 3 299 (the clem109
