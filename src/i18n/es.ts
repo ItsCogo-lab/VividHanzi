@@ -338,6 +338,7 @@ export const es: Record<MessageKey, string> = {
   'support.title': 'Apoya VividHanzi',
   'support.description': 'VividHanzi es gratis y lo hace una sola persona. Si te ayuda a aprender, puedes invitarme a un café en Ko-fi.',
   'support.button': 'Apóyame en Ko-fi',
+  'support.short': 'Apóyame',
   'support.embedTitle': 'Panel de donación de Ko-fi',
   'support.embedFallback': '¿No carga el panel? Abre Ko-fi directamente:',
   'support.openKofi': 'Abrir Ko-fi',

@@ -338,6 +338,7 @@ export const en = {
   'support.title': 'Support VividHanzi',
   'support.description': 'VividHanzi is free and made by one person. If it helps you learn, you can buy me a coffee on Ko-fi.',
   'support.button': 'Support me on Ko-fi',
+  'support.short': 'Support me',
   'support.embedTitle': 'Ko-fi donation panel',
   'support.embedFallback': 'Panel not loading? Open Ko-fi directly:',
   'support.openKofi': 'Open Ko-fi',

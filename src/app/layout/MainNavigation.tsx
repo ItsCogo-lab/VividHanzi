@@ -1,4 +1,5 @@
 import { Link, NavLink } from 'react-router'
+import { KOFI_BUTTON_CLASSES } from '../../features/support/SupportCard.tsx'
 import { t } from '../../i18n/index.ts'
 import { NAVIGATION_ITEMS } from '../navigation.ts'
 
@@ -11,7 +12,7 @@ export function MainNavigation() {
   return (
     <nav
       aria-label={t('app.mainNavigation')}
-      className="fixed inset-x-0 bottom-0 z-10 border-t border-line bg-surface pb-[env(safe-area-inset-bottom)] md:sticky md:top-0 md:h-screen md:w-60 md:shrink-0 md:border-t-0 md:border-r md:px-4 md:py-6"
+      className="fixed inset-x-0 bottom-0 z-10 border-t border-line bg-surface pb-[env(safe-area-inset-bottom)] md:sticky md:top-0 md:flex md:h-screen md:flex-col md:w-60 md:shrink-0 md:border-t-0 md:border-r md:px-4 md:py-6"
     >
       <Link
         to="/"
@@ -45,6 +46,12 @@ export function MainNavigation() {
           </li>
         ))}
       </ul>
+
+      {/* Desktop only: the mobile bar has no room for a fifth item */}
+      <Link to="/support" className={`${KOFI_BUTTON_CLASSES} mt-auto hidden justify-center md:flex`}>
+        <span aria-hidden="true">☕</span>
+        {t('support.short')}
+      </Link>
     </nav>
   )
 }
