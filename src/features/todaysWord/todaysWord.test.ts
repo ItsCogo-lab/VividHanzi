@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import type { Hsk5Word, Word } from '../dictionary/types.ts'
-import { createMemoryStorage } from '../../lib/storage.ts'
-import { chooseTodaysWord, createDailyWordPool, loadTodaysWord, saveTodaysWord, type DailyWord } from './todaysWord.ts'
+import { toDateKey } from '../../lib/dates.ts'
+import { createDailyWordPool, getTodaysWord, type DailyWord } from './todaysWord.ts'
 
 const word = (hanzi: string, pinyin: string, hskLevel?: Word['hskLevel']): Word => ({
   id: hanzi,
@@ -24,42 +24,25 @@ describe('createDailyWordPool', () => {
   })
 })
 
-describe('chooseTodaysWord', () => {
-  const pool: DailyWord[] = createDailyWordPool([word('一', 'yī', 3), word('二', 'èr', 3), word('三', 'sān', 4)], [])
+describe('getTodaysWord', () => {
+  const pool: DailyWord[] = createDailyWordPool(
+    ['一', '二', '三', '四', '五'].map((hanzi) => word(hanzi, 'x', 3)),
+    [],
+  )
+  const days = (from: number, count: number) =>
+    Array.from({ length: count }, (_, index) => toDateKey(new Date(2026, 9, from + index)))
 
-  it('keeps the same word all day', () => {
-    const first = chooseTodaysWord(pool, undefined, '2026-10-05', () => 0.5)!
-    const again = chooseTodaysWord(pool, first.state, '2026-10-05', () => 0)!
-    expect(again.word).toBe(first.word)
-    expect(again.state).toBe(first.state)
+  it('gives the same word for the same date, whoever asks', () => {
+    expect(getTodaysWord(pool, '2026-10-07')).toBe(getTodaysWord([...pool], '2026-10-07'))
   })
 
-  it('never repeats a word until all have been shown, then starts over without repeating the last one', () => {
-    let state = chooseTodaysWord(pool, undefined, '2026-10-01', () => 0)!.state
-    const shown = [state.key]
-    for (const date of ['2026-10-02', '2026-10-03']) {
-      state = chooseTodaysWord(pool, state, date, () => 0)!.state
-      shown.push(state.key)
-    }
-    expect(new Set(shown).size).toBe(3)
-
-    const restart = chooseTodaysWord(pool, state, '2026-10-04', () => 0.99)!
-    expect(restart.word.key).not.toBe(state.key)
-    expect(restart.state.seen).toEqual([restart.word.key])
+  it('never repeats a word until all have been shown, then follows the same order again', () => {
+    const firstRound = days(5, 5).map((date) => getTodaysWord(pool, date)!.key)
+    expect(new Set(firstRound).size).toBe(5)
+    expect(days(10, 5).map((date) => getTodaysWord(pool, date)!.key)).toEqual(firstRound)
   })
 
-  it('ignores saved words that are no longer in the pool', () => {
-    const chosen = chooseTodaysWord(pool, { date: '2026-10-01', key: 'gone', seen: ['gone', '一 yī'] }, '2026-10-01', () => 0)!
-    expect(chosen.word.key).toBe('二 èr')
-    expect(chosen.state.seen).toEqual(['一 yī', '二 èr'])
-  })
-})
-
-describe('storage', () => {
-  it('saves and loads the state, and ignores corrupt data', () => {
-    const storage = createMemoryStorage()
-    saveTodaysWord({ date: '2026-10-05', key: '一 yī', seen: ['一 yī'] }, storage)
-    expect(loadTodaysWord(storage)).toEqual({ date: '2026-10-05', key: '一 yī', seen: ['一 yī'] })
-    expect(loadTodaysWord(createMemoryStorage({ 'hanzivocab.todaysWord': '{"date":1}' }))).toBeUndefined()
+  it('also works for dates before the first day', () => {
+    expect(getTodaysWord(pool, '2026-10-04')).toBe(getTodaysWord(pool, '2026-10-09'))
   })
 })

@@ -6,7 +6,7 @@ import { t } from '../../i18n/index.ts'
 import { toDateKey } from '../../lib/dates.ts'
 import { PinyinText } from '../dictionary/components/PinyinText.tsx'
 import { ToneHanzi } from '../dictionary/components/ToneHanzi.tsx'
-import { chooseTodaysWord, createDailyWordPool, loadTodaysWord, saveTodaysWord, type DailyWord } from './todaysWord.ts'
+import { createDailyWordPool, getTodaysWord, type DailyWord } from './todaysWord.ts'
 
 /** Meanings shown on the card; the entry page has them all. */
 const MAX_MEANINGS = 3
@@ -22,10 +22,7 @@ export function TodaysWord({ now }: { now: Date }) {
   useEffect(() => {
     let active = true
     void import('../../data/hsk5/words.ts').then(({ hsk5Words }) => {
-      const chosen = chooseTodaysWord(createDailyWordPool(allWords, hsk5Words), loadTodaysWord(), today)
-      if (!active || !chosen) return
-      saveTodaysWord(chosen.state)
-      setDaily(chosen.word)
+      if (active) setDaily(getTodaysWord(createDailyWordPool(allWords, hsk5Words), today))
     })
     return () => {
       active = false
