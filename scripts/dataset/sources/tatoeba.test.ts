@@ -73,6 +73,21 @@ describe('Tatoeba adapter', () => {
     ])
   })
 
+  it('keeps sentences quoted by grammar notes even if no word picks them', () => {
+    const examples = selectExamples({
+      words: ['谢谢'],
+      knownCharacters: new Set(Array.from('谢你柠檬很酸')),
+      chinese,
+      english,
+      translations,
+      keep: new Set([8934441, 999999999]),
+    })
+    expect(examples.map(({ tatoebaId, words, grammarOnly }) => ({ tatoebaId, words, grammarOnly }))).toEqual([
+      { tatoebaId: 374825, words: ['谢谢'], grammarOnly: undefined },
+      { tatoebaId: 8934441, words: [], grammarOnly: true },
+    ])
+  })
+
   it('does not use orphaned Chinese sentences', () => {
     const examples = selectExamples({
       words: ['你们'],

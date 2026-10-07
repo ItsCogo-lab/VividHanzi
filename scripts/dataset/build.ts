@@ -14,6 +14,7 @@ import { createReadStream, existsSync, mkdirSync, readFileSync, rmSync, writeFil
 import { createInterface } from 'node:readline'
 import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
+import { grammarPoints } from '../../src/data/grammar.ts'
 import type { Character, ExampleSet, HskLevel, Word } from '../../src/features/dictionary/types.ts'
 import { validateDictionaryData, validateExampleSet } from '../../src/features/dictionary/validation.ts'
 import { strokeFileName } from '../../src/features/dictionary/strokes.ts'
@@ -183,22 +184,23 @@ if (!skippedSources.has('tatoeba')) {
     if (sentence && wantedEnglish.has(sentence.id)) english.set(sentence.id, sentence)
   }
   const exportDate = readSource('tatoeba/export-date.txt').trim()
+  // Sentences quoted by the grammar notes, each kept in the first level that can read it
+  const grammarSentences = new Set(grammarPoints.flatMap((point) => point.examples.map((example) => example.tatoebaId)))
   for (const level of LEVELS) {
-    examplesByLevel.set(level, {
-      source: 'Tatoeba',
-      license: 'CC BY 2.0 FR',
-      exportDate,
-      sentences: selectExamples({
-        words: [...new Set(words.filter((word) => word.hskLevel === level).map((word) => word.hanzi))],
-        knownCharacters: new Set(
-          base.characters.filter((character) => character.hskLevel !== undefined && character.hskLevel <= level).map((character) => character.hanzi),
-        ),
-        chinese,
-        english,
-        translations,
-      }),
+    const sentences = selectExamples({
+      words: [...new Set(words.filter((word) => word.hskLevel === level).map((word) => word.hanzi))],
+      knownCharacters: new Set(
+        base.characters.filter((character) => character.hskLevel !== undefined && character.hskLevel <= level).map((character) => character.hanzi),
+      ),
+      chinese,
+      english,
+      translations,
+      keep: grammarSentences,
     })
+    for (const sentence of sentences) grammarSentences.delete(sentence.tatoebaId)
+    examplesByLevel.set(level, { source: 'Tatoeba', license: 'CC BY 2.0 FR', exportDate, sentences })
   }
+  for (const id of grammarSentences) problems.push(`Grammar notes: Tatoeba sentence ${id} is not usable in any level`)
 }
 
 // --- Validation and writing ----------------------------------------------

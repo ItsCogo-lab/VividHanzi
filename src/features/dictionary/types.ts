@@ -108,6 +108,8 @@ export interface ExampleSentence {
   translationAuthor?: string
   /** Dataset words the sentence was chosen as an example for. */
   words: string[]
+  /** Kept only because a grammar note quotes it: no word uses it as an example. */
+  grammarOnly?: true
 }
 
 /** A level's examples file (public/examples/hsk1.json ... hsk4.json). */
