@@ -13,6 +13,8 @@ import { useSettings } from '../features/settings/settingsContext.ts'
 import { THEME_OPTIONS } from '../features/settings/theme.ts'
 import { t } from '../i18n/index.ts'
 
+const SOURCE_CODE_URL = 'https://github.com/ItsCogo-lab/VividHanzi'
+
 const DATA_SOURCES = [
   {
     labelKey: 'settings.aboutMeanings',
@@ -94,6 +96,12 @@ export function SettingsPage() {
             ))}
           </ul>
           <p className="mt-3 text-sm text-ink-muted">{t('settings.aboutLicense')}</p>
+          <p className="mt-3 text-sm text-ink-muted">
+            {t('settings.aboutSourceCode')}{' '}
+            <a href={SOURCE_CODE_URL} className="text-accent-strong underline underline-offset-2">
+              GitHub
+            </a>
+          </p>
         </SettingsSection>
       </div>
     </>
