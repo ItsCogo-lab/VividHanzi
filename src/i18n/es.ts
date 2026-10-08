@@ -82,6 +82,7 @@ export const es: Record<MessageKey, string> = {
   'practice.choice.incorrect': 'No es correcto',
   'practice.choice.correctOption': 'respuesta correcta',
   'practice.choice.yourOption': 'tu respuesta',
+  'dictionary.otherReadings': 'Otras lecturas',
   'dictionary.search': 'Buscar',
   'dictionary.searchPlaceholder': 'Hanzi, pinyin o significado',
   'dictionary.showing': 'Mostrando {count} de {total}',

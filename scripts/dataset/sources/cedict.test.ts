@@ -33,6 +33,23 @@ describe('CC-CEDICT adapter', () => {
     expect(usableMeanings(findEntries(index, '柠', 'níng'))).toEqual(['used in 柠檬'])
   })
 
+  it('puts first the traditional form most used in words (只 zhī: 隻 before 秖)', () => {
+    const zhi = createCedictIndex(
+      JSON.stringify([
+        { traditional: '只', simplified: '只', pinyin: 'zhi3', english: ['only; merely; just'] },
+        { traditional: '秖', simplified: '只', pinyin: 'zhi1', english: ['grain that has begun to ripen'] },
+        { traditional: '隻', simplified: '只', pinyin: 'zhi1', english: ['classifier for birds and certain animals'] },
+        { traditional: '一隻', simplified: '一只', pinyin: 'yi1 zhi1', english: ['one (animal)'] },
+      ]),
+    )
+    expect(usableMeanings(findEntries(zhi, '只', 'zhī'))).toEqual([
+      'classifier for birds and certain animals',
+      'grain that has begun to ripen',
+    ])
+    // Readings keep their order
+    expect(zhi.get('只')!.map((entry) => entry.pinyin)).toEqual(['zhǐ', 'zhī', 'zhī'])
+  })
+
   it('cleans up the internal notation', () => {
     expect(cleanMeaning('used in 檸檬|柠檬[ning2 meng2]')).toBe('used in 柠檬')
   })

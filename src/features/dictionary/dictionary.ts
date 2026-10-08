@@ -68,6 +68,14 @@ export function getWordsWithCharacter(dictionary: Dictionary, characterId: strin
   return listWords(dictionary).filter((word) => word.hanzi.includes(characterId))
 }
 
+/**
+ * The same hanzi read another way: 只 zhī "classifier" and 只 zhǐ "only"
+ * are two words, each with its own meanings.
+ */
+export function getOtherReadings(dictionary: Dictionary, word: Word): Word[] {
+  return listWords(dictionary).filter((other) => other.hanzi === word.hanzi && other.id !== word.id)
+}
+
 /** Meanings in a language; if there are none in that language, returns the English ones. */
 export function getMeanings(translations: Translations, locale: ContentLocale = 'en'): string[] {
   return translations[locale] ?? translations.en
