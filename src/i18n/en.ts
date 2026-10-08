@@ -143,6 +143,7 @@ export const en = {
   'settings.aboutStrokeOrder': 'Stroke order and count',
   'settings.aboutExamples': 'Example sentences',
   'settings.aboutLicense': 'Each source keeps its own license. The word and character data derived from CC-CEDICT is shared under CC BY-SA 4.0. Details in docs/DATA_SOURCES.md.',
+  'settings.aboutSourceCode': 'VividHanzi is open source under the MIT License. Source code on',
   'nav.study': 'Study',
   'nav.dictionary': 'Dictionary',
   'nav.profile': 'Profile',

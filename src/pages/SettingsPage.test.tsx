@@ -98,6 +98,15 @@ describe('SettingsPage', () => {
     expect(screen.getByRole('link', { name: 'clem109/hsk-vocabulary' })).toBeInTheDocument()
   })
 
+  it('links to the source code', () => {
+    renderWithProviders(<SettingsPage />)
+
+    expect(screen.getByRole('link', { name: 'GitHub' })).toHaveAttribute(
+      'href',
+      'https://github.com/ItsCogo-lab/VividHanzi',
+    )
+  })
+
   it('chooses the exercise types, keeping at least one besides writing', async () => {
     const user = userEvent.setup()
     const storage = memoryStorage()

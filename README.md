@@ -1,47 +1,71 @@
 # VividHanzi
 
-[![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/E1B223H5ZR)
+**A free, open-source web app for learning Chinese characters and vocabulary.**
+Spaced repetition, stroke-by-stroke writing practice, tone-colored pinyin and a
+full Chinese-English dictionary, in a clean interface that works on desktop and
+phone.
 
-A web app for learning and practicing Chinese characters (hanzi) and vocabulary:
-recognition, pinyin, meaning, spaced repetition and, later, writing
-and pronunciation.
+**Try it: [vividhanzi.com](https://vividhanzi.com)** · no account needed, no ads.
 
-Status: **MVP complete** (phases 1 to 12). For now the interface and the
-meanings are in English.
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+[![Support on Ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/cogo8)
 
-## What you can do
+<p>
+  <img src="docs/screenshots/home.png" alt="Home: daily goal, Today's Word and quick practice" width="62%">
+  <img src="docs/screenshots/match-mobile.png" alt="Match exercise on a phone" width="28%">
+</p>
+<p>
+  <img src="docs/screenshots/writing-mobile.png" alt="Writing practice on a phone" width="28%">
+  <img src="docs/screenshots/dictionary-mobile.png" alt="Dictionary entry with example sentences" width="28%">
+  <img src="docs/screenshots/progress.png" alt="Progress: activity calendar, charts and per-skill stats" width="34%">
+</p>
 
-- **Practice** sessions of 5, 10 or 20 exercises with the 328 characters and
-  words of HSK 1 (HSK 2.0): flashcards and multiple choice (hanzi → meaning,
-  hanzi → pinyin, meaning → hanzi).
-- **Spaced repetition**: each answer is saved and decides when each item comes
-  back; sessions start with the pending reviews.
-- **Home** with what is due today, your streak and your HSK 1 progress.
-- **Statistics**: answers, accuracy, streaks, last 7 days and most missed items.
-- **Vocabulary and Characters**: lists with search (hanzi, pinyin with or
-  without tones, meaning) and a detail page for each entry with your progress.
-- **Settings**: session size, deleting your progress and dataset credits.
+## Features
 
-Progress is saved in the browser (localStorage). Optionally you can sign in
-(Google or email link) to sync it across devices with Supabase. The
-architecture and the plan are in [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md).
+- **HSK 1-4 vocabulary** (about 1,200 words) plus 17 hand-picked topic sets and
+  your own custom sets. Import a set from a word list, a CSV or JSON.
+- **Learn, then review.** New words are introduced one by one; you can mark
+  the ones you already know or skip the ones you don't want to learn.
+- **Spaced repetition** decides when each word comes back. Sessions start with
+  what is due and give more exercises for your weaker skills (meaning, pinyin,
+  tones, writing).
+- **Many exercise types:** flashcards, meaning, hanzi, pinyin, tones, match
+  pinyin, match meanings and writing.
+- **Writing practice** stroke by stroke with hints, sized for phones.
+- **Full dictionary** (CC-CEDICT, about 118,000 entries): stroke order
+  animation, radicals, components, etymology and example sentences where every
+  word is tappable.
+- **Grammar notes** for 30 common particles and patterns, with examples.
+- **Tone colors** for hanzi and pinyin, **dark mode**, installable as an app
+  on your home screen.
+- **Progress:** daily goal, activity calendar, streaks, accuracy charts,
+  per-skill stats, difficult words and a Today's Word card (HSK 3-5).
+- **Your data stays yours.** Progress is saved in your browser. Optionally
+  sign in (Google or an email link) to sync it across devices.
 
-## Tech stack
+## Support the project
 
-React 19 · TypeScript (strict) · Vite · Tailwind CSS v4 · Vitest + Testing Library · oxlint
+VividHanzi is free and has no ads or paid tier. If it helps you learn, you can
+[buy me a coffee on Ko-fi](https://ko-fi.com/cogo8). Bug reports, ideas and
+pull requests are just as welcome.
 
-## Requirements
+## Contributing
 
-Node.js 20.19 or later (22 recommended).
+Issues and pull requests are welcome. Read
+[`CONTRIBUTING.md`](CONTRIBUTING.md) for how to set up the project, the
+conventions and what to check before opening a pull request.
 
-## How to run it
+## Running it locally
+
+Requires Node.js 20.19 or later (22 recommended).
 
 ```bash
 npm install
 npm run dev        # development server at http://localhost:5173
 ```
 
-## Scripts
+Without a Supabase project configured the app works the same, just without
+accounts. See [`docs/ACCOUNTS.md`](docs/ACCOUNTS.md).
 
 | Command | What it does |
 | --- | --- |
@@ -57,47 +81,57 @@ npm run dev        # development server at http://localhost:5173
 | `npm run data:build` | Regenerates the dataset in `src/data/`, `public/strokes/` and `public/examples/` (see `docs/DATA_SOURCES.md`) |
 | `npm run data:validate` | Validates the generated dataset without downloading anything |
 
-## Structure
+## Tech stack
+
+React 19 · TypeScript (strict) · Vite · Tailwind CSS v4 · React Router ·
+Hanzi Writer · Supabase (optional sync) · Vitest + Testing Library · oxlint.
+Hosted on GitHub Pages.
+
+## Project structure
 
 ```
-docs/            Architecture, decisions and data sources
+docs/            Architecture, data sources, accounts and screenshots
 scripts/dataset/ Script that generates the dataset from the sources
-public/          Static files (favicon)
+public/          Static files: icons, stroke data and example sentences for HSK
+supabase/        Database schema for the optional account sync
 src/
-  app/           App, routes (AppRoutes), menu sections (navigation.ts)
-    layout/      Common structure: main navigation and content area
+  app/           App shell, routes and navigation
   pages/         One page per app section
-  features/
-    dictionary/  Character and word types, queries, search and data validation
-    practice/    Study sessions: logic (session.ts), exercise types and components
-    srs/         Spaced repetition (Leitner boxes)
-    progress/    Progress, streaks, statistics and localStorage persistence
-    settings/    User settings
-  data/          Generated dataset (HSK 1: 150 words, 178 characters)
-  lib/           Domain-free utilities (pinyin, randomness, dates, storage)
-  components/    Shared components
-    ui/          Generic visual pieces: Button, Card, DataTable, HanziText, PageHeader, ProgressBar, StatCard...
-  i18n/          Interface texts (en.ts active, es.ts ready) and the t() function
-  test/          Shared test configuration
-  index.css      Tailwind and design tokens (colors, fonts, focus)
-  main.tsx       Entry point
+  features/      Domain logic and components (practice, srs, progress, dictionary,
+                 grammar, sync, ...); logic is plain TypeScript, tested without React
+  data/          Generated dataset (HSK 1-5, topic sets, grammar notes)
+  lib/           Domain-free utilities (pinyin, dates, storage)
+  components/ui/ Shared visual pieces
+  i18n/          Interface texts and the t() function
 ```
 
-The complete planned structure is described in
-`docs/ARCHITECTURE.md`; each folder is created in the phase that needs it.
+How it fits together is in [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md).
 
-## Data
+## Data and credits
 
-All linguistic data comes from open sources and is generated with a
-script; the app does not call any external API:
+All linguistic data comes from open sources and is generated with a script;
+nothing is written by hand or by AI. Thanks to the people behind them:
 
-- Meanings, readings and traditional forms of words: [CC-CEDICT](https://cc-cedict.org/wiki/) (CC BY-SA 4.0).
-- HSK 2.0 word list: [clem109/hsk-vocabulary](https://github.com/clem109/hsk-vocabulary) (MIT).
+- Meanings, readings and traditional forms: [CC-CEDICT](https://cc-cedict.org/wiki/) (CC BY-SA 4.0).
+- HSK 2.0 word lists: [clem109/hsk-vocabulary](https://github.com/clem109/hsk-vocabulary) (MIT).
 - Radicals and traditional forms of characters: [Unihan](https://www.unicode.org/reports/tr38/) (Unicode License v3).
 - Components and etymology: [Make Me a Hanzi](https://github.com/skishore/makemeahanzi) (LGPL 3.0+).
 - Stroke order and stroke count: [hanzi-writer-data](https://github.com/chanind/hanzi-writer-data) (Arphic Public License).
 - Example sentences: [Tatoeba](https://tatoeba.org) (CC BY 2.0 FR).
+- Word frequency: [wordfreq](https://github.com/rspeer/wordfreq) (data CC BY-SA 4.0).
+- Grammar notes are original explanations; the
+  [Chinese Grammar Wiki](https://resources.allsetlearning.com/chinese/grammar/)
+  is linked as further reading, not copied.
 
-Each generated file keeps the license of its source. Which source takes
-precedence for each field and how the dataset is regenerated are in
+Details on versions and which source owns each field are in
 [`docs/DATA_SOURCES.md`](docs/DATA_SOURCES.md).
+
+## License
+
+The source code is released under the [MIT License](LICENSE).
+
+The linguistic data is not covered by the MIT License: each data file keeps
+the license of its source (see above). In particular, the word and character
+data derived from CC-CEDICT and wordfreq is shared under CC BY-SA 4.0, the
+example sentences under CC BY 2.0 FR and the stroke data under the Arphic
+Public License.

@@ -143,6 +143,7 @@ export const es: Record<MessageKey, string> = {
   'settings.aboutStrokeOrder': 'Orden y número de trazos',
   'settings.aboutExamples': 'Frases de ejemplo',
   'settings.aboutLicense': 'Cada fuente mantiene su licencia. Los datos de palabras y caracteres derivados de CC-CEDICT se comparten con licencia CC BY-SA 4.0. Detalles en docs/DATA_SOURCES.md.',
+  'settings.aboutSourceCode': 'VividHanzi es de código abierto con licencia MIT. Código fuente en',
   'nav.study': 'Estudiar',
   'nav.dictionary': 'Diccionario',
   'nav.profile': 'Perfil',
