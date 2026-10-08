@@ -128,7 +128,7 @@ export const hsk2Words: Word[] = [
   {"id":"颜色","hanzi":"颜色","pinyin":"yán sè","meanings":{"en":["color","countenance","appearance","facial expression","pigment","dyestuff"]},"hskLevel":2,"traditional":"顏色","frequencyRank":1818},
   {"id":"眼睛","hanzi":"眼睛","pinyin":"yǎn jing","meanings":{"en":["eye"]},"hskLevel":2,"traditional":"眼睛","frequencyRank":1442},
   {"id":"羊肉","hanzi":"羊肉","pinyin":"yáng ròu","meanings":{"en":["mutton","goat meat"]},"hskLevel":2,"traditional":"羊肉","frequencyRank":16641},
-  {"id":"药","hanzi":"药","pinyin":"yào","meanings":{"en":["leaf of the iris","medicine","drug","substance used for a specific purpose (e.g. poisoning, explosion, fermenting)","to poison"]},"hskLevel":2,"frequencyRank":2292},
+  {"id":"药","hanzi":"药","pinyin":"yào","meanings":{"en":["medicine","drug","substance used for a specific purpose (e.g. poisoning, explosion, fermenting)","to poison","leaf of the iris"]},"hskLevel":2,"frequencyRank":2292},
   {"id":"要","hanzi":"要","pinyin":"yào","meanings":{"en":["to want; to need; to ask for","will; shall; about to","need to; should","if (same as 要是)","(bound form) important"]},"hskLevel":2,"traditional":"要","frequencyRank":28},
   {"id":"也","hanzi":"也","pinyin":"yě","meanings":{"en":["also; too; as well; (not ...) either","(used after a verbal or nominal expression X to indicate that X is an extreme or unexpected case) even (X)","(literary) particle having functions similar to 啊"]},"hskLevel":2,"traditional":"也","frequencyRank":10},
   {"id":"已经","hanzi":"已经","pinyin":"yǐ jīng","meanings":{"en":["already"]},"hskLevel":2,"traditional":"已經","frequencyRank":86},

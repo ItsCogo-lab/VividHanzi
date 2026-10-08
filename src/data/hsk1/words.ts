@@ -111,7 +111,7 @@ export const hsk1Words: Word[] = [
   {"id":"睡觉","hanzi":"睡觉","pinyin":"shuì jiào","meanings":{"en":["to go to bed","to sleep"]},"hskLevel":1,"traditional":"睡覺","frequencyRank":2159},
   {"id":"说话","hanzi":"说话","pinyin":"shuō huà","meanings":{"en":["to speak","to say","to talk","to gossip","to tell stories","talk"]},"hskLevel":1,"traditional":"說話","frequencyRank":944},
   {"id":"四","hanzi":"四","pinyin":"sì","meanings":{"en":["four","4"]},"hskLevel":1,"traditional":"四","frequencyRank":814},
-  {"id":"岁","hanzi":"岁","pinyin":"suì","meanings":{"en":["years old","classifier for years (of age)","year","year (of crop harvests)"]},"hskLevel":1,"frequencyRank":245},
+  {"id":"岁","hanzi":"岁","pinyin":"suì","meanings":{"en":["classifier for years (of age)","year","year (of crop harvests)","years old"]},"hskLevel":1,"frequencyRank":245},
   {"id":"他","hanzi":"他","pinyin":"tā","meanings":{"en":["(third-person singular) (since the early 20th century, usu. male) he; him; his","(bound form) other; another; some other (as in 他日 and 他人)"]},"hskLevel":1,"traditional":"他","frequencyRank":13},
   {"id":"她","hanzi":"她","pinyin":"tā","meanings":{"en":["she"]},"hskLevel":1,"traditional":"她","frequencyRank":57},
   {"id":"太","hanzi":"太","pinyin":"tài","meanings":{"en":["highest","greatest","too (much)","very","extremely"]},"hskLevel":1,"traditional":"太","frequencyRank":255},
