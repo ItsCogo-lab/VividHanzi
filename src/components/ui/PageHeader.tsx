@@ -8,13 +8,15 @@ type PageHeaderProps = {
   description?: string
   /** Optional actions to the right of the title (e.g. a button). */
   actions?: ReactNode
+  /** Tab title, when it should say more than the heading. Defaults to "title · VividHanzi". */
+  documentTitle?: string
 }
 
-export function PageHeader({ title, titleLang, description, actions }: PageHeaderProps) {
+export function PageHeader({ title, titleLang, description, actions, documentTitle }: PageHeaderProps) {
   return (
     <header className="mb-4 flex flex-col gap-3 sm:mb-8 sm:gap-4 sm:flex-row sm:items-end sm:justify-between">
       {/* React 19 hoists this <title> into the <head>: each page gets its own tab title */}
-      <title>{`${title} · ${t('app.name')}`}</title>
+      <title>{documentTitle ?? `${title} · ${t('app.name')}`}</title>
       <div>
         <h1 lang={titleLang} className="text-2xl font-semibold tracking-tight sm:text-3xl">
           {title}

@@ -97,6 +97,12 @@ describe('EntryDetailPage', () => {
     expect(screen.getByRole('heading', { name: 'Appears in' })).toBeInTheDocument()
   })
 
+  it('gives an entry a descriptive tab title for search engines', async () => {
+    renderWithProviders(<AppRoutes />, { path: '/characters/学' })
+
+    await waitFor(() => expect(document.title).toMatch(/^学 xué: .* – meaning and stroke order \| VividHanzi$/))
+  })
+
   it('shows which sets the item is in (it can be in several)', () => {
     renderWithProviders(<AppRoutes />, { path: '/vocabulary/苹果' })
 

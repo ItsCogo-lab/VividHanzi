@@ -19,7 +19,8 @@
     "data:fetch": "bash scripts/dataset/fetch-sources.sh",
     "data:build": "node scripts/dataset/build.ts",
     "data:validate": "node scripts/dataset/validate.ts",
-    "data:release": "node scripts/dataset/release.ts"
+    "data:release": "node scripts/dataset/release.ts",
+    "seo:pages": "node scripts/seo/prerender.ts"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.117.2",
