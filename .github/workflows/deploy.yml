@@ -35,21 +35,13 @@ jobs:
       - run: npm run build -- --base=${{ steps.pages.outputs.base_path }}/
         env:
           VITE_SITE_URL: ${{ steps.pages.outputs.base_url }}
-      # For search engines: the sitemap lists the home page only, because the
-      # other routes are served through 404.html (an HTTP 404 Google won't index).
-      # robots.txt only counts at the root of a domain, so it starts to matter
-      # with a custom domain.
-      - name: Write sitemap.xml and robots.txt
+      # For search engines: one static page per HSK character and word (other
+      # routes are served through 404.html, an HTTP 404 Google won't index),
+      # plus sitemap.xml and robots.txt. See scripts/seo/staticPages.ts.
+      - name: Write entry pages, sitemap.xml and robots.txt
+        run: node scripts/seo/prerender.ts
         env:
           SITE_URL: ${{ steps.pages.outputs.base_url }}
-        run: |
-          cat > dist/sitemap.xml <<EOF
-          <?xml version="1.0" encoding="UTF-8"?>
-          <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-            <url><loc>$SITE_URL/</loc></url>
-          </urlset>
-          EOF
-          printf 'User-agent: *\nAllow: /\n\nSitemap: %s/sitemap.xml\n' "$SITE_URL" > dist/robots.txt
       # GitHub Pages knows nothing about React routes: reloading /study responds with
       # 404.html, so that file is a copy of the app and the router does the rest.
       - run: cp dist/index.html dist/404.html

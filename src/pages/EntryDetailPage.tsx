@@ -16,6 +16,7 @@ import { getSetPath } from '../features/studySets/setPaths.ts'
 import { getSetsWithItem } from '../features/studySets/studySets.ts'
 import { t } from '../i18n/index.ts'
 import { getEntryPath } from '../features/dictionary/entryPaths.ts'
+import { describeEntry } from '../features/dictionary/entryDescription.ts'
 import { NotFoundPage } from './NotFoundPage.tsx'
 
 /**
@@ -48,6 +49,7 @@ function Entry({ itemId }: { itemId: StudyItemId }) {
       <PageHeader
         title={item.entry.hanzi}
         titleLang="zh-Hans"
+        documentTitle={describeEntry(item).title}
         description={t(isCharacter ? 'practice.kind.character' : 'practice.kind.word')}
         actions={
           customSet ? (

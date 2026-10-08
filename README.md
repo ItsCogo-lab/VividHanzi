@@ -80,6 +80,7 @@ accounts. See [`docs/ACCOUNTS.md`](docs/ACCOUNTS.md).
 | `npm run data:fetch` | Downloads the dataset sources (HSK list, CC-CEDICT, Unihan, Make Me a Hanzi, Tatoeba) |
 | `npm run data:build` | Regenerates the dataset in `src/data/`, `public/strokes/` and `public/examples/` (see `docs/DATA_SOURCES.md`) |
 | `npm run data:validate` | Validates the generated dataset without downloading anything |
+| `npm run seo:pages` | After a build, writes a static page per HSK character and word, `sitemap.xml` and `robots.txt` into `dist/` (needs `SITE_URL`; the Deploy workflow runs it) |
 
 ## Tech stack
 
