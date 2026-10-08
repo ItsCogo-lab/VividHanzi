@@ -8,7 +8,7 @@ import { AUTO_HINT_AFTER_MISSES } from '../writing.ts'
 
 /** What the exercise can ask of the pad. */
 export interface WritingPadHandle {
-  /** Flashes the next stroke. */
+  /** Flashes the whole character, then the next stroke. */
   hint: () => void
   /** Draws the whole character with its animation; then the pad is done. */
   reveal: () => void
@@ -26,6 +26,28 @@ type WritingPadProps = {
   onDone: () => void
   /** Its strokes can't be loaded (offline, outside HSK), so it can't be written. */
   onUnavailable: () => void
+}
+
+/** "Show me" draws each stroke this many times faster than Hanzi Writer's default... */
+const REVEAL_STROKE_SPEED = 2
+/** ...and waits this long between strokes (default 1000 ms). */
+const REVEAL_DELAY_BETWEEN_STROKES = 150
+/** The hint shows the whole character this many times, each for a moment. */
+const HINT_BLINKS = 2
+const HINT_FADE_MS = 60
+const HINT_VISIBLE_MS = 180
+const HINT_GAP_MS = 120
+
+const wait = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
+
+/** Blinks the whole character on the (otherwise hidden) outline layer. */
+async function flashCharacter(writer: HanziWriter) {
+  for (let blink = 0; blink < HINT_BLINKS; blink++) {
+    if (blink > 0) await wait(HINT_GAP_MS)
+    await writer.showOutline({ duration: HINT_FADE_MS })
+    await wait(HINT_VISIBLE_MS)
+    await writer.hideOutline({ duration: HINT_FADE_MS })
+  }
 }
 
 /**
@@ -53,7 +75,14 @@ export function WritingPad({ hanzi, hasLocalCopy, size, ref, onMistake, onDone, 
   }, [isUnavailable])
 
   useImperativeHandle(ref, () => ({
-    hint: () => writerRef.current?.highlightStroke(nextStrokeRef.current),
+    hint: () => {
+      const writer = writerRef.current
+      if (!writer) return
+      void flashCharacter(writer).then(() => {
+        // The pad may have moved on to another character meanwhile
+        if (writerRef.current === writer) void writer.highlightStroke(nextStrokeRef.current)
+      })
+    },
     reveal: () => {
       const writer = writerRef.current
       if (!writer) return
@@ -70,13 +99,18 @@ export function WritingPad({ hanzi, hasLocalCopy, size, ref, onMistake, onDone, 
     import('hanzi-writer').then(
       ({ default: Writer }) => {
         if (cancelled) return
+        const colors = getWriterColors(target)
         const writer = Writer.create(target, hanzi, {
           width: size,
           height: size,
           padding: 8,
           showCharacter: false,
           showOutline: false,
-          ...getWriterColors(target),
+          ...colors,
+          // The outline is never shown while writing: it is only the hint's flash
+          outlineColor: colors.highlightColor,
+          strokeAnimationSpeed: REVEAL_STROKE_SPEED,
+          delayBetweenStrokes: REVEAL_DELAY_BETWEEN_STROKES,
           charDataLoader: () => data,
         })
         writerRef.current = writer
