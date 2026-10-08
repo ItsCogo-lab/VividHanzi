@@ -4,7 +4,7 @@ import { Card } from '../../../components/ui/Card.tsx'
 import { HanziText } from '../../../components/ui/HanziText.tsx'
 import { t } from '../../../i18n/index.ts'
 import { GrammarNotes } from '../../grammar/components/GrammarNotes.tsx'
-import { formatPinyin, getMeanings, getTraditionalForms, type Dictionary } from '../dictionary.ts'
+import { formatPinyin, getMeanings, getOtherReadings, getTraditionalForms, type Dictionary } from '../dictionary.ts'
 import { getRelatedItems, getStudyItemId, type StudyItem } from '../studyItem.ts'
 import { CharacterFacts } from './CharacterFacts.tsx'
 import { EntryLabel } from './EntryLabel.tsx'
@@ -35,6 +35,7 @@ export function EntryDetails({ item, dictionary, opener }: EntryDetailsProps) {
   const [shown, setShown] = useState({ itemId, count: RELATED_PAGE_SIZE })
   const relatedCount = shown.itemId === itemId ? shown.count : RELATED_PAGE_SIZE
   const traditional = getTraditionalForms(item.entry)
+  const otherReadings = item.kind === 'word' ? getOtherReadings(dictionary, item.entry) : []
 
   return (
     <Card className="flex flex-col gap-4 sm:gap-6">
@@ -61,6 +62,19 @@ export function EntryDetails({ item, dictionary, opener }: EntryDetailsProps) {
           ))}
         </ul>
       </section>
+
+      {otherReadings.length > 0 && (
+        <section>
+          <h2 className="mb-2 text-lg font-semibold">{t('dictionary.otherReadings')}</h2>
+          <ul className="divide-y divide-line rounded-xl border border-line">
+            {otherReadings.map((word) => (
+              <li key={word.id}>
+                <RelatedWord item={{ kind: 'word', entry: word }} opener={opener} />
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
 
       <GrammarNotes item={item} opener={opener} />
 

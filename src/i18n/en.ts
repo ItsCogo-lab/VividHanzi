@@ -82,6 +82,7 @@ export const en = {
   'practice.choice.incorrect': 'Not quite',
   'practice.choice.correctOption': 'correct answer',
   'practice.choice.yourOption': 'your answer',
+  'dictionary.otherReadings': 'Other readings',
   'dictionary.search': 'Search',
   'dictionary.searchPlaceholder': 'Hanzi, pinyin or meaning',
   'dictionary.showing': 'Showing {count} of {total}',

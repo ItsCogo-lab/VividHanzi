@@ -8,6 +8,7 @@ import { createChunkLoader } from '../../../test/dictionaryChunks.ts'
 import { createFakeFetch, jsonResponse } from '../../../test/fakeFetch.ts'
 import { ningResponse } from '../../../test/tatoebaResponses.ts'
 import { paragraphWithText } from '../../../test/text.ts'
+import type { Word } from '../types.ts'
 import { EntryDetails } from './EntryDetails.tsx'
 
 const dictionary = createDictionary([...testCharacters, ningCharacter], [...testWords, ningmengWord])
@@ -216,5 +217,30 @@ describe('EntryDetails for a word', () => {
       />,
     )
     expect(screen.getByText('Traditional').parentElement).toHaveTextContent('Traditional 檸檬')
+  })
+  it('links the other readings of the same hanzi (只 zhī → 只 zhǐ "only")', () => {
+    const zhi = { id: '只[zhī]', hanzi: '只', pinyin: 'zhī', meanings: { en: ['classifier for birds'] }, hskLevel: 3 } satisfies Word
+    const zhiOnly = { id: '只[zhǐ]', hanzi: '只', pinyin: 'zhǐ', meanings: { en: ['only; merely; just'] }, hskLevel: 3 } satisfies Word
+    renderWithProviders(
+      <EntryDetails
+        item={{ kind: 'word', entry: zhi }}
+        dictionary={createDictionary([], [zhi, zhiOnly])}
+        opener={{ getHref: getEntryPath }}
+      />,
+    )
+    const section = screen.getByRole('heading', { name: 'Other readings' }).parentElement!
+    expect(within(section).getByRole('link')).toHaveAttribute('href', getEntryPath({ kind: 'word', entry: zhiOnly }))
+    expect(section).toHaveTextContent('only; merely; just')
+  })
+
+  it('has no other readings section for a word with one reading', () => {
+    renderWithProviders(
+      <EntryDetails
+        item={{ kind: 'word', entry: ningmengWord }}
+        dictionary={dictionary}
+        opener={{ getHref: getEntryPath }}
+      />,
+    )
+    expect(screen.queryByRole('heading', { name: 'Other readings' })).not.toBeInTheDocument()
   })
 })

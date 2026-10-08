@@ -33,6 +33,13 @@ const PREFERRED_TRADITIONAL: Record<string, string> = {
   年: '年',
 }
 
+/**
+ * Characters where CC-CEDICT's own order is better than the one by use
+ * (see sortByTraditionalUse): 喂 "hey" before 餵 "to feed", 須 "must"
+ * before 鬚 "beard", 游 "to swim" before 遊 "to walk".
+ */
+const KEEP_CEDICT_ORDER = new Set(['喂', '须', '游'])
+
 /** Meanings that are dictionary notes rather than translations useful for studying. */
 const NON_TRANSLATION_MEANINGS = [
   /^(old |unofficial |archaic |erroneous )?variant of /i,
@@ -57,7 +64,50 @@ export function createCedictIndex(json: string): CedictIndex {
     list.push(toneMarked)
     index.set(entry.simplified, list)
   }
+  return sortByTraditionalUse(index)
+}
+
+/**
+ * Orders a character's entries with the same reading by how common their
+ * traditional form is. A simplified character can stand for several
+ * traditional ones, and CC-CEDICT lists them in code point order, not by
+ * use: 只 zhī put 秖 "grain that has begun to ripen" before 隻 "classifier
+ * for birds", and 后 hòu put 后 "empress" before 後 "back; after".
+ *
+ * How common a form is: how many CC-CEDICT words write that character
+ * with that traditional form and reading (隻 zhī appears in 23 words, 秖
+ * in none). Readings keep their order; ties keep CC-CEDICT's.
+ */
+function sortByTraditionalUse(index: Map<string, CedictEntry[]>): CedictIndex {
+  const uses = new Map<string, number>()
+  for (const entries of index.values()) {
+    for (const entry of entries) {
+      const simplified = Array.from(entry.simplified)
+      const traditional = Array.from(entry.traditional)
+      const syllables = entry.pinyin.toLowerCase().split(/\s+/)
+      if (simplified.length < 2 || traditional.length !== simplified.length || syllables.length !== simplified.length) continue
+      simplified.forEach((hanzi, position) => {
+        const key = formKey(hanzi, traditional[position]!, syllables[position]!)
+        uses.set(key, (uses.get(key) ?? 0) + 1)
+      })
+    }
+  }
+
+  for (const [simplified, entries] of index) {
+    if (Array.from(simplified).length !== 1 || KEEP_CEDICT_ORDER.has(simplified)) continue
+    const readings = new Map<string, CedictEntry[]>()
+    for (const entry of entries) readings.set(entry.pinyin, [...(readings.get(entry.pinyin) ?? []), entry])
+    const usesOf = (entry: CedictEntry) => uses.get(formKey(entry.simplified, entry.traditional, entry.pinyin.toLowerCase())) ?? 0
+    index.set(
+      simplified,
+      [...readings.values()].flatMap((sameReading) => [...sameReading].sort((a, b) => usesOf(b) - usesOf(a))),
+    )
+  }
   return index
+}
+
+function formKey(simplified: string, traditional: string, syllable: string): string {
+  return `${simplified}${traditional} ${syllable}`
 }
 
 /**
