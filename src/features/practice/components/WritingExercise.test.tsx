@@ -22,6 +22,7 @@ type FakeWriter = {
   hanzi: string
   quizOptions?: QuizOptions
   highlightStroke: ReturnType<typeof vi.fn>
+  showOutline: ReturnType<typeof vi.fn>
   animateCharacter: ReturnType<typeof vi.fn>
 }
 const writers = vi.hoisted(() => [] as FakeWriter[])
@@ -37,6 +38,8 @@ vi.mock('hanzi-writer', () => ({
         },
         cancelQuiz: () => {},
         highlightStroke: vi.fn(),
+        showOutline: vi.fn(() => Promise.resolve()),
+        hideOutline: vi.fn(() => Promise.resolve()),
         animateCharacter: vi.fn((options: { onComplete: () => void }) => options.onComplete()),
       }
       writers.push(writer)
@@ -109,14 +112,15 @@ describe('WritingExercise', () => {
     expect(onAnswer).toHaveBeenCalledExactlyOnceWith(false)
   })
 
-  it('"Hint" (or H) flashes the next stroke and counts as help', async () => {
+  it('"Hint" (or H) blinks the character, then flashes the next stroke, and counts as help', async () => {
     const user = userEvent.setup()
     const { onAnswer } = renderExercise()
     const writer = await writerFor(0)
     act(() => writer.quizOptions!.onCorrectStroke({ strokeNum: 0 }))
 
     await user.keyboard('h')
-    expect(writer.highlightStroke).toHaveBeenCalledWith(1)
+    expect(writer.showOutline).toHaveBeenCalled()
+    await waitFor(() => expect(writer.highlightStroke).toHaveBeenCalledWith(1), { timeout: 2000 })
 
     await write(0)
     await write(1)
