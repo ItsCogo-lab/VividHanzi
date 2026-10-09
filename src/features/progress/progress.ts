@@ -17,7 +17,7 @@ export type ItemStatus = 'new' | 'learning' | 'mastered'
 export type DisplayStatus = ItemStatus | 'excluded'
 
 export function createEmptyProgress(): ProgressData {
-  return { items: {}, writing: {}, activity: {}, excluded: {} }
+  return { items: {}, writing: {}, writingTaught: {}, activity: {}, excluded: {} }
 }
 
 /**
@@ -51,6 +51,16 @@ export function recordWritingAnswer(progress: ProgressData, itemId: StudyItemId,
     writing: { ...progress.writing, [itemId]: answeredRecord(progress.writing[itemId], itemId, correct, now) },
     activity: addToActivity(progress.activity, correct, now),
   }
+}
+
+/**
+ * Marks characters as taught for writing (traced and written with hints).
+ * Characters already marked keep their first date.
+ */
+export function markCharactersTaught(progress: ProgressData, characters: readonly string[], now: Date): ProgressData {
+  const writingTaught = { ...progress.writingTaught }
+  for (const character of characters) writingTaught[character] ??= now.toISOString()
+  return { ...progress, writingTaught }
 }
 
 /** The record after an answer. Without the `basic` or `fromLevel` flags: answered items are the user's own progress. */

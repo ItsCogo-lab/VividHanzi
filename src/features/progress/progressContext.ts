@@ -12,6 +12,8 @@ export interface ProgressContextValue {
   recordResult: (result: ExerciseResult) => void
   /** Marks an item as learned (Learn session). */
   introduceItem: (itemId: StudyItemId) => void
+  /** Marks characters as taught for writing (see markCharactersTaught). */
+  markCharactersTaught: (characters: readonly string[]) => void
   /** Marks an item as already mastered (Learn session): it comes up again only very occasionally. */
   markItemKnown: (itemId: StudyItemId) => void
   /** Marks an item as one the user doesn't want to learn, or undoes it (see setItemExcluded). */

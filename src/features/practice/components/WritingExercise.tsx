@@ -5,6 +5,7 @@ import { HanziText } from '../../../components/ui/HanziText.tsx'
 import { Kbd } from '../../../components/ui/Kbd.tsx'
 import { t } from '../../../i18n/index.ts'
 import { formatPinyin, type Dictionary } from '../../dictionary/dictionary.ts'
+import { useProgress } from '../../progress/progressContext.ts'
 import type { StudyItem } from '../../dictionary/studyItem.ts'
 import { PinyinText } from '../../dictionary/components/PinyinText.tsx'
 import { ToneHanzi } from '../../dictionary/components/ToneHanzi.tsx'
@@ -12,13 +13,21 @@ import { getMeaningLabel } from '../choiceExercises.ts'
 import { useSessionShortcuts } from '../shortcuts.ts'
 import type { WritingExercise as WritingExerciseType } from '../types.ts'
 import { useElementWidth } from '../useElementWidth.ts'
-import { gradeWriting, NO_HELP, type WritingHelp } from '../writing.ts'
+import { getCharactersToTeach, gradeWriting, NO_HELP, type WritingHelp } from '../writing.ts'
 import { LookUpButtons } from './LookUpButtons.tsx'
-import { WritingPad, type WritingPadHandle } from './WritingPad.tsx'
+import { WritingPad, type WritingPadHandle, type WritingPadMode } from './WritingPad.tsx'
 
 /** Below this width (a phone in portrait) only the character being written gets a pad, as big as fits. */
 const NARROW_WIDTH = 560
 const MAX_NARROW_PAD = 360
+/** The pad for learning a character on wider screens. */
+const LESSON_PAD = 240
+
+/** A step to learn a new character before writing the item from memory. */
+interface Lesson {
+  character: string
+  mode: Exclude<WritingPadMode, 'memory'>
+}
 
 type WritingExerciseProps = {
   exercise: WritingExerciseType
@@ -34,10 +43,24 @@ type WritingExerciseProps = {
  * one character at a time. Written characters stay in their box. When all
  * are done it is graded (gradeWriting) and the answer is shown, as in a
  * choice question.
+ *
+ * Characters never written before are taught first: each is traced over
+ * its outline, then written with hints (see getCharactersToTeach). Help in
+ * those steps doesn't count; only the writing from memory afterwards is graded.
  */
 export function WritingExercise({ exercise, dictionary, onAnswer, onSkip, onLookUp }: WritingExerciseProps) {
   const { item } = exercise
   const characters = Array.from(item.entry.hanzi)
+  const { progress, markCharactersTaught } = useProgress()
+  // Fixed when the exercise opens, so marking a character taught doesn't change it
+  const [lessons] = useState<Lesson[]>(() =>
+    getCharactersToTeach(item, progress).flatMap((character) => [
+      { character, mode: 'trace' },
+      { character, mode: 'guided' },
+    ]),
+  )
+  const [lessonIndex, setLessonIndex] = useState(0)
+  const lesson = lessons[lessonIndex]
   const padsRef = useRef<HTMLDivElement>(null)
   const width = useElementWidth(padsRef)
   const isNarrow = width !== undefined && width < NARROW_WIDTH
@@ -53,8 +76,13 @@ export function WritingExercise({ exercise, dictionary, onAnswer, onSkip, onLook
   const shown = Math.min(current, characters.length - 1)
 
   const hint = () => {
-    setHelp((previous) => ({ ...previous, hintUsed: true }))
+    // While learning a character, help is free
+    if (!lesson) setHelp((previous) => ({ ...previous, hintUsed: true }))
     padRef.current?.hint()
+  }
+  const finishLesson = (finished: Lesson) => {
+    if (finished.mode === 'guided') markCharactersTaught([finished.character])
+    setLessonIndex((index) => index + 1)
   }
   const reveal = () => {
     setHelp((previous) => ({ ...previous, revealed: true }))
@@ -67,7 +95,8 @@ export function WritingExercise({ exercise, dictionary, onAnswer, onSkip, onLook
   // On wider screens all the pads sit side by side, smaller for words
   const wideSize = characters.length === 1 ? 240 : 150
 
-  useSessionShortcuts(isDone ? { Enter: next, ' ': next } : unavailable ? {} : { h: hint, H: hint })
+  const canHint = !unavailable && lesson?.mode !== 'trace'
+  useSessionShortcuts(isDone ? { Enter: next, ' ': next } : canHint ? { h: hint, H: hint } : {})
 
   // As in choice questions: on finishing, focus goes to "Continue"
   useEffect(() => {
@@ -82,11 +111,27 @@ export function WritingExercise({ exercise, dictionary, onAnswer, onSkip, onLook
         </p>
         <p className="text-2xl font-medium">{getMeaningLabel(item)}</p>
         <PinyinText pinyin={formatPinyin(item.entry)} className="text-lg text-accent-strong" />
-        <h2 className="text-lg text-ink-muted">{t('writing.question')}</h2>
+        <h2 className="text-lg text-ink-muted">
+          {t(lesson ? `writing.${lesson.mode}` : lessons.length > 0 ? 'writing.fromMemory' : 'writing.question')}
+        </h2>
       </div>
 
       <div ref={padsRef}>
-        {isNarrow ? (
+        {lesson ? (
+          <div className="flex justify-center">
+            <WritingPad
+              key={lessonIndex}
+              ref={padRef}
+              hanzi={lesson.character}
+              mode={lesson.mode}
+              hasLocalCopy={hasLocalCopy}
+              size={isNarrow ? Math.min(width, MAX_NARROW_PAD) : LESSON_PAD}
+              onMistake={() => {}}
+              onDone={() => finishLesson(lesson)}
+              onUnavailable={() => setUnavailable(true)}
+            />
+          </div>
+        ) : isNarrow ? (
           <div className="flex flex-col items-center gap-3">
             {characters.length > 1 && (
               <CharacterProgress characters={characters} current={current} />
@@ -155,6 +200,15 @@ export function WritingExercise({ exercise, dictionary, onAnswer, onSkip, onLook
             {t('practice.continue')}
           </Button>
         </div>
+      ) : lesson ? (
+        // Tracing needs no buttons; writing with hints only the hint
+        lesson.mode === 'guided' && (
+          <div className="flex justify-center">
+            <Button variant="secondary" aria-keyshortcuts="H" onClick={hint}>
+              {t('writing.hint')} <Kbd>H</Kbd>
+            </Button>
+          </div>
+        )
       ) : (
         <div className="grid grid-cols-2 gap-3">
           <Button variant="secondary" aria-keyshortcuts="H" onClick={hint}>

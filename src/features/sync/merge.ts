@@ -26,7 +26,13 @@ export function mergeProgress(local: ProgressData, remote: ProgressData): Progre
     const other = excluded[id]
     if (!other || value.changedAt >= other.changedAt) excluded[id] = value
   }
-  return { items, writing, activity, excluded }
+  // A character taught on either device is taught: keep the earliest date
+  const writingTaught = { ...remote.writingTaught }
+  for (const [character, date] of Object.entries(local.writingTaught)) {
+    const other = writingTaught[character]
+    if (!other || date < other) writingTaught[character] = date
+  }
+  return { items, writing, writingTaught, activity, excluded }
 }
 
 type ProgressRecords = ProgressData['items']

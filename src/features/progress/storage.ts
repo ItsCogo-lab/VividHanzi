@@ -31,6 +31,8 @@ export function loadProgress(storage?: KeyValueStorage): ProgressData {
     items: keepValid(saved.items, isItemProgress),
     // Writing progress came later: data saved before it has none, and that's fine
     writing: isRecord(saved.writing) ? keepValid(saved.writing, isItemProgress) : {},
+    // Same for the characters taught for writing
+    writingTaught: isRecord(saved.writingTaught) ? keepValid(saved.writingTaught, isString) : {},
     activity: keepValid(saved.activity, isDailyActivity),
     // Same for the items the user chose not to learn
     excluded: isRecord(saved.excluded) ? keepValid(saved.excluded, isExcludedItem) : {},
@@ -55,6 +57,10 @@ function isItemProgress(value: unknown): value is ItemProgress {
     typeof value.nextReviewAt === 'string' &&
     (value.skills === undefined || isSkills(value.skills))
   )
+}
+
+function isString(value: unknown): value is string {
+  return typeof value === 'string'
 }
 
 function isDailyActivity(value: unknown): value is DailyActivity {

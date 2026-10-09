@@ -115,7 +115,8 @@ describe('PracticePage: practice writing', () => {
 
     expect(screen.getByRole('heading', { name: 'Practice writing' })).toBeInTheDocument()
     expect(screen.getByText(/^Card 1 of 1$/)).toBeInTheDocument()
-    expect(screen.getByText('Write it')).toBeInTheDocument()
+    // 谢 was never written: it is traced first
+    expect(screen.getByText('New character: trace it')).toBeInTheDocument()
   })
 
   it('with nothing to write says so', () => {

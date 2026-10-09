@@ -4,7 +4,10 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { createDictionary } from '../../dictionary/dictionary.ts'
 import { testCharacters, testWords } from '../../dictionary/testData.ts'
 import { createFakeFetch, jsonResponse } from '../../../test/fakeFetch.ts'
+import { memoryStorage } from '../../../test/memoryStorage.ts'
 import { renderWithProviders } from '../../../test/renderWithProviders.tsx'
+import { createEmptyProgress, markCharactersTaught } from '../../progress/progress.ts'
+import { loadProgress, saveProgress } from '../../progress/storage.ts'
 import type { WritingExercise as WritingExerciseType } from '../types.ts'
 import { WritingExercise } from './WritingExercise.tsx'
 
@@ -14,12 +17,14 @@ import { WritingExercise } from './WritingExercise.tsx'
  * user had drawn the strokes.
  */
 type QuizOptions = {
+  showHintAfterMisses: number
   onMistake: (stroke: { mistakesOnStroke: number }) => void
   onCorrectStroke: (stroke: { strokeNum: number }) => void
   onComplete: () => void
 }
 type FakeWriter = {
   hanzi: string
+  options: { showOutline: boolean }
   quizOptions?: QuizOptions
   highlightStroke: ReturnType<typeof vi.fn>
   showOutline: ReturnType<typeof vi.fn>
@@ -29,9 +34,10 @@ const writers = vi.hoisted(() => [] as FakeWriter[])
 
 vi.mock('hanzi-writer', () => ({
   default: {
-    create: (_target: HTMLElement, hanzi: string) => {
+    create: (_target: HTMLElement, hanzi: string, options: { showOutline: boolean }) => {
       const writer: FakeWriter & Record<string, unknown> = {
         hanzi,
+        options,
         quiz: (options: QuizOptions) => {
           writer.quizOptions = options
           return Promise.resolve()
@@ -53,12 +59,19 @@ const exercise: WritingExerciseType = { type: 'writing', item: { kind: 'word', e
 const strokes = { strokes: ['M 0 0 L 1 1'], medians: [[[0, 0], [1, 1]]] }
 const online = createFakeFetch([[/hanzi-writer-data/, () => jsonResponse(strokes)]]).fetch
 
-function renderExercise({ fetchFn = online } = {}) {
+/** Storage where 谢 has already been taught, so 谢谢 is written from memory straight away. */
+function taughtStorage() {
+  const storage = memoryStorage()
+  saveProgress(markCharactersTaught(createEmptyProgress(), ['谢'], new Date()), storage)
+  return storage
+}
+
+function renderExercise({ fetchFn = online, storage = taughtStorage() } = {}) {
   const onAnswer = vi.fn()
   const onSkip = vi.fn()
   renderWithProviders(
     <WritingExercise exercise={exercise} dictionary={dictionary} onAnswer={onAnswer} onSkip={onSkip} onLookUp={() => {}} />,
-    { fetchFn },
+    { fetchFn, storage },
   )
   return { onAnswer, onSkip }
 }
@@ -182,5 +195,38 @@ describe('WritingExercise', () => {
     } finally {
       vi.unstubAllGlobals()
     }
+  })
+
+  it('teaches a new character first: traced over its outline, then with hints, then from memory', async () => {
+    const user = userEvent.setup()
+    const storage = memoryStorage()
+    const { onAnswer } = renderExercise({ storage })
+
+    // 谢 appears twice in 谢谢 but is taught once
+    expect(screen.getByText('New character: trace it')).toBeInTheDocument()
+    const trace = await writerFor(0)
+    expect(trace.hanzi).toBe('谢')
+    expect(trace.options.showOutline).toBe(true)
+    expect(trace.highlightStroke).toHaveBeenCalledWith(0)
+    expect(screen.queryByRole('button', { name: /Hint/ })).not.toBeInTheDocument()
+    act(() => trace.quizOptions!.onMistake({ mistakesOnStroke: 3 }))
+    await write(0)
+
+    expect(screen.getByText('Now without the outline: a missed stroke is shown')).toBeInTheDocument()
+    const guided = await writerFor(1)
+    expect(guided.options.showOutline).toBe(false)
+    expect(guided.quizOptions!.showHintAfterMisses).toBe(1)
+    // Help while learning doesn't count
+    await user.click(screen.getByRole('button', { name: /Hint/ }))
+    await write(1)
+    expect(loadProgress(storage).writingTaught).toHaveProperty('谢')
+
+    expect(screen.getByText('Now write it from memory')).toBeInTheDocument()
+    expect((await writerFor(2)).quizOptions!.showHintAfterMisses).toBe(3)
+    await write(2)
+    await write(3)
+    expect(screen.getByText('Correct!')).toBeInTheDocument()
+    await user.click(screen.getByRole('button', { name: 'Continue' }))
+    expect(onAnswer).toHaveBeenCalledExactlyOnceWith(true)
   })
 })

@@ -14,8 +14,19 @@ export interface WritingPadHandle {
   reveal: () => void
 }
 
+/**
+ * How much help the pad gives:
+ * - `trace`: the character's outline is shown and each next stroke is
+ *   flashed, to draw over it (the first time a character is written).
+ * - `guided`: no outline, but a missed stroke is shown at once.
+ * - `memory`: from memory; a stroke is shown only after 3 misses on it.
+ */
+export type WritingPadMode = 'trace' | 'guided' | 'memory'
+
 type WritingPadProps = {
   hanzi: string
+  /** `memory` by default. */
+  mode?: WritingPadMode
   /** HSK 1-4 characters have a local copy of their strokes (offline fallback). */
   hasLocalCopy: boolean
   size: number
@@ -50,13 +61,18 @@ async function flashCharacter(writer: HanziWriter) {
   }
 }
 
+/** The outline to trace over: stronger than the grid lines, softer than the strokes. */
+function getTraceColor(element: HTMLElement): string {
+  return getComputedStyle(element).getPropertyValue('--color-trace').trim() || '#d3c9ba'
+}
+
 /**
  * One character to write, in a 田字格 grid. Hanzi Writer's quiz grades each
  * stroke as it is drawn: a right one stays, a wrong one disappears, and
  * after 3 misses on the same stroke it is shown as a hint. When done, the
  * character stays drawn.
  */
-export function WritingPad({ hanzi, hasLocalCopy, size, ref, onMistake, onDone, onUnavailable }: WritingPadProps) {
+export function WritingPad({ hanzi, mode = 'memory', hasLocalCopy, size, ref, onMistake, onDone, onUnavailable }: WritingPadProps) {
   const strokes = useStrokeData(hanzi, hasLocalCopy)
   const data = strokes.status === 'ready' ? strokes.data : undefined
   const targetRef = useRef<HTMLDivElement>(null)
@@ -68,6 +84,7 @@ export function WritingPad({ hanzi, hasLocalCopy, size, ref, onMistake, onDone, 
     callbacksRef.current = { onMistake, onDone, onUnavailable }
   })
   const { theme } = useSettings()
+  const isTracing = mode === 'trace'
   const isUnavailable = strokes.status === 'unavailable' || strokes.status === 'missing'
 
   useEffect(() => {
@@ -105,23 +122,29 @@ export function WritingPad({ hanzi, hasLocalCopy, size, ref, onMistake, onDone, 
           height: size,
           padding: 8,
           showCharacter: false,
-          showOutline: false,
+          showOutline: isTracing,
           ...colors,
-          // The outline is never shown while writing: it is only the hint's flash
-          outlineColor: colors.highlightColor,
+          // From memory the outline is only the hint's flash; to trace, a soft color to draw over
+          outlineColor: isTracing ? getTraceColor(target) : colors.highlightColor,
           strokeAnimationSpeed: REVEAL_STROKE_SPEED,
           delayBetweenStrokes: REVEAL_DELAY_BETWEEN_STROKES,
           charDataLoader: () => data,
         })
         writerRef.current = writer
+        // Tracing also teaches the stroke order: the next stroke flashes
+        const showNextStroke = () => {
+          if (isTracing && writerRef.current === writer) void writer.highlightStroke(nextStrokeRef.current)
+        }
         void writer.quiz({
-          showHintAfterMisses: AUTO_HINT_AFTER_MISSES,
+          showHintAfterMisses: mode === 'memory' ? AUTO_HINT_AFTER_MISSES : 1,
           onMistake: (stroke) => callbacksRef.current.onMistake(stroke.mistakesOnStroke),
           onCorrectStroke: (stroke) => {
             nextStrokeRef.current = stroke.strokeNum + 1
+            if (stroke.strokesRemaining > 0) showNextStroke()
           },
           onComplete: () => callbacksRef.current.onDone(),
         })
+        showNextStroke()
       },
       () => {},
     )
@@ -131,7 +154,7 @@ export function WritingPad({ hanzi, hasLocalCopy, size, ref, onMistake, onDone, 
       writerRef.current = null
       target.replaceChildren()
     }
-  }, [data, hanzi, size, theme])
+  }, [data, hanzi, size, theme, mode, isTracing])
 
   return (
     <div className="relative rounded-xl border border-line bg-paper text-ink" style={{ width: size, height: size }}>
