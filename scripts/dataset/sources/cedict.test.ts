@@ -50,6 +50,15 @@ describe('CC-CEDICT adapter', () => {
     expect(zhi.get('只')!.map((entry) => entry.pinyin)).toEqual(['zhǐ', 'zhī', 'zhī'])
   })
 
+  it('moves the main meaning first when CC-CEDICT starts with a usage note (老 lǎo)', () => {
+    const lao = createCedictIndex(
+      JSON.stringify([
+        { traditional: '老', simplified: '老', pinyin: 'lao3', english: ['prefix used before the surname of a person', 'old (of people)', 'experienced'] },
+      ]),
+    )
+    expect(usableMeanings(findEntries(lao, '老', 'lǎo'))).toEqual(['old (of people)', 'prefix used before the surname of a person', 'experienced'])
+  })
+
   it('cleans up the internal notation', () => {
     expect(cleanMeaning('used in 檸檬|柠檬[ning2 meng2]')).toBe('used in 柠檬')
   })
