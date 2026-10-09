@@ -2,9 +2,9 @@ import { describe, expect, it } from 'vitest'
 import type { StudyItem } from '../dictionary/studyItem.ts'
 import type { Word } from '../dictionary/types.ts'
 import { testWords } from '../dictionary/testData.ts'
-import { createEmptyProgress, recordAnswer, recordWritingAnswer } from '../progress/progress.ts'
+import { createEmptyProgress, markCharactersTaught, recordAnswer, recordWritingAnswer } from '../progress/progress.ts'
 import type { ProgressData } from '../progress/types.ts'
-import { canWrite, gradeWriting, isWritingDue, NO_HELP, selectWritingItems } from './writing.ts'
+import { canWrite, getCharactersToTeach, gradeWriting, isWritingDue, NO_HELP, selectWritingItems } from './writing.ts'
 
 const monday = new Date(2026, 8, 28, 10, 0)
 const thursday = new Date(2026, 9, 1, 10, 0)
@@ -90,5 +90,19 @@ describe('gradeWriting', () => {
     expect(gradeWriting({ ...NO_HELP, maxMissesOnStroke: 3 })).toBe(false)
     expect(gradeWriting({ ...NO_HELP, hintUsed: true })).toBe(false)
     expect(gradeWriting({ ...NO_HELP, revealed: true })).toBe(false)
+  })
+})
+
+describe('getCharactersToTeach', () => {
+  it('the characters never taught, each once', () => {
+    expect(getCharactersToTeach(thanks, createEmptyProgress())).toEqual(['谢'])
+    expect(getCharactersToTeach(word('你好'), markCharactersTaught(createEmptyProgress(), ['好'], monday))).toEqual(['你'])
+  })
+
+  it('characters of items already written right count as taught; written wrong, not', () => {
+    const wrong = recordWritingAnswer(createEmptyProgress(), 'word:长[cháng]', false, monday)
+    expect(getCharactersToTeach(word('长大'), wrong)).toEqual(['长', '大'])
+    const right = recordWritingAnswer(wrong, 'word:长[cháng]', true, monday)
+    expect(getCharactersToTeach(word('长大'), right)).toEqual(['大'])
   })
 })

@@ -13,6 +13,8 @@
   --color-ink: #1f1d1a;
   --color-ink-muted: #5f5a52;
   --color-line: #e7e1d7;
+  /* The outline traced over when learning to write a character */
+  --color-trace: #d3c9ba;
 
   /* Vermilion accent (朱红), with a dark variant for text on a light background */
   --color-accent: #b4412f;
@@ -62,6 +64,7 @@ html[data-theme='dark'] {
   --color-ink: #ede7dd;
   --color-ink-muted: #aaa297;
   --color-line: #3a352f;
+  --color-trace: #5c554c;
 
   --color-accent: #e57a63;
   --color-accent-strong: #f4a08c;

@@ -61,6 +61,13 @@ export interface ProgressData {
    * An item not in here has never been written.
    */
   writing: Partial<Record<StudyItemId, ItemProgress>>
+  /**
+   * Characters whose writing the user has been taught: traced over their
+   * outline, then written with hints (see WritingExercise). The value is
+   * when, in ISO 8601 format. A character written right before this existed
+   * also counts as taught (see getTaughtCharacters).
+   */
+  writingTaught: Record<string, string>
   activity: Record<DateKey, DailyActivity>
   /** Items the user chose not to learn: Learn no longer offers them. */
   excluded: Partial<Record<StudyItemId, ExcludedItem>>

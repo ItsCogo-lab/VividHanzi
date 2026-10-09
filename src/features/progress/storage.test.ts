@@ -22,6 +22,13 @@ describe('saveProgress / loadProgress', () => {
     expect(loadProgress(storage).writing).toEqual(progress.writing)
   })
 
+  it('also keeps the characters taught for writing, dropping malformed ones', () => {
+    const storage = memoryStorage({
+      'hanzivocab.progress': JSON.stringify({ version: 1, items: {}, activity: {}, writingTaught: { 你: '2026-09-28T10:00:00.000Z', 好: 3 } }),
+    })
+    expect(loadProgress(storage).writingTaught).toEqual({ 你: '2026-09-28T10:00:00.000Z' })
+  })
+
   it('progress saved before writing existed loads with no writing records', () => {
     const storage = memoryStorage({ 'hanzivocab.progress': JSON.stringify({ version: 1, items: {}, activity: {} }) })
     expect(loadProgress(storage)).toEqual(createEmptyProgress())

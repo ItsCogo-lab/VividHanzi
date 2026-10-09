@@ -91,3 +91,32 @@ export const NO_HELP: WritingHelp = { hintUsed: false, revealed: false, maxMisse
 export function gradeWriting(help: WritingHelp): boolean {
   return !help.hintUsed && !help.revealed && help.maxMissesOnStroke < AUTO_HINT_AFTER_MISSES
 }
+
+const HAN_CHARACTER = /\p{Script=Han}/u
+
+/**
+ * Characters the user has been taught to write: the ones marked taught
+ * (traced and written with hints) plus every character of an item already
+ * written right, so writing learned before this step doesn't start over.
+ */
+export function getTaughtCharacters(progress: ProgressData): Set<string> {
+  const taught = new Set(Object.keys(progress.writingTaught))
+  for (const record of Object.values(progress.writing)) {
+    if (!record || record.timesCorrect === 0) continue
+    // Ids are "char:好" or "word:你好" (maybe followed by a reading): keep the hanzi
+    for (const symbol of record.itemId.slice(record.itemId.indexOf(':') + 1)) {
+      if (HAN_CHARACTER.test(symbol)) taught.add(symbol)
+    }
+  }
+  return taught
+}
+
+/**
+ * The characters of an item to teach before writing it from memory: those
+ * not taught yet, each once, in order. You can't write a character you have
+ * only ever read, so the first time it is traced and then written with hints.
+ */
+export function getCharactersToTeach(item: StudyItem, progress: ProgressData): string[] {
+  const taught = getTaughtCharacters(progress)
+  return [...new Set(Array.from(item.entry.hanzi))].filter((character) => !taught.has(character))
+}
