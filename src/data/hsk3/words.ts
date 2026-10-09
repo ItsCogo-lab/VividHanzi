@@ -153,7 +153,7 @@ export const hsk3Words: Word[] = [
   {"id":"裤子","hanzi":"裤子","pinyin":"kù zi","meanings":{"en":["pants","trousers"]},"hskLevel":3,"frequencyRank":5103},
   {"id":"筷子","hanzi":"筷子","pinyin":"kuài zi","meanings":{"en":["chopsticks"]},"hskLevel":3,"traditional":"筷子","frequencyRank":16632},
   {"id":"蓝","hanzi":"蓝","pinyin":"lán","meanings":{"en":["blue","indigo plant"]},"hskLevel":3,"traditional":"藍","frequencyRank":2852},
-  {"id":"老","hanzi":"老","pinyin":"lǎo","meanings":{"en":["prefix used before the surname of a person or a numeral indicating the order of birth of the children in a family or to indicate affection or familiarity","old (of people)","venerable (person)","experienced","of long standing","always"]},"hskLevel":3,"traditional":"老","frequencyRank":422},
+  {"id":"老","hanzi":"老","pinyin":"lǎo","meanings":{"en":["old (of people)","prefix used before the surname of a person or a numeral indicating the order of birth of the children in a family or to indicate affection or familiarity","venerable (person)","experienced","of long standing","always"]},"hskLevel":3,"traditional":"老","frequencyRank":422},
   {"id":"离开","hanzi":"离开","pinyin":"lí kāi","meanings":{"en":["to depart; to leave"]},"hskLevel":3,"traditional":"離開","frequencyRank":557},
   {"id":"礼物","hanzi":"礼物","pinyin":"lǐ wù","meanings":{"en":["gift; present"]},"hskLevel":3,"traditional":"禮物","frequencyRank":2519},
   {"id":"历史","hanzi":"历史","pinyin":"lì shǐ","meanings":{"en":["history"]},"hskLevel":3,"traditional":"歷史","frequencyRank":140},

@@ -40,6 +40,17 @@ const PREFERRED_TRADITIONAL: Record<string, string> = {
  */
 const KEEP_CEDICT_ORDER = new Set(['喂', '须', '游'])
 
+/**
+ * Entries whose first gloss is not the main meaning, keyed by simplified
+ * form and CC-CEDICT pinyin: that meaning is moved to the front. Only for
+ * cases a rule can't catch (第 also starts with "(prefix ...)", and there
+ * it is the main meaning).
+ */
+const MAIN_MEANING: Record<string, string> = {
+  // Not "prefix used before the surname of a person..."
+  '老 lao3': 'old (of people)',
+}
+
 /** Meanings that are dictionary notes rather than translations useful for studying. */
 const NON_TRANSLATION_MEANINGS = [
   /^(old |unofficial |archaic |erroneous )?variant of /i,
@@ -59,12 +70,18 @@ export function createCedictIndex(json: string): CedictIndex {
   const entries: CedictEntry[] = JSON.parse(json)
   const index = new Map<string, CedictEntry[]>()
   for (const entry of entries) {
-    const toneMarked = { ...entry, pinyin: numberedPinyinToToneMarks(entry.pinyin) }
+    const toneMarked = { ...entry, pinyin: numberedPinyinToToneMarks(entry.pinyin), english: withMainMeaningFirst(entry) }
     const list = index.get(entry.simplified) ?? []
     list.push(toneMarked)
     index.set(entry.simplified, list)
   }
   return sortByTraditionalUse(index)
+}
+
+function withMainMeaningFirst(entry: CedictEntry): string[] {
+  const main = MAIN_MEANING[`${entry.simplified} ${entry.pinyin}`]
+  if (main === undefined || !entry.english.includes(main)) return entry.english
+  return [main, ...entry.english.filter((meaning) => meaning !== main)]
 }
 
 /**
