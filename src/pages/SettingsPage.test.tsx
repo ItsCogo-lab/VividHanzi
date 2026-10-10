@@ -107,7 +107,7 @@ describe('SettingsPage', () => {
     )
   })
 
-  it('chooses the exercise types, keeping at least one besides writing', async () => {
+  it('chooses the exercise types, keeping at least one', async () => {
     const user = userEvent.setup()
     const storage = memoryStorage()
     renderWithProviders(<SettingsPage />, { storage })
@@ -116,11 +116,11 @@ describe('SettingsPage', () => {
     await user.click(within(types).getByRole('checkbox', { name: /^Tones/ }))
     expect(loadSettings(storage).exerciseTypes).not.toContain('tone-choice')
 
-    // Turn off every recognition type but Pinyin: its box can't be unchecked
-    for (const name of [/^Flashcards/, /^Meaning/, /^Hanzi/, /^Match pinyin/, /^Match meanings/]) {
+    // Writing alone is allowed; its box then can't be unchecked
+    for (const name of [/^Flashcards/, /^Meaning/, /^Hanzi/, /^Pinyin/, /^Match pinyin/, /^Match meanings/]) {
       await user.click(within(types).getByRole('checkbox', { name }))
     }
-    expect(within(types).getByRole('checkbox', { name: /^Pinyin/ })).toBeDisabled()
-    expect(loadSettings(storage).exerciseTypes).toEqual(['pinyin-choice', 'writing'])
+    expect(within(types).getByRole('checkbox', { name: /^Writing/ })).toBeDisabled()
+    expect(loadSettings(storage).exerciseTypes).toEqual(['writing'])
   })
 })

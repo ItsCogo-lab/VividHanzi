@@ -25,8 +25,9 @@ export interface Settings {
   /** Also show pinyin with tone numbers ("ni3 hao3"). */
   toneNumbers: boolean
   /**
-   * Exercise types that can come up in Study sessions. Always at least one
-   * besides writing, which only comes up when an item's writing is due.
+   * Exercise types that can come up in Study sessions, always at least one.
+   * Next to other types, writing only comes up when an item's writing is
+   * due; on its own, the session is writing only (see isWritingOnly).
    */
   exerciseTypes: readonly ExerciseType[]
   /** Color theme: system, light or dark. */
@@ -76,9 +77,9 @@ export function isSessionSize(value: unknown): value is SessionSize {
   return SESSION_SIZE_OPTIONS.some((option) => option === value)
 }
 
-/** Can a session be built with only these types? It needs one besides writing. */
-export function hasRecognitionType(types: readonly ExerciseType[]): boolean {
-  return types.some((type) => type !== 'writing')
+/** Only writing chosen: sessions write the items that can be written (see selectWritingItems). */
+export function isWritingOnly(types: readonly ExerciseType[]): boolean {
+  return types.length > 0 && types.every((type) => type === 'writing')
 }
 
 /**
@@ -89,7 +90,7 @@ export function hasRecognitionType(types: readonly ExerciseType[]): boolean {
 function loadExerciseTypes(saved: Record<string, unknown>): readonly ExerciseType[] {
   if (Array.isArray(saved.exerciseTypes)) {
     const types = EXERCISE_TYPES.filter((type) => (saved.exerciseTypes as unknown[]).includes(type))
-    return hasRecognitionType(types) ? types : DEFAULT_SETTINGS.exerciseTypes
+    return types.length > 0 ? types : DEFAULT_SETTINGS.exerciseTypes
   }
   return saved.writingExercises === false ? EXERCISE_TYPES.filter((type) => type !== 'writing') : EXERCISE_TYPES
 }

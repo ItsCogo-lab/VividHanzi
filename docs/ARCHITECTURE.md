@@ -498,7 +498,8 @@ repetition, but the result carries each skill apart (`ExerciseResult.skills`),
 so the weaker one comes up more in later sessions.
 
 **Which types.** `settings.exerciseTypes` picks the types Study sessions may
-use (`getDefinitions`), always with one besides writing. `?type=<type>` on the
+use (`getDefinitions`), at least one. With writing alone, the session writes
+the items of its pool that can be written (`selectWritingItems`). `?type=<type>` on the
 practice page runs a session of that type only, whatever the settings, over
 everything with progress (learned in a set or known from the HSK level, never
 new words); Home lists one button per type.
