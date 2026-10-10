@@ -1,13 +1,13 @@
 import { useEffect, useRef, useState, type ReactNode } from 'react'
 import { Button } from '../components/ui/Button.tsx'
 import { Card } from '../components/ui/Card.tsx'
+import { CheckboxRow } from '../components/ui/CheckboxRow.tsx'
 import { PageHeader } from '../components/ui/PageHeader.tsx'
 import { InstallSetting } from '../features/install/components/InstallSetting.tsx'
 import { ToneLegend } from '../features/dictionary/components/ToneLegend.tsx'
 import { useProgress } from '../features/progress/progressContext.ts'
-import { EXERCISE_TYPES } from '../features/practice/exerciseDefinitions.ts'
-import { EXERCISE_TYPE_HINTS, EXERCISE_TYPE_LABELS } from '../features/practice/exerciseLabels.ts'
-import { DAILY_GOAL_OPTIONS, hasRecognitionType, SESSION_SIZE_OPTIONS } from '../features/settings/settings.ts'
+import { DAILY_GOAL_OPTIONS, SESSION_SIZE_OPTIONS } from '../features/settings/settings.ts'
+import { ExerciseTypesChoice } from '../features/settings/components/ExerciseTypesChoice.tsx'
 import { SupportCard } from '../features/support/SupportCard.tsx'
 import { useSettings } from '../features/settings/settingsContext.ts'
 import { THEME_OPTIONS } from '../features/settings/theme.ts'
@@ -212,36 +212,13 @@ function ThemeSetting() {
   )
 }
 
-/**
- * Which exercise types can come up in Study sessions. The last one besides
- * writing can't be turned off: writing alone can't make a session.
- */
+/** Exercise types, plus where else they can be picked. */
 function ExerciseTypesSetting() {
-  const { settings, updateSettings } = useSettings()
-  const enabled = settings.exerciseTypes
   return (
-    <fieldset>
-      <legend className="mb-2 text-ink-muted">{t('settings.exerciseTypes')}</legend>
-      <div className="flex flex-col gap-3">
-        {EXERCISE_TYPES.map((type) => {
-          const checked = enabled.includes(type)
-          const without = enabled.filter((other) => other !== type)
-          return (
-            <CheckboxRow
-              key={type}
-              checked={checked}
-              disabled={checked && !hasRecognitionType(without)}
-              onChange={(on) =>
-                updateSettings({ exerciseTypes: EXERCISE_TYPES.filter((other) => (other === type ? on : enabled.includes(other))) })
-              }
-              label={t(EXERCISE_TYPE_LABELS[type])}
-              hint={t(EXERCISE_TYPE_HINTS[type])}
-            />
-          )
-        })}
-      </div>
+    <div>
+      <ExerciseTypesChoice legend={t('settings.exerciseTypes')} />
       <p className="mt-3 text-sm text-ink-muted">{t('settings.exerciseTypesHint')}</p>
-    </fieldset>
+    </div>
   )
 }
 
@@ -261,32 +238,6 @@ function ToggleSetting({ setting, label, hint }: ToggleSettingProps) {
       label={label}
       hint={hint}
     />
-  )
-}
-
-type CheckboxRowProps = {
-  checked: boolean
-  disabled?: boolean
-  onChange: (checked: boolean) => void
-  label: string
-  hint: string
-}
-
-function CheckboxRow({ checked, disabled = false, onChange, label, hint }: CheckboxRowProps) {
-  return (
-    <label className={`flex items-start gap-3 ${disabled ? 'cursor-not-allowed' : 'cursor-pointer'}`}>
-      <input
-        type="checkbox"
-        checked={checked}
-        disabled={disabled}
-        onChange={(event) => onChange(event.target.checked)}
-        className="mt-1 size-5 shrink-0 accent-accent"
-      />
-      <span>
-        <span className="font-medium">{label}</span>
-        <span className="block text-sm text-ink-muted">{hint}</span>
-      </span>
-    </label>
   )
 }
 

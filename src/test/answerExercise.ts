@@ -3,6 +3,11 @@ import type userEvent from '@testing-library/user-event'
 import { hskStudyItems } from '../features/dictionary/hskDictionary.ts'
 import { getMeaningLabel, getPinyinLabel } from '../features/practice/choiceExercises.ts'
 
+/** Starts a Study session with the exercise types already chosen (see SessionStart). */
+export async function startSession(user: ReturnType<typeof userEvent.setup>) {
+  await user.click(await screen.findByRole('button', { name: 'Start' }))
+}
+
 /** Answers the current exercise, whatever its type (the type is random). */
 export async function answerCurrentExercise(user: ReturnType<typeof userEvent.setup>) {
   const showAnswer = screen.queryByRole('button', { name: 'Show answer' })

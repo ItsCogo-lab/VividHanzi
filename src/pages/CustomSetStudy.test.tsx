@@ -13,7 +13,7 @@ import { hskDictionary } from '../features/dictionary/hskDictionary.ts'
 import { getStudyItem } from '../features/dictionary/studyItem.ts'
 import { loadProgress } from '../features/progress/storage.ts'
 import type { KeyValueStorage } from '../lib/storage.ts'
-import { answerCurrentExercise } from '../test/answerExercise.ts'
+import { answerCurrentExercise, startSession } from '../test/answerExercise.ts'
 import { createChunkLoader } from '../test/dictionaryChunks.ts'
 import { memoryStorage } from '../test/memoryStorage.ts'
 import { paragraphWithText } from '../test/text.ts'
@@ -90,6 +90,7 @@ describe('Learn and Study with a custom set', () => {
 
     // Study: what was learned is due for review today
     await user.click(screen.getByRole('link', { name: 'Review them now' }))
+    await startSession(user)
     expect(screen.getByText('Card 1 of 3')).toBeInTheDocument()
     await finishSession(user)
     expect(screen.getByRole('heading', { name: 'Session complete' })).toBeInTheDocument()
@@ -121,6 +122,7 @@ describe('Learn and Study with a custom set', () => {
     expect(Object.keys(loadProgress(storage).items)).toEqual(['word:企鹅'])
 
     await user.click(screen.getByRole('link', { name: 'Review them now' }))
+    await startSession(user)
     expect(await screen.findByText('Card 1 of 1')).toBeInTheDocument()
     await finishSession(user)
     expect(screen.getByRole('heading', { name: 'Session complete' })).toBeInTheDocument()

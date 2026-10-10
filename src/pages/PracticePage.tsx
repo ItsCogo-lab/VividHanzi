@@ -13,6 +13,7 @@ import { getStudyItem, getStudyItemId, type StudyItem, type StudyItemId } from '
 import { useMyStudies } from '../features/myStudies/myStudiesContext.ts'
 import { LearnSession } from '../features/practice/components/LearnSession.tsx'
 import { PracticeSession } from '../features/practice/components/PracticeSession.tsx'
+import { SessionStart } from '../features/practice/components/SessionStart.tsx'
 import { EXERCISE_DEFINITIONS, getDefinitions, type ExerciseDefinition } from '../features/practice/exerciseDefinitions.ts'
 import { EXERCISE_TYPE_LABELS } from '../features/practice/exerciseLabels.ts'
 import { createSessionExercises } from '../features/practice/session.ts'
@@ -54,7 +55,8 @@ function createPracticeSession(pool: readonly StudyItem[], progress: ProgressDat
  * with ?focus=writing, a writing-only session (see selectWritingItems); with
  * ?type=pinyin-choice (or any other type), a session of that type only.
  * Without a set, the mixed session over all vocabulary. The `key` makes
- * changing set or type create a new session.
+ * changing set or type create a new session. Sessions that follow the
+ * Settings exercise types ask for them first (SessionStart).
  */
 export function PracticePage() {
   const [searchParams] = useSearchParams()
@@ -99,18 +101,29 @@ function Practice() {
   // useState with a function: the session is created once on entering, not on every render.
   // It uses the progress at that moment; answers do not change the ongoing session.
   const [session, setSession] = useState(() => createPracticeSession(hskWordItems, progress, settings))
+  const [started, setStarted] = useState(false)
 
   return (
     <>
       <PageHeader title={t('practice.title')} description={t('practice.description')} />
-      {/* key: a new session mounts a new PracticeSession, with its state from scratch */}
-      <PracticeSession
-        key={session.id}
-        exercises={session.exercises}
-        dictionary={dictionary}
-        onResult={recordResult}
-        onRestart={() => setSession(createPracticeSession(hskWordItems, progress, settings))}
-      />
+      {started ? (
+        // key: a new session mounts a new PracticeSession, with its state from scratch
+        <PracticeSession
+          key={session.id}
+          exercises={session.exercises}
+          dictionary={dictionary}
+          onResult={recordResult}
+          onRestart={() => setSession(createPracticeSession(hskWordItems, progress, settings))}
+        />
+      ) : (
+        // The session is rebuilt with the exercise types just chosen
+        <SessionStart
+          onStart={() => {
+            setSession(createPracticeSession(hskWordItems, progress, settings))
+            setStarted(true)
+          }}
+        />
+      )}
     </>
   )
 }
@@ -211,6 +224,7 @@ function DifficultSession({ itemIds }: { itemIds: readonly StudyItemId[] }) {
     return createPracticeSession(pool, current, settings)
   }
   const [session, setSession] = useState(() => createSession(progress))
+  const [started, setStarted] = useState(false)
 
   if (session.exercises.length === 0) {
     return (
@@ -221,6 +235,14 @@ function DifficultSession({ itemIds }: { itemIds: readonly StudyItemId[] }) {
         </ButtonLink>
       </Card>
     )
+  }
+  if (!started) {
+    // The session is rebuilt with the exercise types just chosen
+    const start = () => {
+      setSession(createSession(progress))
+      setStarted(true)
+    }
+    return <SessionStart onStart={start} />
   }
 
   return (
@@ -320,6 +342,7 @@ function StudyPractice({ set, reviewAll }: { set: StudySet; reviewAll: boolean }
     return { ...createPracticeSession(pool, current, settings), learnedCount: due.length + upToDate.length }
   }
   const [session, setSession] = useState(() => createSession(progress))
+  const [started, setStarted] = useState(false)
 
   if (session.exercises.length === 0) {
     return session.learnedCount === 0 ? (
@@ -331,6 +354,13 @@ function StudyPractice({ set, reviewAll }: { set: StudySet; reviewAll: boolean }
         <ButtonLink to={getSetSessionPath(set, 'study', { reviewAll: true })}>{t('session.reviewAnyway')}</ButtonLink>
       </EmptySession>
     )
+  }
+  if (!started) {
+    const start = () => {
+      setSession(createSession(progress))
+      setStarted(true)
+    }
+    return <SessionStart onStart={start} />
   }
 
   return (
