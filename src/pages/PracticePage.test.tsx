@@ -72,12 +72,41 @@ describe('PracticePage: choosing exercise types before a session', () => {
     expect(loadSettings(storage).exerciseTypes).toEqual(['tone-choice'])
   })
 
-  it('the last type besides writing cannot be unchecked', () => {
+  it('the last type checked cannot be unchecked', () => {
     const storage = memoryStorage()
-    saveSettings({ ...DEFAULT_SETTINGS, exerciseTypes: ['flashcard', 'writing'] }, storage)
+    saveSettings({ ...DEFAULT_SETTINGS, exerciseTypes: ['writing'] }, storage)
     renderWithProviders(<PracticePage />, { storage })
 
-    expect(screen.getByRole('checkbox', { name: /^Flashcards/ })).toBeDisabled()
+    expect(screen.getByRole('checkbox', { name: /^Writing/ })).toBeDisabled()
+  })
+
+  it('with writing alone, writes the items that can be written', async () => {
+    const user = userEvent.setup()
+    const storage = memoryStorage()
+    saveSettings({ ...DEFAULT_SETTINGS, exerciseTypes: ['writing'] }, storage)
+    let progress = recordAnswer(createEmptyProgress(), 'word:谢谢', true, new Date())
+    progress = recordAnswer(progress, 'word:你好', false, new Date())
+    saveProgress(progress, storage)
+    renderWithProviders(<PracticePage />, { storage })
+    await startSession(user)
+
+    // Only 谢谢 was read right: 你好 can't be written yet
+    expect(screen.getByText(/^Card 1 of 1$/)).toBeInTheDocument()
+    expect(screen.getByText('New character: trace it')).toBeInTheDocument()
+  })
+
+  it('with writing alone and nothing that can be written, says so and lets you pick again', async () => {
+    const user = userEvent.setup()
+    const storage = memoryStorage()
+    saveSettings({ ...DEFAULT_SETTINGS, exerciseTypes: ['writing'] }, storage)
+    renderWithProviders(<PracticePage />, { storage })
+    await startSession(user)
+
+    expect(screen.getByText(/^Nothing to write here yet/)).toBeInTheDocument()
+    await user.click(screen.getByRole('button', { name: 'Choose other exercises' }))
+    await user.click(screen.getByRole('checkbox', { name: /^Meaning/ }))
+    await startSession(user)
+    expect(screen.getByRole('heading', { name: 'What does it mean?' })).toBeInTheDocument()
   })
 
   it('an empty session says so without asking', () => {

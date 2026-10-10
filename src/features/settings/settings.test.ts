@@ -40,8 +40,9 @@ describe('exercise types', () => {
     expect(load({ exerciseTypes: ['tone-choice', 'sing-along', 'flashcard'] })).toEqual(['flashcard', 'tone-choice'])
   })
 
-  it('falls back to all types if only writing is left', () => {
-    expect(load({ exerciseTypes: ['writing'] })).toEqual(EXERCISE_TYPES)
+  it('keeps writing alone, and falls back to all types if none is left', () => {
+    expect(load({ exerciseTypes: ['writing'] })).toEqual(['writing'])
+    expect(load({ exerciseTypes: [] })).toEqual(EXERCISE_TYPES)
   })
 })
 
