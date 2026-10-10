@@ -6,11 +6,11 @@ import { loadMyStudies } from '../features/myStudies/storage.ts'
 import { createEmptyProgress, getItemStatus, introduceItem, isDue, isExcluded, recordAnswer } from '../features/progress/progress.ts'
 import { loadProgress, saveProgress } from '../features/progress/storage.ts'
 import type { ProgressData } from '../features/progress/types.ts'
-import { DEFAULT_SETTINGS, saveSettings } from '../features/settings/settings.ts'
+import { DEFAULT_SETTINGS, loadSettings, saveSettings } from '../features/settings/settings.ts'
 import { memoryStorage } from '../test/memoryStorage.ts'
 import { renderWithProviders } from '../test/renderWithProviders.tsx'
 import { PracticePage } from './PracticePage.tsx'
-import { answerCurrentExercise } from '../test/answerExercise.ts'
+import { answerCurrentExercise, startSession } from '../test/answerExercise.ts'
 
 /** Answers until the session ends: a missed choice question comes back at the end. */
 async function finishSession(user: ReturnType<typeof userEvent.setup>) {
@@ -20,10 +20,12 @@ async function finishSession(user: ReturnType<typeof userEvent.setup>) {
 }
 
 describe('PracticePage', () => {
-  it('uses the session size from the settings', () => {
+  it('uses the session size from the settings', async () => {
+    const user = userEvent.setup()
     const storage = memoryStorage()
     saveSettings({ ...DEFAULT_SETTINGS, sessionSize: 5 }, storage)
     renderWithProviders(<PracticePage />, { storage })
+    await startSession(user)
 
     expect(screen.getByText('Card 1 of 5')).toBeInTheDocument()
   })
@@ -32,12 +34,55 @@ describe('PracticePage', () => {
     const user = userEvent.setup()
     const storage = memoryStorage()
     renderWithProviders(<PracticePage />, { storage })
+    await startSession(user)
 
     await answerCurrentExercise(user)
     await answerCurrentExercise(user)
 
     expect(screen.getByText(/^Card 3 of \d+$/)).toBeInTheDocument()
     expect(Object.keys(loadProgress(storage).items)).toHaveLength(2)
+  })
+})
+
+describe('PracticePage: choosing exercise types before a session', () => {
+  it('asks which exercise types to use, with the saved ones checked, before showing any exercise', () => {
+    const storage = memoryStorage()
+    saveSettings({ ...DEFAULT_SETTINGS, exerciseTypes: ['flashcard', 'tone-choice'] }, storage)
+    renderWithProviders(<PracticePage />, { storage })
+
+    expect(screen.getByRole('group', { name: 'Which exercises do you want?' })).toBeInTheDocument()
+    expect(screen.getByRole('checkbox', { name: /^Flashcards/ })).toBeChecked()
+    expect(screen.getByRole('checkbox', { name: /^Meaning/ })).not.toBeChecked()
+    expect(screen.queryByText(/^Card 1/)).not.toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Start' })).toHaveFocus()
+  })
+
+  it('the session uses the types picked, and they are saved for next time', async () => {
+    const user = userEvent.setup()
+    const storage = memoryStorage()
+    renderWithProviders(<PracticePage />, { storage })
+
+    for (const checkbox of screen.getAllByRole('checkbox')) {
+      if (!checkbox.matches(':checked') || within(checkbox.closest('label')!).queryByText('Tones')) continue
+      await user.click(checkbox)
+    }
+    await startSession(user)
+
+    expect(screen.getByRole('heading', { name: 'Which tones are right?' })).toBeInTheDocument()
+    expect(loadSettings(storage).exerciseTypes).toEqual(['tone-choice'])
+  })
+
+  it('the last type besides writing cannot be unchecked', () => {
+    const storage = memoryStorage()
+    saveSettings({ ...DEFAULT_SETTINGS, exerciseTypes: ['flashcard', 'writing'] }, storage)
+    renderWithProviders(<PracticePage />, { storage })
+
+    expect(screen.getByRole('checkbox', { name: /^Flashcards/ })).toBeDisabled()
+  })
+
+  it('an empty session says so without asking', () => {
+    renderWithProviders(<PracticePage />, { path: '/study/practice?focus=difficult' })
+    expect(screen.queryByRole('button', { name: 'Start' })).not.toBeInTheDocument()
   })
 })
 
@@ -89,6 +134,7 @@ describe('PracticePage: difficult items', () => {
     renderWithProviders(<PracticePage />, { storage, path: '/study/practice?focus=difficult' })
 
     expect(screen.getByRole('heading', { name: 'Difficult items' })).toBeInTheDocument()
+    await startSession(user)
     expect(screen.getByText(/^Card 1 of 2$/)).toBeInTheDocument()
     await finishSession(user)
 
@@ -234,6 +280,7 @@ describe('PracticePage: Learn and Study of a set', () => {
     const storage = renderSession('mode=study', learned.reduce((result, itemId) => introduceItem(result, itemId, now), createEmptyProgress()))
 
     expect(screen.getByText("Review vocabulary you've already learned")).toBeInTheDocument()
+    await startSession(user)
     expect(screen.getByText('Card 1 of 3')).toBeInTheDocument()
     await finishSession(user)
 
@@ -263,8 +310,10 @@ describe('PracticePage: Learn and Study of a set', () => {
     )
   })
 
-  it('"Review anyway" reviews learned items even if not due', () => {
+  it('"Review anyway" reviews learned items even if not due', async () => {
+    const user = userEvent.setup()
     renderSession('mode=study&scope=all', recordAnswer(createEmptyProgress(), colorIds[0]!, true, now))
+    await startSession(user)
 
     expect(screen.getByText('Card 1 of 1')).toBeInTheDocument()
   })
@@ -298,6 +347,7 @@ describe('PracticePage: Learn and Study of a set', () => {
   it('in Study the dictionary works and after closing it the same card and session type remain', async () => {
     const user = userEvent.setup()
     renderSession('mode=study', colorIds.reduce((result, itemId) => introduceItem(result, itemId, now), createEmptyProgress()))
+    await startSession(user)
     await answerCurrentExercise(user)
 
     const { before, after } = await openAndCloseDictionary(user)
