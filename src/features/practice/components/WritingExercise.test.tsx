@@ -78,7 +78,8 @@ function renderExercise({ fetchFn = online, storage = taughtStorage() } = {}) {
 
 /** Waits for the pad of the n-th character and returns its writer. */
 async function writerFor(index: number) {
-  await waitFor(() => expect(writers[index]?.quizOptions).toBeDefined())
+  // The next pad comes after a short pause (PAUSE_AFTER_CHARACTER_MS)
+  await waitFor(() => expect(writers[index]?.quizOptions).toBeDefined(), { timeout: 3000 })
   return writers[index]!
 }
 
@@ -211,8 +212,11 @@ describe('WritingExercise', () => {
     expect(screen.queryByRole('button', { name: /Hint/ })).not.toBeInTheDocument()
     act(() => trace.quizOptions!.onMistake({ mistakesOnStroke: 3 }))
     await write(0)
-
-    expect(screen.getByText('Now without the outline: a missed stroke is shown')).toBeInTheDocument()
+    // The traced character stays on screen for a moment before the next step
+    expect(screen.getByText('New character: trace it')).toBeInTheDocument()
+    expect(
+      await screen.findByText('Now without the outline: a missed stroke is shown', {}, { timeout: 3000 }),
+    ).toBeInTheDocument()
     const guided = await writerFor(1)
     expect(guided.options.showOutline).toBe(false)
     expect(guided.quizOptions!.showHintAfterMisses).toBe(1)
@@ -221,7 +225,7 @@ describe('WritingExercise', () => {
     await write(1)
     expect(loadProgress(storage).writingTaught).toHaveProperty('谢')
 
-    expect(screen.getByText('Now write it from memory')).toBeInTheDocument()
+    expect(await screen.findByText('Now write it from memory', {}, { timeout: 3000 })).toBeInTheDocument()
     expect((await writerFor(2)).quizOptions!.showHintAfterMisses).toBe(3)
     await write(2)
     await write(3)

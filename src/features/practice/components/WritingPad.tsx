@@ -43,6 +43,10 @@ type WritingPadProps = {
 const REVEAL_STROKE_SPEED = 2
 /** ...and waits this long between strokes (default 1000 ms). */
 const REVEAL_DELAY_BETWEEN_STROKES = 150
+/** While learning a character, a shown stroke is drawn slowly (Hanzi Writer's default is 2)... */
+const LEARNING_HIGHLIGHT_SPEED = 0.6
+/** ...and when tracing, the next stroke waits a moment after the last one is drawn. */
+const NEXT_STROKE_DELAY_MS = 500
 /** The hint shows the whole character this many times, each for a moment. */
 const HINT_BLINKS = 2
 const HINT_FADE_MS = 60
@@ -128,6 +132,7 @@ export function WritingPad({ hanzi, mode = 'memory', hasLocalCopy, size, ref, on
           outlineColor: isTracing ? getTraceColor(target) : colors.highlightColor,
           strokeAnimationSpeed: REVEAL_STROKE_SPEED,
           delayBetweenStrokes: REVEAL_DELAY_BETWEEN_STROKES,
+          ...(mode !== 'memory' && { strokeHighlightSpeed: LEARNING_HIGHLIGHT_SPEED }),
           charDataLoader: () => data,
         })
         writerRef.current = writer
@@ -140,7 +145,11 @@ export function WritingPad({ hanzi, mode = 'memory', hasLocalCopy, size, ref, on
           onMistake: (stroke) => callbacksRef.current.onMistake(stroke.mistakesOnStroke),
           onCorrectStroke: (stroke) => {
             nextStrokeRef.current = stroke.strokeNum + 1
-            if (stroke.strokesRemaining > 0) showNextStroke()
+            if (stroke.strokesRemaining > 0) {
+              const next = nextStrokeRef.current
+              // Unless another stroke was drawn meanwhile
+              setTimeout(() => nextStrokeRef.current === next && showNextStroke(), NEXT_STROKE_DELAY_MS)
+            }
           },
           onComplete: () => callbacksRef.current.onDone(),
         })

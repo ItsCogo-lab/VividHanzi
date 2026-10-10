@@ -20,6 +20,8 @@ import { WritingPad, type WritingPadHandle, type WritingPadMode } from './Writin
 /** Below this width (a phone in portrait) only the character being written gets a pad, as big as fits. */
 const NARROW_WIDTH = 560
 const MAX_NARROW_PAD = 360
+/** How long a finished character stays on screen before its pad is replaced by the next one. */
+export const PAUSE_AFTER_CHARACTER_MS = 900
 /** The pad for learning a character on wider screens. */
 const LESSON_PAD = 240
 
@@ -80,9 +82,20 @@ export function WritingExercise({ exercise, dictionary, onAnswer, onSkip, onLook
     if (!lesson) setHelp((previous) => ({ ...previous, hintUsed: true }))
     padRef.current?.hint()
   }
+  // A finished character stays on screen for a moment, to see how it came out
+  const [pausing, setPausing] = useState(false)
+  const pauseTimerRef = useRef<ReturnType<typeof setTimeout>>(undefined)
+  useEffect(() => () => clearTimeout(pauseTimerRef.current), [])
+  const afterPause = (advance: () => void) => {
+    setPausing(true)
+    pauseTimerRef.current = setTimeout(() => {
+      setPausing(false)
+      advance()
+    }, PAUSE_AFTER_CHARACTER_MS)
+  }
   const finishLesson = (finished: Lesson) => {
     if (finished.mode === 'guided') markCharactersTaught([finished.character])
-    setLessonIndex((index) => index + 1)
+    afterPause(() => setLessonIndex((index) => index + 1))
   }
   const reveal = () => {
     setHelp((previous) => ({ ...previous, revealed: true }))
@@ -95,7 +108,7 @@ export function WritingExercise({ exercise, dictionary, onAnswer, onSkip, onLook
   // On wider screens all the pads sit side by side, smaller for words
   const wideSize = characters.length === 1 ? 240 : 150
 
-  const canHint = !unavailable && lesson?.mode !== 'trace'
+  const canHint = !unavailable && !pausing && lesson?.mode !== 'trace'
   useSessionShortcuts(isDone ? { Enter: next, ' ': next } : canHint ? { h: hint, H: hint } : {})
 
   // As in choice questions: on finishing, focus goes to "Continue"
@@ -143,7 +156,8 @@ export function WritingExercise({ exercise, dictionary, onAnswer, onSkip, onLook
               hasLocalCopy={hasLocalCopy}
               size={Math.min(width, MAX_NARROW_PAD)}
               onMistake={onMistake}
-              onDone={() => setCurrent(shown + 1)}
+              // Its pad is replaced by the next character's: pause first (not after the last one, which stays)
+              onDone={() => (shown + 1 < characters.length ? afterPause(() => setCurrent(shown + 1)) : setCurrent(shown + 1))}
               onUnavailable={() => setUnavailable(true)}
             />
           </div>
@@ -204,17 +218,17 @@ export function WritingExercise({ exercise, dictionary, onAnswer, onSkip, onLook
         // Tracing needs no buttons; writing with hints only the hint
         lesson.mode === 'guided' && (
           <div className="flex justify-center">
-            <Button variant="secondary" aria-keyshortcuts="H" onClick={hint}>
+            <Button variant="secondary" aria-keyshortcuts="H" disabled={pausing} onClick={hint}>
               {t('writing.hint')} <Kbd>H</Kbd>
             </Button>
           </div>
         )
       ) : (
         <div className="grid grid-cols-2 gap-3">
-          <Button variant="secondary" aria-keyshortcuts="H" onClick={hint}>
+          <Button variant="secondary" aria-keyshortcuts="H" disabled={pausing} onClick={hint}>
             {t('writing.hint')} <Kbd>H</Kbd>
           </Button>
-          <Button variant="secondary" onClick={reveal}>
+          <Button variant="secondary" disabled={pausing} onClick={reveal}>
             {t('writing.showMe')}
           </Button>
         </div>
