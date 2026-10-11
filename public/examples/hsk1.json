@@ -1,7 +1,7 @@
 {
  "source": "Tatoeba",
  "license": "CC BY 2.0 FR",
- "exportDate": "2026-10-09",
+ "exportDate": "2026-10-11",
  "sentences": [
   {
    "tatoebaId": 136401,
@@ -11,8 +11,6 @@
    "translationTatoebaId": 370708,
    "translationAuthor": "saeb",
    "words": [
-    "里",
-    "哪",
     "你",
     "在",
     "住"
@@ -48,8 +46,20 @@
    "translationAuthor": "CK",
    "words": [
     "的",
+    "你",
     "想",
     "做"
+   ]
+  },
+  {
+   "tatoebaId": 332820,
+   "zh": "你在听我说吗？",
+   "author": "fucongcong",
+   "en": "Do you hear what I'm saying?",
+   "translationTatoebaId": 2305057,
+   "translationAuthor": "muggies16",
+   "words": [
+    "听"
    ]
   },
   {
@@ -73,17 +83,6 @@
    "words": [
     "了",
     "做"
-   ]
-  },
-  {
-   "tatoebaId": 333024,
-   "zh": "她什么时候生的？",
-   "author": "popolady",
-   "en": "When was she born?",
-   "translationTatoebaId": 310506,
-   "translationAuthor": "CK",
-   "words": [
-    "时候"
    ]
   },
   {
@@ -113,14 +112,15 @@
    ]
   },
   {
-   "tatoebaId": 333491,
-   "zh": "我的朋友十七岁了。",
+   "tatoebaId": 333474,
+   "zh": "一年有十二个月。",
    "author": "al",
-   "en": "My friend is seventeen years old.",
-   "translationTatoebaId": 761865,
-   "translationAuthor": "Zifre",
+   "en": "A year has twelve months.",
+   "translationTatoebaId": 73060,
+   "translationAuthor": "CM",
    "words": [
-    "七"
+    "年",
+    "月"
    ]
   },
   {
@@ -234,7 +234,8 @@
    "translationTatoebaId": 334464,
    "translationAuthor": "guyviet",
    "words": [
-    "吃"
+    "吃",
+    "在"
    ]
   },
   {
@@ -267,8 +268,7 @@
    "translationTatoebaId": 1482,
    "translationAuthor": "CK",
    "words": [
-    "不",
-    "日"
+    "不"
    ]
   },
   {
@@ -314,7 +314,7 @@
    "translationTatoebaId": 335138,
    "translationAuthor": "CN",
    "words": [
-    "人"
+    "是"
    ]
   },
   {
@@ -347,9 +347,7 @@
    "translationTatoebaId": 387411,
    "translationAuthor": "CK",
    "words": [
-    "点",
-    "冷",
-    "有"
+    "冷"
    ]
   },
   {
@@ -427,18 +425,6 @@
    ]
   },
   {
-   "tatoebaId": 340647,
-   "zh": "下个星期见！",
-   "author": "aaroned",
-   "en": "See you next week!",
-   "translationTatoebaId": 32557,
-   "translationAuthor": "CK",
-   "words": [
-    "个",
-    "下"
-   ]
-  },
-  {
    "tatoebaId": 343380,
    "zh": "有什么不对吗？",
    "author": "fucongcong",
@@ -490,9 +476,7 @@
    "translationTatoebaId": 304209,
    "translationAuthor": "CM",
    "words": [
-    "回",
-    "会",
-    "来"
+    "会"
    ]
   },
   {
@@ -536,19 +520,8 @@
    "translationTatoebaId": 535007,
    "translationAuthor": "blay_paul",
    "words": [
-    "桌子"
-   ]
-  },
-  {
-   "tatoebaId": 348014,
-   "zh": "他在读大学。",
-   "author": "zhouj1955",
-   "en": "He is in college.",
-   "translationTatoebaId": 387501,
-   "translationAuthor": "Mouseneb",
-   "words": [
-    "大",
-    "读"
+    "桌子",
+    "坐"
    ]
   },
   {
@@ -561,6 +534,17 @@
    "words": [
     "今天",
     "星期"
+   ]
+  },
+  {
+   "tatoebaId": 349189,
+   "zh": "太小了。",
+   "author": "zhouj1955",
+   "en": "It's too small.",
+   "translationTatoebaId": 267535,
+   "translationAuthor": "CK",
+   "words": [
+    "小"
    ]
   },
   {
@@ -583,7 +567,6 @@
    "translationAuthor": "CK",
    "words": [
     "很",
-    "去",
     "少",
     "她"
    ]
@@ -610,9 +593,7 @@
    "translationTatoebaId": 2368,
    "translationAuthor": "CK",
    "words": [
-    "个",
-    "好",
-    "人"
+    "个"
    ]
   },
   {
@@ -627,17 +608,6 @@
    ]
   },
   {
-   "tatoebaId": 374855,
-   "zh": "大名是什么？",
-   "author": "sysko",
-   "en": "What is his real name?",
-   "translationTatoebaId": 12624892,
-   "translationAuthor": "Enzo",
-   "words": [
-    "大"
-   ]
-  },
-  {
    "tatoebaId": 374862,
    "zh": "你是哪里人？",
    "author": "sysko",
@@ -645,8 +615,6 @@
    "translationTatoebaId": 370703,
    "translationAuthor": "saeb",
    "words": [
-    "里",
-    "哪",
     "人"
    ]
   },
@@ -691,7 +659,6 @@
    "translationTatoebaId": 379086,
    "translationAuthor": "CM",
    "words": [
-    "二",
     "六"
    ]
   },
@@ -730,17 +697,6 @@
    ]
   },
   {
-   "tatoebaId": 385098,
-   "zh": "今天星期几？",
-   "author": "sysko",
-   "en": "What day is it today?",
-   "translationTatoebaId": 476431,
-   "translationAuthor": "minshirui",
-   "words": [
-    "几"
-   ]
-  },
-  {
    "tatoebaId": 385103,
    "zh": "这个月是几月？",
    "author": "sysko",
@@ -748,6 +704,7 @@
    "translationTatoebaId": 488730,
    "translationAuthor": "minshirui",
    "words": [
+    "几",
     "月"
    ]
   },
@@ -759,8 +716,7 @@
    "translationTatoebaId": 429851,
    "translationAuthor": "baxtree",
    "words": [
-    "今天",
-    "怎么"
+    "今天"
    ]
   },
   {
@@ -786,17 +742,6 @@
    ]
   },
   {
-   "tatoebaId": 390547,
-   "zh": "你说日语吗?",
-   "author": "fucongcong",
-   "en": "Do you speak Japanese?",
-   "translationTatoebaId": 69058,
-   "translationAuthor": "autuno",
-   "words": [
-    "日"
-   ]
-  },
-  {
    "tatoebaId": 391063,
    "zh": "你住在哪儿？",
    "author": "sysko",
@@ -804,7 +749,6 @@
    "translationTatoebaId": 370708,
    "translationAuthor": "saeb",
    "words": [
-    "哪",
     "住"
    ]
   },
@@ -853,9 +797,18 @@
    "translationAuthor": "CK",
    "words": [
     "日",
-    "三",
-    "十",
-    "月"
+    "三"
+   ]
+  },
+  {
+   "tatoebaId": 399588,
+   "zh": "你坐火车去吗？",
+   "author": "GlossaMatik",
+   "en": "Will you go by train?",
+   "translationTatoebaId": 237647,
+   "translationAuthor": "CK",
+   "words": [
+    "坐"
    ]
   },
   {
@@ -867,6 +820,27 @@
    "translationAuthor": "CK",
    "words": [
     "女儿"
+   ]
+  },
+  {
+   "tatoebaId": 402916,
+   "zh": "我不在的时候有没有人来？",
+   "author": "GlossaMatik",
+   "en": "Did anyone come in my absence?",
+   "translationTatoebaId": 252066,
+   "words": [
+    "时候"
+   ]
+  },
+  {
+   "tatoebaId": 403616,
+   "zh": "那你是怎么做的？",
+   "author": "GlossaMatik",
+   "en": "What did you do then?",
+   "translationTatoebaId": 43167,
+   "translationAuthor": "CK",
+   "words": [
+    "怎么"
    ]
   },
   {
@@ -888,6 +862,7 @@
    "translationTatoebaId": 249513,
    "translationAuthor": "CK",
    "words": [
+    "都",
     "我们"
    ]
   },
@@ -899,7 +874,6 @@
    "translationTatoebaId": 405500,
    "translationAuthor": "CK",
    "words": [
-    "家",
     "里"
    ]
   },
@@ -998,17 +972,6 @@
    ]
   },
   {
-   "tatoebaId": 420108,
-   "zh": "你吃饭了吗？",
-   "author": "sysko",
-   "en": "Have you eaten yet?",
-   "translationTatoebaId": 382317,
-   "translationAuthor": "cburgmer",
-   "words": [
-    "吃"
-   ]
-  },
-  {
    "tatoebaId": 420698,
    "zh": "这东西多少钱？",
    "author": "sysko",
@@ -1033,6 +996,17 @@
    ]
   },
   {
+   "tatoebaId": 422951,
+   "zh": "你们有什么菜？",
+   "author": "GlossaMatik",
+   "en": "What kind of food do you have?",
+   "translationTatoebaId": 422947,
+   "translationAuthor": "CM",
+   "words": [
+    "菜"
+   ]
+  },
+  {
    "tatoebaId": 423411,
    "zh": "下午我不在家。",
    "author": "fucongcong",
@@ -1043,25 +1017,25 @@
    ]
   },
   {
-   "tatoebaId": 430977,
-   "zh": "他有三个儿子。",
+   "tatoebaId": 429099,
+   "zh": "他六点回来了。",
    "author": "fucongcong",
-   "en": "He has three sons.",
-   "translationTatoebaId": 430778,
-   "translationAuthor": "Archibald",
+   "en": "He returned at six.",
+   "translationTatoebaId": 761927,
+   "translationAuthor": "Zifre",
    "words": [
-    "儿子"
+    "六"
    ]
   },
   {
-   "tatoebaId": 432313,
-   "zh": "他没有女朋友。",
-   "author": "GlossaMatik",
-   "en": "He has no girlfriend.",
-   "translationTatoebaId": 284658,
+   "tatoebaId": 432971,
+   "zh": "他的生日是八月二十一日。",
+   "author": "aliene",
+   "en": "His birthday is August 21st.",
+   "translationTatoebaId": 287129,
    "translationAuthor": "CK",
    "words": [
-    "朋友"
+    "日"
    ]
   },
   {
@@ -1084,17 +1058,6 @@
    "translationAuthor": "CK",
    "words": [
     "东西"
-   ]
-  },
-  {
-   "tatoebaId": 448196,
-   "zh": "你回来了吗？",
-   "author": "GlossaMatik",
-   "en": "You've come back?",
-   "translationTatoebaId": 448189,
-   "translationAuthor": "FeuDRenais",
-   "words": [
-    "回"
    ]
   },
   {
@@ -1161,8 +1124,7 @@
    "translationTatoebaId": 471758,
    "translationAuthor": "CM",
    "words": [
-    "猫",
-    "那"
+    "猫"
    ]
   },
   {
@@ -1177,14 +1139,14 @@
    ]
   },
   {
-   "tatoebaId": 475871,
-   "zh": "你是大学生吗？",
-   "author": "biglion",
-   "en": "Are you a college student?",
-   "translationTatoebaId": 275628,
-   "translationAuthor": "CK",
+   "tatoebaId": 472986,
+   "zh": "开电视。",
+   "author": "fucongcong",
+   "en": "Turn on the TV.",
+   "translationTatoebaId": 1180903,
+   "translationAuthor": "treskro3",
    "words": [
-    "学生"
+    "开"
    ]
   },
   {
@@ -1205,7 +1167,8 @@
    "translationTatoebaId": 480576,
    "translationAuthor": "CK",
    "words": [
-    "钱"
+    "钱",
+    "有"
    ]
   },
   {
@@ -1231,6 +1194,17 @@
    ]
   },
   {
+   "tatoebaId": 487586,
+   "zh": "这是他们家。",
+   "author": "fucongcong",
+   "en": "This is their house.",
+   "translationTatoebaId": 55437,
+   "translationAuthor": "adjusting",
+   "words": [
+    "家"
+   ]
+  },
+  {
    "tatoebaId": 488780,
    "zh": "这个人是谁？",
    "author": "GlossaMatik",
@@ -1238,8 +1212,19 @@
    "translationTatoebaId": 488778,
    "translationAuthor": "CM",
    "words": [
-    "个",
+    "人",
     "谁"
+   ]
+  },
+  {
+   "tatoebaId": 490784,
+   "zh": "他是我的朋友。",
+   "author": "GlossaMatik",
+   "en": "He is my friend.",
+   "translationTatoebaId": 298009,
+   "translationAuthor": "CH",
+   "words": [
+    "朋友"
    ]
   },
   {
@@ -1282,7 +1267,8 @@
    "translationTatoebaId": 2238072,
    "translationAuthor": "gleki",
    "words": [
-    "没"
+    "来",
+    "人"
    ]
   },
   {
@@ -1294,29 +1280,6 @@
    "translationAuthor": "Shishir",
    "words": [
     "打电话"
-   ]
-  },
-  {
-   "tatoebaId": 510745,
-   "zh": "你有一些书。",
-   "author": "fucongcong",
-   "en": "You have some books.",
-   "translationTatoebaId": 16791,
-   "translationAuthor": "LimeGreenTeknii",
-   "words": [
-    "些",
-    "一"
-   ]
-  },
-  {
-   "tatoebaId": 512173,
-   "zh": "你太太怎么样？",
-   "author": "fucongcong",
-   "en": "How is your wife?",
-   "translationTatoebaId": 879669,
-   "translationAuthor": "CK",
-   "words": [
-    "怎么"
    ]
   },
   {
@@ -1354,17 +1317,6 @@
    ]
   },
   {
-   "tatoebaId": 567558,
-   "zh": "我是大学生。",
-   "author": "gnomebubble",
-   "en": "I am a university student.",
-   "translationTatoebaId": 275627,
-   "translationAuthor": "CC",
-   "words": [
-    "大"
-   ]
-  },
-  {
    "tatoebaId": 609958,
    "zh": "你太漂亮了！",
    "author": "sarah",
@@ -1376,14 +1328,14 @@
    ]
   },
   {
-   "tatoebaId": 661576,
-   "zh": "今天是星期六。",
-   "author": "mervegorus",
-   "en": "Today is Saturday.",
-   "translationTatoebaId": 661572,
-   "translationAuthor": "mervegorus",
+   "tatoebaId": 618147,
+   "zh": "他喝了三杯水。",
+   "author": "nickyeow",
+   "en": "He drank three glasses of water.",
+   "translationTatoebaId": 300197,
+   "translationAuthor": "CK",
    "words": [
-    "星期"
+    "水"
    ]
   },
   {
@@ -1408,17 +1360,6 @@
    ]
   },
   {
-   "tatoebaId": 667622,
-   "zh": "很好不是吗？",
-   "author": "Nina_1A",
-   "en": "Isn't that good?",
-   "translationTatoebaId": 7799670,
-   "translationAuthor": "sharris123",
-   "words": [
-    "好"
-   ]
-  },
-  {
    "tatoebaId": 674243,
    "zh": "他叫什么名字？",
    "author": "sysko",
@@ -1427,17 +1368,6 @@
    "translationAuthor": "CK",
    "words": [
     "名字"
-   ]
-  },
-  {
-   "tatoebaId": 686757,
-   "zh": "今天下雨了。",
-   "author": "offdare",
-   "en": "It's rainy today.",
-   "translationTatoebaId": 242772,
-   "translationAuthor": "CK",
-   "words": [
-    "下"
    ]
   },
   {
@@ -1470,6 +1400,28 @@
    "translationAuthor": "Nevado",
    "words": [
     "电脑"
+   ]
+  },
+  {
+   "tatoebaId": 717152,
+   "zh": "有个学生想见你。",
+   "author": "sysko",
+   "en": "A student wants to see you.",
+   "translationTatoebaId": 21456,
+   "translationAuthor": "CK",
+   "words": [
+    "学生"
+   ]
+  },
+  {
+   "tatoebaId": 721037,
+   "zh": "你们怎么做的？",
+   "author": "sysko",
+   "en": "How did you make it?",
+   "translationTatoebaId": 38356,
+   "translationAuthor": "CK",
+   "words": [
+    "怎么"
    ]
   },
   {
@@ -1513,7 +1465,6 @@
    "translationTatoebaId": 676997,
    "translationAuthor": "CN",
    "words": [
-    "都",
     "住"
    ]
   },
@@ -1525,6 +1476,7 @@
    "translationTatoebaId": 252433,
    "translationAuthor": "CN",
    "words": [
+    "二",
     "九"
    ]
   },
@@ -1559,40 +1511,6 @@
    "translationAuthor": "Source_VOA",
    "words": [
     "年"
-   ]
-  },
-  {
-   "tatoebaId": 762029,
-   "zh": "我爱上了你。",
-   "author": "GlossaMatik",
-   "en": "I fell in love with you.",
-   "translationTatoebaId": 762039,
-   "translationAuthor": "nickyeow",
-   "words": [
-    "爱",
-    "上"
-   ]
-  },
-  {
-   "tatoebaId": 771082,
-   "zh": "你有多少钱？",
-   "author": "GlossaMatik",
-   "en": "How much money do you have?",
-   "translationTatoebaId": 64597,
-   "translationAuthor": "CK",
-   "words": [
-    "少"
-   ]
-  },
-  {
-   "tatoebaId": 771373,
-   "zh": "她看不起他。",
-   "author": "Martha",
-   "en": "She despised him.",
-   "translationTatoebaId": 316497,
-   "translationAuthor": "CK",
-   "words": [
-    "看"
    ]
   },
   {
@@ -1637,6 +1555,7 @@
    "translationTatoebaId": 485111,
    "translationAuthor": "Scott",
    "words": [
+    "去",
     "商店"
    ]
   },
@@ -1652,17 +1571,6 @@
    ]
   },
   {
-   "tatoebaId": 788164,
-   "zh": "她的写作很好。",
-   "author": "U2FS",
-   "en": "Her writing is very good.",
-   "translationTatoebaId": 1479249,
-   "translationAuthor": "weihaiping",
-   "words": [
-    "写"
-   ]
-  },
-  {
    "tatoebaId": 788585,
    "zh": "你爸爸在哪里？",
    "author": "bfsutian",
@@ -1674,26 +1582,15 @@
    ]
   },
   {
-   "tatoebaId": 792836,
-   "zh": "你几点回家？",
+   "tatoebaId": 795619,
+   "zh": "他回店里去了。",
    "author": "fucongcong",
-   "en": "What time do you go home?",
-   "translationTatoebaId": 70296,
+   "en": "He went back to the store.",
+   "translationTatoebaId": 794178,
    "translationAuthor": "CK",
    "words": [
-    "点",
-    "几"
-   ]
-  },
-  {
-   "tatoebaId": 795904,
-   "zh": "她十分漂亮。",
-   "author": "Zifre",
-   "en": "She's very beautiful.",
-   "translationTatoebaId": 311506,
-   "translationAuthor": "CK",
-   "words": [
-    "十"
+    "回",
+    "里"
    ]
   },
   {
@@ -1720,18 +1617,6 @@
    ]
   },
   {
-   "tatoebaId": 816446,
-   "zh": "我爱上了她。",
-   "author": "fucongcong",
-   "en": "I fell in love with her.",
-   "translationTatoebaId": 308938,
-   "translationAuthor": "Hellerick",
-   "words": [
-    "爱",
-    "上"
-   ]
-  },
-  {
    "tatoebaId": 816566,
    "zh": "零在一前面。",
    "author": "fucongcong",
@@ -1740,7 +1625,8 @@
    "translationAuthor": "Source_VOA",
    "words": [
     "零",
-    "前面"
+    "前面",
+    "一"
    ]
   },
   {
@@ -1762,18 +1648,18 @@
    "translationTatoebaId": 450005,
    "translationAuthor": "CK",
    "words": [
-    "那"
+    "大"
    ]
   },
   {
-   "tatoebaId": 819458,
-   "zh": "昨天下雨了。",
+   "tatoebaId": 825942,
+   "zh": "那些狗都很大。",
    "author": "Martha",
-   "en": "It rained yesterday.",
-   "translationTatoebaId": 63300,
+   "en": "Those dogs are big.",
+   "translationTatoebaId": 67020,
    "translationAuthor": "CK",
    "words": [
-    "下"
+    "大"
    ]
   },
   {
@@ -1807,18 +1693,6 @@
    "translationAuthor": "CK",
    "words": [
     "现在"
-   ]
-  },
-  {
-   "tatoebaId": 840654,
-   "zh": "他小看女人。",
-   "author": "GlossaMatik",
-   "en": "He looks down on women.",
-   "translationTatoebaId": 299473,
-   "translationAuthor": "CM",
-   "words": [
-    "看",
-    "小"
    ]
   },
   {
@@ -1861,6 +1735,7 @@
    "translationTatoebaId": 8590678,
    "translationAuthor": "easononizuka",
    "words": [
+    "些",
     "衣服"
    ]
   },
@@ -1872,8 +1747,18 @@
    "translationTatoebaId": 401673,
    "translationAuthor": "CK",
    "words": [
-    "和",
-    "年"
+    "和"
+   ]
+  },
+  {
+   "tatoebaId": 870126,
+   "zh": "昨天下大雨。",
+   "author": "Martha",
+   "en": "We had a heavy rain yesterday.",
+   "translationTatoebaId": 244525,
+   "translationAuthor": "CK",
+   "words": [
+    "下"
    ]
   },
   {
@@ -1884,7 +1769,7 @@
    "translationTatoebaId": 244433,
    "translationAuthor": "CK",
    "words": [
-    "小"
+    "下"
    ]
   },
   {
@@ -1933,6 +1818,17 @@
    ]
   },
   {
+   "tatoebaId": 1021006,
+   "zh": "你读了那本书吗？",
+   "author": "joro",
+   "en": "You've already read the book?",
+   "translationTatoebaId": 894811,
+   "translationAuthor": "pauldhunt",
+   "words": [
+    "读"
+   ]
+  },
+  {
    "tatoebaId": 1105591,
    "zh": "认识你很高兴",
    "author": "paperwings",
@@ -1956,14 +1852,14 @@
    ]
   },
   {
-   "tatoebaId": 1164718,
-   "zh": "吃饭了没有？",
-   "author": "Vortarulo",
-   "en": "Have you eaten yet?",
-   "translationTatoebaId": 382317,
-   "translationAuthor": "cburgmer",
+   "tatoebaId": 1163567,
+   "zh": "你是哪国人？",
+   "author": "cntrational",
+   "en": "Where do you come from?",
+   "translationTatoebaId": 17150,
+   "translationAuthor": "CK",
    "words": [
-    "没"
+    "哪"
    ]
   },
   {
@@ -1978,14 +1874,14 @@
    ]
   },
   {
-   "tatoebaId": 1227034,
-   "zh": "我吃水果、喝水。",
-   "author": "tsayng",
-   "en": "I eat fruit and drink water.",
-   "translationTatoebaId": 1138030,
-   "translationAuthor": "cntrational",
+   "tatoebaId": 1216135,
+   "zh": "请喝茶！",
+   "author": "Takuya",
+   "en": "Please drink tea.",
+   "translationTatoebaId": 2366729,
+   "translationAuthor": "NotApplicable",
    "words": [
-    "水果"
+    "请"
    ]
   },
   {
@@ -2011,6 +1907,39 @@
    ]
   },
   {
+   "tatoebaId": 1368241,
+   "zh": "他会不会写这个字？",
+   "author": "Vortarulo",
+   "en": "Can he write this character?",
+   "translationTatoebaId": 57223,
+   "translationAuthor": "shekitten",
+   "words": [
+    "字"
+   ]
+  },
+  {
+   "tatoebaId": 1406848,
+   "zh": "不是有一点小吗?",
+   "author": "sirpoot",
+   "en": "Isn't it a bit small?",
+   "translationTatoebaId": 619708,
+   "translationAuthor": "ulyssemc1",
+   "words": [
+    "小"
+   ]
+  },
+  {
+   "tatoebaId": 1417581,
+   "zh": "一天有二十四个小时。",
+   "author": "sadhen",
+   "en": "A day has twenty-four hours.",
+   "translationTatoebaId": 27426,
+   "translationAuthor": "CM",
+   "words": [
+    "四"
+   ]
+  },
+  {
    "tatoebaId": 1438364,
    "zh": "天气热点儿没关系。",
    "author": "asosan",
@@ -2030,6 +1959,17 @@
    "translationAuthor": "CK",
    "words": [
     "再见"
+   ]
+  },
+  {
+   "tatoebaId": 1468432,
+   "zh": "那个时候，我在家。",
+   "author": "sadhen",
+   "en": "I was at home then.",
+   "translationTatoebaId": 46975,
+   "translationAuthor": "CK",
+   "words": [
+    "时候"
    ]
   },
   {
@@ -2066,17 +2006,6 @@
    ]
   },
   {
-   "tatoebaId": 1516179,
-   "zh": "她叫他坐下。",
-   "author": "gonnastop",
-   "en": "She asked him to sit down.",
-   "translationTatoebaId": 316254,
-   "translationAuthor": "Eldad",
-   "words": [
-    "坐"
-   ]
-  },
-  {
    "tatoebaId": 1516243,
    "zh": "我看见你做饭了。",
    "author": "gonnastop",
@@ -2097,6 +2026,17 @@
    "words": [
     "漂亮",
     "衣服"
+   ]
+  },
+  {
+   "tatoebaId": 1691786,
+   "zh": "她家在哪儿？",
+   "author": "sadhen",
+   "en": "Where is her house?",
+   "translationTatoebaId": 481895,
+   "translationAuthor": "CK",
+   "words": [
+    "家"
    ]
   },
   {
@@ -2133,6 +2073,28 @@
    ]
   },
   {
+   "tatoebaId": 1786106,
+   "zh": "那本书在哪儿？",
+   "author": "sadhen",
+   "en": "Where is the book?",
+   "translationTatoebaId": 43928,
+   "translationAuthor": "CK",
+   "words": [
+    "那"
+   ]
+  },
+  {
+   "tatoebaId": 1786136,
+   "zh": "我有一个家。",
+   "author": "sadhen",
+   "en": "I have a home.",
+   "translationTatoebaId": 1786134,
+   "translationAuthor": "gleki",
+   "words": [
+    "家"
+   ]
+  },
+  {
    "tatoebaId": 1788049,
    "zh": "他们吃很多米饭。",
    "author": "sadhen",
@@ -2144,12 +2106,23 @@
    ]
   },
   {
-   "tatoebaId": 1843469,
-   "zh": "我在学汉字。",
-   "author": "LanguageExpert",
-   "en": "I am studying kanji.",
-   "translationTatoebaId": 792548,
-   "translationAuthor": "ryanthewired",
+   "tatoebaId": 1839183,
+   "zh": "你是日本学生吗？",
+   "author": "sadhen",
+   "en": "Are you a Japanese student?",
+   "translationTatoebaId": 15870,
+   "translationAuthor": "CN",
+   "words": [
+    "学生"
+   ]
+  },
+  {
+   "tatoebaId": 1889352,
+   "zh": "她一个字都没对我说。",
+   "author": "fercheung",
+   "en": "She didn't say even one word to me.",
+   "translationTatoebaId": 1442205,
+   "translationAuthor": "CK",
    "words": [
     "字"
    ]
@@ -2163,6 +2136,17 @@
    "translationAuthor": "Spamster",
    "words": [
     "女儿"
+   ]
+  },
+  {
+   "tatoebaId": 1899582,
+   "zh": "吃午饭了吗？",
+   "author": "fercheung",
+   "en": "Have you finished eating your lunch?",
+   "translationTatoebaId": 31664,
+   "translationAuthor": "CK",
+   "words": [
+    "吃"
    ]
   },
   {
@@ -2210,17 +2194,6 @@
    ]
   },
   {
-   "tatoebaId": 2031433,
-   "zh": "我是个大学生。",
-   "author": "ydcok",
-   "en": "I am a university student.",
-   "translationTatoebaId": 275627,
-   "translationAuthor": "CC",
-   "words": [
-    "学生"
-   ]
-  },
-  {
    "tatoebaId": 2040505,
    "zh": "杯子在桌上。",
    "author": "sadhen",
@@ -2232,14 +2205,14 @@
    ]
   },
   {
-   "tatoebaId": 2050794,
-   "zh": "他开车来的。",
-   "author": "fercheung",
-   "en": "He came by car.",
-   "translationTatoebaId": 299019,
+   "tatoebaId": 2041218,
+   "zh": "现在是七点四十五分。",
+   "author": "Venki",
+   "en": "It's quarter to eight now.",
+   "translationTatoebaId": 241532,
    "translationAuthor": "CK",
    "words": [
-    "开"
+    "七"
    ]
   },
   {
@@ -2251,6 +2224,17 @@
    "translationAuthor": "faraway9911",
    "words": [
     "飞机"
+   ]
+  },
+  {
+   "tatoebaId": 2152768,
+   "zh": "那本书在这里。",
+   "author": "sadhen",
+   "en": "The book is here.",
+   "translationTatoebaId": 1369202,
+   "translationAuthor": "sacredceltic",
+   "words": [
+    "那"
    ]
   },
   {
@@ -2267,17 +2251,6 @@
    ]
   },
   {
-   "tatoebaId": 2200437,
-   "zh": "她去买东西。",
-   "author": "johannjunge",
-   "en": "She's going out to buy some things.",
-   "translationTatoebaId": 2210387,
-   "translationAuthor": "FeuDRenais2",
-   "words": [
-    "买"
-   ]
-  },
-  {
    "tatoebaId": 2217675,
    "zh": "猫在桌子上睡觉。",
    "author": "aruhito",
@@ -2289,17 +2262,6 @@
    ]
   },
   {
-   "tatoebaId": 2241812,
-   "zh": "他没有朋友。",
-   "author": "sadhen",
-   "en": "He doesn't have any friends.",
-   "translationTatoebaId": 284930,
-   "translationAuthor": "CK",
-   "words": [
-    "没"
-   ]
-  },
-  {
    "tatoebaId": 2292923,
    "zh": "我二十五岁了。",
    "author": "Vortarulo",
@@ -2307,7 +2269,6 @@
    "translationTatoebaId": 957242,
    "translationAuthor": "Artfanster",
    "words": [
-    "二",
     "五"
    ]
   },
@@ -2320,6 +2281,28 @@
    "translationAuthor": "sysko",
    "words": [
     "工作"
+   ]
+  },
+  {
+   "tatoebaId": 2338699,
+   "zh": "我在医院住了一个星期。",
+   "author": "Kiwi",
+   "en": "I stayed in hospital for a week.",
+   "translationTatoebaId": 7156560,
+   "translationAuthor": "Kiwi",
+   "words": [
+    "星期"
+   ]
+  },
+  {
+   "tatoebaId": 2345989,
+   "zh": "书在桌子上。",
+   "author": "everylanguage",
+   "en": "The book is on the table.",
+   "translationTatoebaId": 2163151,
+   "translationAuthor": "Source_VOA",
+   "words": [
+    "上"
    ]
   },
   {
@@ -2345,17 +2328,6 @@
    ]
   },
   {
-   "tatoebaId": 2390036,
-   "zh": "她上个月不在。",
-   "author": "sysko",
-   "en": "She wasn't there last month.",
-   "translationTatoebaId": 1977707,
-   "translationAuthor": "Spamster",
-   "words": [
-    "月"
-   ]
-  },
-  {
    "tatoebaId": 2409610,
    "zh": "我很喜欢猫。",
    "author": "sysko",
@@ -2364,17 +2336,6 @@
    "translationAuthor": "CM",
    "words": [
     "猫"
-   ]
-  },
-  {
-   "tatoebaId": 2440682,
-   "zh": "她不会开车。",
-   "author": "fenfang557",
-   "en": "She can't drive.",
-   "translationTatoebaId": 2077782,
-   "translationAuthor": "Spamster",
-   "words": [
-    "开"
    ]
   },
   {
@@ -2410,17 +2371,6 @@
    ]
   },
   {
-   "tatoebaId": 2779141,
-   "zh": "昨天我去电影院。",
-   "author": "Kiwi",
-   "en": "I went to the cinema yesterday.",
-   "translationTatoebaId": 2600846,
-   "translationAuthor": "anemone",
-   "words": [
-    "电影"
-   ]
-  },
-  {
    "tatoebaId": 2807844,
    "zh": "雨下了三天。",
    "author": "cienias",
@@ -2428,7 +2378,8 @@
    "translationTatoebaId": 2566602,
    "translationAuthor": "AsliAbbasi",
    "words": [
-    "三"
+    "三",
+    "下"
    ]
   },
   {
@@ -2443,14 +2394,14 @@
    ]
   },
   {
-   "tatoebaId": 3076600,
-   "zh": "昨天是星期四。",
-   "author": "tommyfang95",
-   "en": "Yesterday was Thursday.",
-   "translationTatoebaId": 528533,
-   "translationAuthor": "wma",
+   "tatoebaId": 3147854,
+   "zh": "爸爸去哪了?",
+   "author": "cienias",
+   "en": "Where did dad go?",
+   "translationTatoebaId": 318877,
+   "translationAuthor": "minshirui",
    "words": [
-    "四"
+    "哪"
    ]
   },
   {
@@ -2475,24 +2426,14 @@
    ]
   },
   {
-   "tatoebaId": 3377911,
-   "zh": "这是中国菜。",
-   "author": "Ivan24",
-   "en": "This is Chinese food.",
-   "translationTatoebaId": 3377912,
-   "translationAuthor": "CM",
-   "words": [
-    "菜"
-   ]
-  },
-  {
-   "tatoebaId": 3378013,
-   "zh": "我认识汉字。",
+   "tatoebaId": 3378097,
+   "zh": "我去上大学。",
    "author": "GlossaMatik",
-   "en": "I know the Chinese characters.",
-   "translationTatoebaId": 3378014,
+   "en": "I go to university.",
+   "translationTatoebaId": 3378098,
+   "translationAuthor": "_undertoad",
    "words": [
-    "字"
+    "上"
    ]
   },
   {
@@ -2504,28 +2445,6 @@
    "translationAuthor": "AlanF_US",
    "words": [
     "老师"
-   ]
-  },
-  {
-   "tatoebaId": 3378195,
-   "zh": "你喝茶了吗？",
-   "author": "GlossaMatik",
-   "en": "Have you drank tea?",
-   "translationTatoebaId": 3378196,
-   "words": [
-    "茶",
-    "喝"
-   ]
-  },
-  {
-   "tatoebaId": 3378212,
-   "zh": "你是中国人吗？",
-   "author": "GlossaMatik",
-   "en": "Are you Chinese?",
-   "translationTatoebaId": 1098145,
-   "translationAuthor": "cntrational",
-   "words": [
-    "中国"
    ]
   },
   {
@@ -2562,6 +2481,28 @@
    ]
   },
   {
+   "tatoebaId": 3378284,
+   "zh": "他们一起去看电影。",
+   "author": "GlossaMatik",
+   "en": "They go to movies together.",
+   "translationTatoebaId": 3378285,
+   "translationAuthor": "CH",
+   "words": [
+    "电影"
+   ]
+  },
+  {
+   "tatoebaId": 3463818,
+   "zh": "我不喜欢他。",
+   "author": "sysko",
+   "en": "I don't like him.",
+   "translationTatoebaId": 354256,
+   "translationAuthor": "Hautis",
+   "words": [
+    "不"
+   ]
+  },
+  {
    "tatoebaId": 3478455,
    "zh": "她朋友很少。",
    "author": "schlagermanx",
@@ -2580,7 +2521,6 @@
    "translationTatoebaId": 310075,
    "translationAuthor": "CM",
    "words": [
-    "七",
     "岁"
    ]
   },
@@ -2593,28 +2533,6 @@
    "translationAuthor": "CK",
    "words": [
     "杯子"
-   ]
-  },
-  {
-   "tatoebaId": 3586053,
-   "zh": "那是你的车。",
-   "author": "Tximist",
-   "en": "That's your car.",
-   "translationTatoebaId": 2767812,
-   "translationAuthor": "FeuDRenais2",
-   "words": [
-    "那"
-   ]
-  },
-  {
-   "tatoebaId": 3666937,
-   "zh": "我想坐下来。",
-   "author": "tmzg",
-   "en": "I want to sit down.",
-   "translationTatoebaId": 2548851,
-   "translationAuthor": "CK",
-   "words": [
-    "坐"
    ]
   },
   {
@@ -2640,6 +2558,17 @@
    ]
   },
   {
+   "tatoebaId": 3703482,
+   "zh": "你是哪国家？",
+   "author": "katshi94",
+   "en": "Where do you come from?",
+   "translationTatoebaId": 17150,
+   "translationAuthor": "CK",
+   "words": [
+    "哪"
+   ]
+  },
+  {
    "tatoebaId": 3742628,
    "zh": "她是我的菜。",
    "author": "egg0073",
@@ -2662,14 +2591,25 @@
    ]
   },
   {
-   "tatoebaId": 4105310,
-   "zh": "我喜欢水果。",
-   "author": "wabisabi",
-   "en": "I like fruit.",
-   "translationTatoebaId": 1121362,
-   "translationAuthor": "cntrational",
+   "tatoebaId": 4265094,
+   "zh": "我朋友很少。",
+   "author": "notabene",
+   "en": "I have few friends.",
+   "translationTatoebaId": 324366,
+   "translationAuthor": "CK",
    "words": [
-    "水"
+    "少"
+   ]
+  },
+  {
+   "tatoebaId": 4265129,
+   "zh": "你开车很好。",
+   "author": "notabene",
+   "en": "You are a good driver.",
+   "translationTatoebaId": 4770663,
+   "translationAuthor": "garborg",
+   "words": [
+    "好"
    ]
   },
   {
@@ -2681,17 +2621,6 @@
    "translationAuthor": "sundown",
    "words": [
     "八"
-   ]
-  },
-  {
-   "tatoebaId": 4477000,
-   "zh": "你什么时候去？",
-   "author": "menyo",
-   "en": "When are you going?",
-   "translationTatoebaId": 1886666,
-   "translationAuthor": "CK",
-   "words": [
-    "时候"
    ]
   },
   {
@@ -2736,6 +2665,17 @@
    "translationAuthor": "CK",
    "words": [
     "写"
+   ]
+  },
+  {
+   "tatoebaId": 4874075,
+   "zh": "他们说了些什么？",
+   "author": "musclegirlxyp",
+   "en": "What did they say?",
+   "translationTatoebaId": 1553325,
+   "translationAuthor": "CK",
+   "words": [
+    "些"
    ]
   },
   {
@@ -2812,7 +2752,9 @@
    "translationTatoebaId": 5327634,
    "translationAuthor": "Jeannierocket",
    "words": [
-    "零"
+    "二",
+    "零",
+    "年"
    ]
   },
   {
@@ -2823,8 +2765,6 @@
    "translationTatoebaId": 1194034,
    "translationAuthor": "FiRez",
    "words": [
-    "不",
-    "是",
     "我"
    ]
   },
@@ -2836,18 +2776,8 @@
    "translationTatoebaId": 10455244,
    "translationAuthor": "DaoSeng",
    "words": [
+    "喝",
     "昨天"
-   ]
-  },
-  {
-   "tatoebaId": 5500482,
-   "zh": "昨天是星期五。",
-   "author": "egg0073",
-   "en": "Yesterday was Friday.",
-   "translationTatoebaId": 5499845,
-   "translationAuthor": "Adelpa",
-   "words": [
-    "五"
    ]
   },
   {
@@ -2862,6 +2792,18 @@
    ]
   },
   {
+   "tatoebaId": 5550146,
+   "zh": "你去了几回？",
+   "author": "verdastelo9604",
+   "en": "How many trips did you make?",
+   "translationTatoebaId": 7841344,
+   "translationAuthor": "basilhan",
+   "words": [
+    "回",
+    "几"
+   ]
+  },
+  {
    "tatoebaId": 5550167,
    "zh": "这水不能喝。",
    "author": "verdastelo9604",
@@ -2873,14 +2815,14 @@
    ]
   },
   {
-   "tatoebaId": 5574845,
-   "zh": "桌上有些书。",
+   "tatoebaId": 5576766,
+   "zh": "看来他会在下个月来。",
    "author": "verdastelo9604",
-   "en": "On the table there are some books.",
-   "translationTatoebaId": 644470,
-   "translationAuthor": "vicch",
+   "en": "It looks like he'll be coming here next month.",
+   "translationTatoebaId": 519418,
+   "translationAuthor": "FeuDRenais",
    "words": [
-    "些"
+    "月"
    ]
   },
   {
@@ -2894,47 +2836,25 @@
    "grammarOnly": true
   },
   {
-   "tatoebaId": 5580940,
-   "zh": "你们在读书。",
+   "tatoebaId": 5581060,
+   "zh": "我吃好饭了。",
    "author": "grindeldore",
-   "en": "You all are reading.",
-   "translationTatoebaId": 6137186,
-   "translationAuthor": "Sethlang",
-   "words": [
-    "读"
-   ]
-  },
-  {
-   "tatoebaId": 5580944,
-   "zh": "他们在读书。",
-   "author": "grindeldore",
-   "en": "They are reading books.",
-   "translationTatoebaId": 7772153,
-   "translationAuthor": "sharris123",
-   "words": [
-    "读"
-   ]
-  },
-  {
-   "tatoebaId": 5581036,
-   "zh": "我不是中国人。",
-   "author": "grindeldore",
-   "en": "I'm not Chinese.",
-   "translationTatoebaId": 5675728,
+   "en": "I've finished eating.",
+   "translationTatoebaId": 5675722,
    "translationAuthor": "phantomslikeamofo",
    "words": [
-    "中国"
+    "好"
    ]
   },
   {
-   "tatoebaId": 5581710,
-   "zh": "请看这本书。",
+   "tatoebaId": 5581793,
+   "zh": "那太多了吗？",
    "author": "verdastelo9604",
-   "en": "Please have a look at this book.",
-   "translationTatoebaId": 954240,
+   "en": "Was that too much?",
+   "translationTatoebaId": 3392977,
    "translationAuthor": "CK",
    "words": [
-    "请"
+    "那"
    ]
   },
   {
@@ -2945,10 +2865,7 @@
    "translationTatoebaId": 1126543,
    "translationAuthor": "CK",
    "words": [
-    "家",
-    "吗",
-    "你",
-    "在"
+    "吗"
    ]
   },
   {
@@ -2960,6 +2877,39 @@
    "translationAuthor": "CM",
    "words": [
     "再见"
+   ]
+  },
+  {
+   "tatoebaId": 5617210,
+   "zh": "她的生日是五月五日。",
+   "author": "verdastelo9604",
+   "en": "Her birthday is May 5th.",
+   "translationTatoebaId": 2842665,
+   "translationAuthor": "CN",
+   "words": [
+    "日"
+   ]
+  },
+  {
+   "tatoebaId": 5663542,
+   "zh": "他在看我们。",
+   "author": "verdastelo9604",
+   "en": "He's looking at us.",
+   "translationTatoebaId": 5373152,
+   "translationAuthor": "Hybrid",
+   "words": [
+    "看"
+   ]
+  },
+  {
+   "tatoebaId": 5670782,
+   "zh": "我们没点火。",
+   "author": "verdastelo9604",
+   "en": "We didn't start the fire.",
+   "translationTatoebaId": 2281761,
+   "translationAuthor": "CK",
+   "words": [
+    "没"
    ]
   },
   {
@@ -2996,14 +2946,25 @@
    ]
   },
   {
-   "tatoebaId": 5907629,
-   "zh": "她去年出生。",
+   "tatoebaId": 5863266,
+   "zh": "我想睡点觉。",
    "author": "verdastelo9604",
-   "en": "She was born last year.",
-   "translationTatoebaId": 313842,
+   "en": "I'd like to get some sleep.",
+   "translationTatoebaId": 1936480,
    "translationAuthor": "CK",
    "words": [
-    "年"
+    "点"
+   ]
+  },
+  {
+   "tatoebaId": 5945152,
+   "zh": "现在读这个。",
+   "author": "verdastelo9604",
+   "en": "Read this now.",
+   "translationTatoebaId": 1841179,
+   "translationAuthor": "CK",
+   "words": [
+    "读"
    ]
   },
   {
@@ -3062,6 +3023,17 @@
    ]
   },
   {
+   "tatoebaId": 6055154,
+   "zh": "你有几个儿子？",
+   "author": "verdakoro",
+   "en": "How many sons do you have?",
+   "translationTatoebaId": 9286590,
+   "translationAuthor": "Ivan24",
+   "words": [
+    "儿子"
+   ]
+  },
+  {
    "tatoebaId": 6055157,
    "zh": "她的女儿都很漂亮。",
    "author": "verdakoro",
@@ -3084,14 +3056,14 @@
    ]
   },
   {
-   "tatoebaId": 6057687,
-   "zh": "他很少吃水果。",
+   "tatoebaId": 6057148,
+   "zh": "我喝了一杯水。",
    "author": "xjjAstrus",
-   "en": "He seldom eats fruits.",
-   "translationTatoebaId": 7841346,
-   "translationAuthor": "basilhan",
+   "en": "I drank a cup of water.",
+   "translationTatoebaId": 7765386,
+   "translationAuthor": "sharris123",
    "words": [
-    "水果"
+    "水"
    ]
   },
   {
@@ -3114,6 +3086,28 @@
    "translationAuthor": "sharris123",
    "words": [
     "上午"
+   ]
+  },
+  {
+   "tatoebaId": 6169146,
+   "zh": "我看了日出。",
+   "author": "verdastelo9604",
+   "en": "I saw the sunrise.",
+   "translationTatoebaId": 2881933,
+   "translationAuthor": "Hybrid",
+   "words": [
+    "看"
+   ]
+  },
+  {
+   "tatoebaId": 6382731,
+   "zh": "我爱看小说。",
+   "author": "mervert1",
+   "en": "I love reading novels.",
+   "translationTatoebaId": 6067780,
+   "translationAuthor": "mailohilohi",
+   "words": [
+    "爱"
    ]
   },
   {
@@ -3150,17 +3144,6 @@
    ]
   },
   {
-   "tatoebaId": 6486900,
-   "zh": "昨天星期六。",
-   "author": "xjjAstrus",
-   "en": "Yesterday was Saturday.",
-   "translationTatoebaId": 5579558,
-   "translationAuthor": "garynw",
-   "words": [
-    "六"
-   ]
-  },
-  {
    "tatoebaId": 6940041,
    "zh": "我们不会再见你了。",
    "author": "Cheng",
@@ -3169,17 +3152,6 @@
    "translationAuthor": "CH",
    "words": [
     "再见"
-   ]
-  },
-  {
-   "tatoebaId": 6956878,
-   "zh": "那些是她的。",
-   "author": "znc",
-   "en": "Those are hers.",
-   "translationTatoebaId": 6954903,
-   "translationAuthor": "Eccles17",
-   "words": [
-    "些"
    ]
   },
   {
@@ -3194,6 +3166,28 @@
    ]
   },
   {
+   "tatoebaId": 7768226,
+   "zh": "我是个学生。",
+   "author": "jiangche",
+   "en": "I am a student.",
+   "translationTatoebaId": 252287,
+   "translationAuthor": "CK",
+   "words": [
+    "个"
+   ]
+  },
+  {
+   "tatoebaId": 7771887,
+   "zh": "他说了些什么。",
+   "author": "jiangche",
+   "en": "He said something.",
+   "translationTatoebaId": 2926303,
+   "translationAuthor": "CH",
+   "words": [
+    "些"
+   ]
+  },
+  {
    "tatoebaId": 7771910,
    "zh": "你和谁说话呢？",
    "author": "jiangche",
@@ -3205,14 +3199,14 @@
    ]
   },
   {
-   "tatoebaId": 7774609,
-   "zh": "他四月十八日来了。",
+   "tatoebaId": 7774367,
+   "zh": "我是个女人。",
    "author": "jiangche",
-   "en": "He came on the 18th of April.",
-   "translationTatoebaId": 8249371,
-   "translationAuthor": "francaisr0wlet",
+   "en": "I'm a woman.",
+   "translationTatoebaId": 1122514,
+   "translationAuthor": "Shishir",
    "words": [
-    "八"
+    "个"
    ]
   },
   {
@@ -3223,8 +3217,6 @@
    "translationTatoebaId": 7775995,
    "translationAuthor": "Mohamedzakaria",
    "words": [
-    "回",
-    "家",
     "我"
    ]
   },
@@ -3240,6 +3232,17 @@
    ]
   },
   {
+   "tatoebaId": 8605838,
+   "zh": "他读很多书。",
+   "author": "slo_oth",
+   "en": "He reads a great deal.",
+   "translationTatoebaId": 291620,
+   "translationAuthor": "CM",
+   "words": [
+    "读"
+   ]
+  },
+  {
    "tatoebaId": 8692916,
    "zh": "他不能买车。",
    "author": "crescat",
@@ -3251,14 +3254,15 @@
    ]
   },
   {
-   "tatoebaId": 8777611,
-   "zh": "请看看这里。",
+   "tatoebaId": 8791918,
+   "zh": "我十点回来。",
    "author": "crescat",
-   "en": "Please take a look at this.",
-   "translationTatoebaId": 6029125,
-   "translationAuthor": "Huskion",
+   "en": "I'll be back at ten.",
+   "translationTatoebaId": 73430,
+   "translationAuthor": "CK",
    "words": [
-    "请"
+    "点",
+    "十"
    ]
   },
   {
@@ -3284,25 +3288,14 @@
    ]
   },
   {
-   "tatoebaId": 8914629,
-   "zh": "我听不见你。",
-   "author": "fresky",
-   "en": "I can't hear you.",
-   "translationTatoebaId": 320093,
-   "translationAuthor": "CK",
-   "words": [
-    "听"
-   ]
-  },
-  {
-   "tatoebaId": 8928640,
-   "zh": "她是四十岁。",
+   "tatoebaId": 8889572,
+   "zh": "我们爱爸爸。",
    "author": "iiujik",
-   "en": "She is forty years old.",
-   "translationTatoebaId": 4566557,
-   "translationAuthor": "maydoo",
+   "en": "We love Dad.",
+   "translationTatoebaId": 8321664,
+   "translationAuthor": "Amastan",
    "words": [
-    "四"
+    "爱"
    ]
   },
   {
@@ -3313,7 +3306,8 @@
    "translationTatoebaId": 72367,
    "translationAuthor": "CK",
    "words": [
-    "八"
+    "八",
+    "七"
    ]
   },
   {
@@ -3329,7 +3323,7 @@
   },
   {
    "tatoebaId": 9007280,
-   "zh": "现在五点钟.",
+   "zh": "现在五点钟。",
    "author": "Kenbi93",
    "en": "It's five o'clock.",
    "translationTatoebaId": 1371779,
@@ -3349,6 +3343,28 @@
    "grammarOnly": true
   },
   {
+   "tatoebaId": 9415404,
+   "zh": "没人看见你。",
+   "author": "BobbyLee",
+   "en": "No one has seen you.",
+   "translationTatoebaId": 8922189,
+   "translationAuthor": "CK",
+   "words": [
+    "没"
+   ]
+  },
+  {
+   "tatoebaId": 9433044,
+   "zh": "他们买了吗？",
+   "author": "BobbyLee",
+   "en": "Did they buy it?",
+   "translationTatoebaId": 3150406,
+   "translationAuthor": "CK",
+   "words": [
+    "买"
+   ]
+  },
+  {
    "tatoebaId": 9475958,
    "zh": "我想和他说话。",
    "author": "BobbyLee",
@@ -3357,6 +3373,17 @@
    "translationAuthor": "CK",
    "words": [
     "说话"
+   ]
+  },
+  {
+   "tatoebaId": 9817802,
+   "zh": "我大他一岁。",
+   "author": "Ivanovb",
+   "en": "I'm one year older than him.",
+   "translationTatoebaId": 11818268,
+   "translationAuthor": "sivelock",
+   "words": [
+    "大"
    ]
   },
   {
@@ -3383,17 +3410,6 @@
    ]
   },
   {
-   "tatoebaId": 9959852,
-   "zh": "我十二岁了。",
-   "author": "GlossaMatik",
-   "en": "I'm twelve years old.",
-   "translationTatoebaId": 2069119,
-   "translationAuthor": "Eldad",
-   "words": [
-    "二"
-   ]
-  },
-  {
    "tatoebaId": 9972460,
    "zh": "他们都爱我。",
    "author": "GlossaMatik",
@@ -3402,6 +3418,17 @@
    "translationAuthor": "CK",
    "words": [
     "都"
+   ]
+  },
+  {
+   "tatoebaId": 9991977,
+   "zh": "这杯茶很好喝。",
+   "author": "GlossaMatik",
+   "en": "This tea is very good.",
+   "translationTatoebaId": 707883,
+   "translationAuthor": "KasperNymand",
+   "words": [
+    "茶"
    ]
   },
   {
@@ -3425,6 +3452,17 @@
    "translationAuthor": "Amastan",
    "words": [
     "冷"
+   ]
+  },
+  {
+   "tatoebaId": 10029668,
+   "zh": "我儿子十岁了。",
+   "author": "GlossaMatik",
+   "en": "My son is ten years old.",
+   "translationTatoebaId": 935930,
+   "translationAuthor": "riccioberto",
+   "words": [
+    "十"
    ]
   },
   {
@@ -3468,6 +3506,17 @@
    "translationAuthor": "MarijnKp",
    "words": [
     "米饭"
+   ]
+  },
+  {
+   "tatoebaId": 10270526,
+   "zh": "我明天回日本。",
+   "author": "DaoSeng",
+   "en": "I'll be going back to Japan tomorrow.",
+   "translationTatoebaId": 9808650,
+   "translationAuthor": "megamanenm",
+   "words": [
+    "回"
    ]
   },
   {
@@ -3523,7 +3572,7 @@
    "translationTatoebaId": 11252828,
    "translationAuthor": "weihaiping",
    "words": [
-    "水"
+    "里"
    ]
   },
   {
@@ -3582,6 +3631,18 @@
    ]
   },
   {
+   "tatoebaId": 10966717,
+   "zh": "六点四十五了。",
+   "author": "xjjAstrus",
+   "en": "It's a quarter to seven.",
+   "translationTatoebaId": 11840805,
+   "translationAuthor": "ddnktr",
+   "words": [
+    "六",
+    "五"
+   ]
+  },
+  {
    "tatoebaId": 10966746,
    "zh": "明天中午他们不在学校。",
    "author": "xjjAstrus",
@@ -3619,6 +3680,17 @@
    ]
   },
   {
+   "tatoebaId": 10966804,
+   "zh": "你会写多少汉字？",
+   "author": "xjjAstrus",
+   "en": "How many Chinese characters can you write?",
+   "translationTatoebaId": 7772319,
+   "translationAuthor": "sharris123",
+   "words": [
+    "写"
+   ]
+  },
+  {
    "tatoebaId": 10966817,
    "zh": "你妈妈呢？",
    "author": "xjjAstrus",
@@ -3627,6 +3699,17 @@
    "translationAuthor": "CK",
    "words": [],
    "grammarOnly": true
+  },
+  {
+   "tatoebaId": 10966839,
+   "zh": "你明年去中国吗？",
+   "author": "xjjAstrus",
+   "en": "Will you go to China next year?",
+   "translationTatoebaId": 12137258,
+   "translationAuthor": "yujiang",
+   "words": [
+    "中国"
+   ]
   },
   {
    "tatoebaId": 10966840,
@@ -3695,14 +3778,14 @@
    ]
   },
   {
-   "tatoebaId": 11046616,
-   "zh": "我没有名字。",
-   "author": "DaoSeng",
-   "en": "I have no name.",
-   "translationTatoebaId": 4343499,
-   "translationAuthor": "shekitten",
+   "tatoebaId": 11077429,
+   "zh": "八点多了。",
+   "author": "LeeSooHa",
+   "en": "It's past eight.",
+   "translationTatoebaId": 5825535,
+   "translationAuthor": "CK",
    "words": [
-    "字"
+    "八"
    ]
   },
   {
@@ -3717,14 +3800,25 @@
    ]
   },
   {
-   "tatoebaId": 11502926,
-   "zh": "你什么时候来？",
+   "tatoebaId": 11502931,
+   "zh": "我们没看见。",
    "author": "Aphima",
-   "en": "When will you come?",
-   "translationTatoebaId": 1312116,
-   "translationAuthor": "Eldad",
+   "en": "We didn't see it.",
+   "translationTatoebaId": 8359928,
+   "translationAuthor": "Amastan",
    "words": [
-    "时候"
+    "没"
+   ]
+  },
+  {
+   "tatoebaId": 11502938,
+   "zh": "他四点钟回来。",
+   "author": "Aphima",
+   "en": "He'll return at four.",
+   "translationTatoebaId": 6293828,
+   "translationAuthor": "Tangobango",
+   "words": [
+    "四"
    ]
   },
   {
@@ -3735,18 +3829,8 @@
    "translationTatoebaId": 11837141,
    "translationAuthor": "Lemmih",
    "words": [
-    "后面"
-   ]
-  },
-  {
-   "tatoebaId": 11837632,
-   "zh": "明天星期六。",
-   "author": "Lemmih",
-   "en": "Tomorrow is Saturday.",
-   "translationTatoebaId": 3062005,
-   "translationAuthor": "CN",
-   "words": [
-    "六"
+    "后面",
+    "请"
    ]
   },
   {
@@ -3758,6 +3842,17 @@
    "translationAuthor": "Lemmih",
    "words": [
     "电影"
+   ]
+  },
+  {
+   "tatoebaId": 11837677,
+   "zh": "你爱吃什么水果？",
+   "author": "Lemmih",
+   "en": "What kind of fruit do you like?",
+   "translationTatoebaId": 10367534,
+   "translationAuthor": "CK",
+   "words": [
+    "水果"
    ]
   },
   {
@@ -3783,6 +3878,16 @@
    ]
   },
   {
+   "tatoebaId": 12278333,
+   "zh": "字、字⋯⋯",
+   "author": "FishlandicFishy",
+   "en": "Words, words...",
+   "translationTatoebaId": 1493540,
+   "words": [
+    "字"
+   ]
+  },
+  {
    "tatoebaId": 12686341,
    "zh": "对不起。我不能做你女朋友。",
    "author": "soueihin",
@@ -3791,6 +3896,17 @@
    "translationAuthor": "always",
    "words": [
     "对不起"
+   ]
+  },
+  {
+   "tatoebaId": 12993361,
+   "zh": "一，二，三，四，五。",
+   "author": "XZJqz",
+   "en": "One, two, three, four, five.",
+   "translationTatoebaId": 12993387,
+   "translationAuthor": "XZJqz",
+   "words": [
+    "二"
    ]
   },
   {
@@ -3804,6 +3920,50 @@
     "不",
     "你",
     "我"
+   ]
+  },
+  {
+   "tatoebaId": 13285170,
+   "zh": "你回来的时候我们再说。",
+   "author": "Ayer",
+   "en": "We can talk when you get back.",
+   "translationTatoebaId": 3181703,
+   "translationAuthor": "CK",
+   "words": [
+    "时候"
+   ]
+  },
+  {
+   "tatoebaId": 13543159,
+   "zh": "你吃了多少水果？",
+   "author": "LeviHighway",
+   "en": "How much fruit did you eat?",
+   "translationTatoebaId": 9337211,
+   "translationAuthor": "sundown",
+   "words": [
+    "水果"
+   ]
+  },
+  {
+   "tatoebaId": 13881309,
+   "zh": "我们不在中国。",
+   "author": "jan_OkulaJu",
+   "en": "We're not in China.",
+   "translationTatoebaId": 7776977,
+   "translationAuthor": "CN",
+   "words": [
+    "中国"
+   ]
+  },
+  {
+   "tatoebaId": 13949068,
+   "zh": "水开了。",
+   "author": "jan_OkulaJu",
+   "en": "The water is boiling.",
+   "translationTatoebaId": 8584728,
+   "translationAuthor": "CK",
+   "words": [
+    "开"
    ]
   }
  ]
