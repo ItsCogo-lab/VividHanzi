@@ -1,3 +1,4 @@
+import { rankExamples } from '../exampleChoice.ts'
 import { getExamplesFor, loadExampleSet, MAX_EXAMPLES_SHOWN } from '../examples.ts'
 import type { DictionaryChunk } from '../fullDictionary.ts'
 import { hskDictionary } from '../hskDictionary.ts'
@@ -113,15 +114,16 @@ let knownCharacters: Set<string> | undefined
 
 /**
  * Picks the sentences to show: first those that only use HSK 1-4 characters
- * (or those of the term itself), which the learner can read in full; then,
- * the shortest. The API already returns them from shortest to longest.
+ * (or those of the term itself), which the learner can read in full; within
+ * those, the ones that show the term in context (rankExamples); then, the
+ * shortest. The API already returns them from shortest to longest.
  */
 export function pickExamples(term: string, candidates: readonly ExampleSentence[]): ExampleSentence[] {
   knownCharacters ??= new Set([...hskDictionary.characters.values()].map((character) => character.hanzi))
   const known = knownCharacters
   const readable = (text: string) =>
     Array.from(text).every((symbol) => !/\p{Script=Han}/u.test(symbol) || known.has(symbol) || term.includes(symbol))
-  return candidates
+  return rankExamples(candidates, term, (sentence) => sentence.zh)
     .map((sentence, index) => ({
       sentence,
       index,

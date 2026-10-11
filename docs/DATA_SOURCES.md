@@ -172,8 +172,13 @@ It is the same source the etymology in the Tofu Learn app came from.
 Selection criteria (deterministic): Chinese sentences with an author, at most 16
 characters, without Latin letters or digits and whose Chinese characters are
 all of the same HSK level or a lower one (someone studying HSK 1 can
-read a whole HSK 1 sentence). Per word, the 3 shortest (for equal length, the
-one with the lowest id), with the English translation with the lowest id. Sentences are copied
+read a whole HSK 1 sentence). Per word, 3 sentences: first those that add at
+least 4 Chinese characters to the word, so they show it in use (完成了！ alone
+says little), then the rest; within each group the shortest first (for equal
+length, the one with the lowest id). Sentences that only differ in punctuation
+count once. Each comes with the English translation with the lowest id. The
+same order is used for the sentences fetched from the Tatoeba API at runtime
+(`src/features/dictionary/exampleChoice.ts`). Sentences are copied
 as they are. Their pinyin is generated in the browser (see "Pinyin of the
 example sentences").
 
@@ -452,7 +457,7 @@ Transportation, Nature, Technology, Work, Animals, Colors). Criteria:
 ## Grammar notes
 
 `src/data/grammar.ts`, written by hand. The card for the most common function
-words of HSK 1-4 shows a Grammar section with their uses (30 points):
+words of HSK 1-4 shows a Grammar section with their uses (31 points):
 
 - Particles: 的 (possession and modifiers), 了 (completed action and change of
   state), 吗, 呢 ("and you?"), 吧 (suggestions and softening), 过, 着, 得, 地
@@ -471,12 +476,14 @@ Criteria:
   text nor its sentences are copied, and each point only **links** to its page.
 - **Examples:** Tatoeba sentences (CC BY 2.0 FR) that are already in
   `public/examples/`, copied as they are with their id and author. A test checks
-  that they exist there unchanged and that they contain the word. A use without sentences
+  that they exist there unchanged and that they contain the word. The build
+  always keeps the sentences a note quotes, in the first level that can read
+  them, even when no word picks them; those are marked `grammarOnly`. A use without sentences
   in Tatoeba is not included (the progressive-action 呢, the 是...的 emphasis).
 - **Where they appear:** on the character's card always; on a word, only if
   its toneless pinyin is that of the use (得 "de" yes, 得 "děi" no). A pair
   also shows on its second word through `alsoShownOn` (但是 shows
-  虽然...但是). A test checks that every point shows on an HSK 1-4 word.
+  虽然...但是); 或者 has its own point instead of sharing 还是's. A test checks that every point shows on an HSK 1-4 word.
 
 ## Generated files
 
