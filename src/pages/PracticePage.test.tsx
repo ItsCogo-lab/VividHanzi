@@ -42,6 +42,26 @@ describe('PracticePage', () => {
     expect(screen.getByText(/^Card 3 of \d+$/)).toBeInTheDocument()
     expect(Object.keys(loadProgress(storage).items)).toHaveLength(2)
   })
+
+  it('Back undoes the last answer and shows that card again, also with Backspace', async () => {
+    const user = userEvent.setup()
+    const storage = memoryStorage()
+    renderWithProviders(<PracticePage />, { storage })
+    await startSession(user)
+    // Nothing to undo before the first answer
+    expect(screen.queryByRole('button', { name: /Back/ })).not.toBeInTheDocument()
+
+    await answerCurrentExercise(user)
+    await answerCurrentExercise(user)
+    await user.click(screen.getByRole('button', { name: /Back/ }))
+
+    expect(screen.getByText(/^Card 2 of \d+$/)).toBeInTheDocument()
+    expect(Object.keys(loadProgress(storage).items)).toHaveLength(1)
+
+    await user.keyboard('{Backspace}')
+    expect(screen.getByText(/^Card 1 of \d+$/)).toBeInTheDocument()
+    expect(loadProgress(storage)).toEqual(createEmptyProgress())
+  })
 })
 
 describe('PracticePage: choosing exercise types before a session', () => {
@@ -293,6 +313,26 @@ describe('PracticePage: Learn and Study of a set', () => {
     expect(excluded[`word:${skipped}`]?.excluded).toBe(true)
     expect(getItemStatus(items[`word:${known}`])).toBe('mastered')
     expect(getItemStatus(items[`word:${learned}`])).toBe('learning')
+  })
+
+  it('Learn\'s Back undoes the last choice and shows that item again, also from the summary', async () => {
+    const user = userEvent.setup()
+    const storage = renderSession('mode=learn')
+
+    const total = Number(screen.getByText(/^Item 1 of/).textContent!.split(' of ')[1])
+    const first = currentLearnHanzi()!
+    await user.click(screen.getByRole('button', { name: "Don't learn" }))
+    await user.click(screen.getByRole('button', { name: /Back/ }))
+
+    expect(screen.getByText(`Item 1 of ${total}`)).toBeInTheDocument()
+    expect(currentLearnHanzi()).toBe(first)
+    expect(isExcluded(loadProgress(storage), `word:${first}`)).toBe(false)
+
+    for (let i = 0; i < total; i++) await user.click(screen.getByRole('button', { name: "I've learned it" }))
+    expect(screen.getByText('Learning session complete')).toBeInTheDocument()
+    await user.click(screen.getByRole('button', { name: /Back/ }))
+    expect(screen.getByText(`Item ${total} of ${total}`)).toBeInTheDocument()
+    expect(Object.keys(loadProgress(storage).items)).toHaveLength(total - 1)
   })
 
   it('Learn with nothing new says so and does not switch to Study on its own', () => {

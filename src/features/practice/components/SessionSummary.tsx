@@ -7,15 +7,18 @@ import type { StudyItem } from '../../dictionary/studyItem.ts'
 import type { SessionSummary as Summary } from '../session.ts'
 import { PinyinText } from '../../dictionary/components/PinyinText.tsx'
 import { ToneHanzi } from '../../dictionary/components/ToneHanzi.tsx'
+import { BackButton } from './BackButton.tsx'
 
 type SessionSummaryProps = {
   summary: Summary
   /** Items the user did not know, to review them at a glance. */
   missedItems: readonly StudyItem[]
   onRestart: () => void
+  /** Goes back to the last card, undoing its answer. */
+  onBack?: () => void
 }
 
-export function SessionSummary({ summary, missedItems, onRestart }: SessionSummaryProps) {
+export function SessionSummary({ summary, missedItems, onRestart, onBack }: SessionSummaryProps) {
   return (
     <Card className="mx-auto flex max-w-xl flex-col gap-4 sm:gap-6">
       <div className="text-center">
@@ -47,6 +50,7 @@ export function SessionSummary({ summary, missedItems, onRestart }: SessionSumma
           {t('notFound.backHome')}
         </ButtonLink>
         <Button onClick={onRestart}>{t('practice.again')}</Button>
+        {onBack && <BackButton onBack={onBack} className="sm:col-span-2" />}
       </div>
     </Card>
   )

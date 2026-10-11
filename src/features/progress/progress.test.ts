@@ -8,10 +8,12 @@ import {
   isDue,
   isExcluded,
   isLearned,
+  markCharactersTaught,
   markItemKnown,
   MASTERED_LEVEL,
   recordAnswer,
   recordWritingAnswer,
+  restoreProgress,
   setItemExcluded,
 } from './progress.ts'
 
@@ -163,6 +165,37 @@ describe('setItemExcluded', () => {
   it('an item that is being studied shows its real status even if it was excluded', () => {
     const progress = introduceItem(setItemExcluded(createEmptyProgress(), 'word:谢谢', true, monday), 'word:谢谢', tuesday)
     expect(getDisplayStatus(progress, 'word:谢谢')).toBe('learning')
+  })
+})
+
+describe('restoreProgress', () => {
+  it("undoes an answer: the item's record and the day's activity go back to how they were", () => {
+    const before = recordAnswer(recordAnswer(createEmptyProgress(), 'char:你', true, monday), 'char:好', true, tuesday)
+    const after = recordAnswer(before, 'char:你', false, tuesday)
+
+    expect(restoreProgress(after, before, ['char:你'], tuesday)).toEqual(before)
+  })
+
+  it('removes what the step created, and keeps changes to other items', () => {
+    const before = recordAnswer(createEmptyProgress(), 'char:好', true, monday)
+    const written = markCharactersTaught(recordWritingAnswer(before, 'word:谢谢', true, tuesday), ['谢'], tuesday)
+    // Something else changed meanwhile (e.g. a sync): it stays
+    const current = recordAnswer(written, 'char:你', true, monday)
+
+    const restored = restoreProgress(current, before, ['word:谢谢'], tuesday)
+    expect(restored.writing).toEqual({})
+    expect(restored.writingTaught).toEqual({})
+    expect(restored.items['char:你']).toEqual(current.items['char:你'])
+    expect(restored.activity).toEqual(before.activity)
+  })
+
+  it('undoes an exclusion by keeping the choice as not excluded, for syncing', () => {
+    const before = createEmptyProgress()
+    const excluded = setItemExcluded(before, 'word:谢谢', true, monday)
+
+    const restored = restoreProgress(excluded, before, ['word:谢谢'], tuesday)
+    expect(isExcluded(restored, 'word:谢谢')).toBe(false)
+    expect(restored.excluded['word:谢谢']).toEqual({ excluded: false, changedAt: tuesday.toISOString() })
   })
 })
 

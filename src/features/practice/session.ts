@@ -1,4 +1,4 @@
-import { compareByFrequency, getStudyItemId, type StudyItem } from '../dictionary/studyItem.ts'
+import { compareByFrequency, getStudyItemId, type StudyItem, type StudyItemId } from '../dictionary/studyItem.ts'
 import { createEmptyProgress, isDue } from '../progress/progress.ts'
 import { EXERCISE_SKILLS, getSkillStreak, type SkillResults } from '../progress/skills.ts'
 import type { ProgressData } from '../progress/types.ts'
@@ -138,14 +138,27 @@ export interface SessionState {
    * on are retries.
    */
   firstAttemptCount: number
+  /**
+   * What there was before the last answer, to go back to it (see the `back`
+   * action): the session state and the progress when that exercise was shown.
+   * Each state keeps its own `previous`, so going back can be repeated up to
+   * the first exercise.
+   */
+  previous?: { state: SessionState; progress: ProgressData }
 }
 
 /**
  * - `answer`: the current exercise was answered.
+ *   `progress` is the progress from when it was shown, to undo the answer.
  * - `skip`: it couldn't be done (a writing exercise without stroke data, when
  *   offline): it leaves the session without counting as an answer.
+ * - `back`: returns to the last answered exercise, as it was before answering
+ *   it. The progress is put back by the component (see getLastAnswer).
  */
-export type SessionAction = { type: 'answer'; correct: boolean; skills?: SkillResults } | { type: 'skip' }
+export type SessionAction =
+  | { type: 'answer'; correct: boolean; skills?: SkillResults; progress: ProgressData }
+  | { type: 'skip' }
+  | { type: 'back' }
 
 export function createSessionState(exercises: readonly Exercise[]): SessionState {
   return { exercises, currentIndex: 0, results: [], firstAttemptCount: exercises.length }
@@ -161,6 +174,8 @@ export function createSessionState(exercises: readonly Exercise[]): SessionState
  * end with something you just got wrong.
  */
 export function sessionReducer(state: SessionState, action: SessionAction): SessionState {
+  // Going back also works from the summary, when there is no current exercise
+  if (action.type === 'back') return state.previous?.state ?? state
   const exercise = getCurrentExercise(state)
   if (!exercise) return state
 
@@ -168,7 +183,13 @@ export function sessionReducer(state: SessionState, action: SessionAction): Sess
     case 'answer': {
       const result = createExerciseResult(exercise, action.correct, action.skills)
       const exercises = action.correct ? state.exercises : [...state.exercises, createRetryExercise(exercise)]
-      return { ...state, exercises, currentIndex: state.currentIndex + 1, results: [...state.results, result] }
+      return {
+        ...state,
+        exercises,
+        currentIndex: state.currentIndex + 1,
+        results: [...state.results, result],
+        previous: { state, progress: action.progress },
+      }
     }
     case 'skip': {
       // Removed rather than left without a result, so results keep matching exercises by position
@@ -201,6 +222,16 @@ export function createRetryExercise(exercise: Exercise): Exercise {
 function rotate<T>(items: readonly T[]): T[] {
   const [first, ...rest] = items
   return first === undefined ? rest : [...rest, first]
+}
+
+/**
+ * The last answer, if it can be undone: the item it was about and the
+ * progress to put back for it.
+ */
+export function getLastAnswer(state: SessionState): { itemId: StudyItemId; progress: ProgressData } | undefined {
+  if (!state.previous) return undefined
+  const { state: before, progress } = state.previous
+  return { itemId: getStudyItemId(getCurrentExercise(before)!.item), progress }
 }
 
 /** Is the current exercise a retry of one missed earlier in the session? */
