@@ -189,6 +189,55 @@ export function setItemExcluded(progress: ProgressData, itemId: StudyItemId, exc
   return { ...progress, excluded: { ...progress.excluded, [itemId]: { excluded, changedAt: now.toISOString() } } }
 }
 
+/**
+ * Undoes a session step (an answer, or a choice in Learn): puts back, from
+ * `before` (the progress taken when the step's exercise was shown), the
+ * records of the items it touched, plus the activity days and taught
+ * characters that changed since. Nothing else changed in between, so that
+ * is everything the step did; other items keep their current state.
+ *
+ * An exclusion that didn't exist before is kept as `excluded: false` instead
+ * of deleted, for the same reason as in setItemExcluded: a sync must know
+ * the newer choice.
+ */
+export function restoreProgress(
+  current: ProgressData,
+  before: ProgressData,
+  itemIds: readonly StudyItemId[],
+  now: Date,
+): ProgressData {
+  const items = { ...current.items }
+  const writing = { ...current.writing }
+  const excluded = { ...current.excluded }
+  for (const itemId of itemIds) {
+    if (before.items[itemId]) items[itemId] = before.items[itemId]
+    else delete items[itemId]
+    if (before.writing[itemId]) writing[itemId] = before.writing[itemId]
+    else delete writing[itemId]
+    if (current.excluded[itemId] !== before.excluded[itemId]) {
+      excluded[itemId] = before.excluded[itemId] ?? { excluded: false, changedAt: now.toISOString() }
+    }
+  }
+  return {
+    items,
+    writing,
+    excluded,
+    activity: restoreChangedKeys(current.activity, before.activity),
+    writingTaught: restoreChangedKeys(current.writingTaught, before.writingTaught),
+  }
+}
+
+/** `current` with every key whose value differs from `before` set back to it (or removed). */
+function restoreChangedKeys<T>(current: Record<string, T>, before: Record<string, T>): Record<string, T> {
+  const restored = { ...current }
+  for (const key of Object.keys(current)) {
+    if (current[key] === before[key]) continue
+    if (key in before) restored[key] = before[key]!
+    else delete restored[key]
+  }
+  return restored
+}
+
 export function isExcluded(progress: ProgressData, itemId: StudyItemId): boolean {
   return progress.excluded[itemId]?.excluded === true
 }

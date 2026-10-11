@@ -76,6 +76,8 @@ export const es: Record<MessageKey, string> = {
   'practice.writingOnlyEmpty': 'Aquí todavía no hay nada que escribir. Una palabra se puede escribir cuando la has acertado en otro ejercicio.',
   'practice.chooseOtherTypes': 'Elegir otros ejercicios',
   'practice.again': 'Practicar otra vez',
+  'practice.back': 'Atrás',
+  'practice.backHint': 'Deshacer la última respuesta y volver a ella',
   'practice.retry': 'Otra vez: esta la fallaste antes.',
   'practice.continue': 'Continuar',
   'practice.choice.meaningQuestion': '¿Qué significa?',

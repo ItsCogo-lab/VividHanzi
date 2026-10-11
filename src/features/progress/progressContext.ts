@@ -18,6 +18,8 @@ export interface ProgressContextValue {
   markItemKnown: (itemId: StudyItemId) => void
   /** Marks an item as one the user doesn't want to learn, or undoes it (see setItemExcluded). */
   setItemExcluded: (itemId: StudyItemId, excluded: boolean) => void
+  /** Undoes a session step on those items, back to `before` (see restoreProgress in progress.ts). */
+  restoreProgress: (before: ProgressData, itemIds: readonly StudyItemId[]) => void
   /** Applies the user's HSK level to those items (see applyHskLevel in progress.ts). */
   applyHskLevel: (items: readonly LeveledItem[], level: HskLevel | null) => void
   resetProgress: () => void

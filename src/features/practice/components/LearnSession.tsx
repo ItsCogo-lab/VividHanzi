@@ -4,10 +4,13 @@ import { Card } from '../../../components/ui/Card.tsx'
 import { Kbd } from '../../../components/ui/Kbd.tsx'
 import { t } from '../../../i18n/index.ts'
 import { StatusBadge } from '../../progress/components/StatusBadge.tsx'
+import { useProgress } from '../../progress/progressContext.ts'
+import type { ProgressData } from '../../progress/types.ts'
 import { EntryDetails } from '../../dictionary/components/EntryDetails.tsx'
 import { EntryLabel } from '../../dictionary/components/EntryLabel.tsx'
 import type { Dictionary } from '../../dictionary/dictionary.ts'
 import { getStudyItemId, type StudyItem } from '../../dictionary/studyItem.ts'
+import { BackButton } from './BackButton.tsx'
 import { SessionFrame } from './SessionFrame.tsx'
 import { useSessionShortcuts } from '../shortcuts.ts'
 
@@ -31,6 +34,9 @@ type LearnSessionProps = {
  * Learn session: introduces new items one by one with their full entry
  * (the same as in the dictionary) and the user confirms which ones they have
  * learned. There are no questions: that is Study.
+ *
+ * Back undoes the last choice: the item shows again and its progress goes
+ * back to how it was before choosing.
  */
 export function LearnSession({
   items,
@@ -41,11 +47,21 @@ export function LearnSession({
   summaryActions,
   renderExtra,
 }: LearnSessionProps) {
-  const [currentIndex, setCurrentIndex] = useState(0)
-  // What the user chose for each item, except the ones they decided not to learn
-  const [learned, setLearned] = useState<readonly { item: StudyItem; known: boolean }[]>([])
-  const [excluded, setExcluded] = useState<readonly StudyItem[]>([])
+  const { progress, restoreProgress } = useProgress()
+  // What the user chose for each item so far, in order, with the progress from before choosing
+  const [choices, setChoices] = useState<readonly { item: StudyItem; choice: LearnChoice; progress: ProgressData }[]>([])
+  const currentIndex = choices.length
   const item = items[currentIndex]
+  const learned = choices.filter(({ choice }) => choice !== 'exclude')
+  const excluded = choices.filter(({ choice }) => choice === 'exclude')
+
+  const lastChoice = choices.at(-1)
+  const back =
+    lastChoice &&
+    (() => {
+      restoreProgress(lastChoice.progress, [getStudyItemId(lastChoice.item)])
+      setChoices(choices.slice(0, -1))
+    })
 
   if (!item) {
     return (
@@ -58,13 +74,13 @@ export function LearnSession({
         </div>
         {learned.length + excluded.length > 0 && (
           <ul className="divide-y divide-line">
-            {learned.map(({ item: learnedItem, known }) => (
+            {learned.map(({ item: learnedItem, choice }) => (
               <li key={getStudyItemId(learnedItem)} className="flex items-center justify-between gap-3 py-2">
                 <EntryLabel entry={learnedItem.entry} withMeaning />
-                {known && <StatusBadge status="mastered" />}
+                {choice === 'known' && <StatusBadge status="mastered" />}
               </li>
             ))}
-            {excluded.map((excludedItem) => (
+            {excluded.map(({ item: excludedItem }) => (
               <li key={getStudyItemId(excludedItem)} className="flex items-center justify-between gap-3 py-2">
                 <EntryLabel entry={excludedItem.entry} withMeaning />
                 <StatusBadge status="excluded" />
@@ -72,21 +88,19 @@ export function LearnSession({
             ))}
           </ul>
         )}
-        <div className="grid gap-3 sm:grid-cols-2">{summaryActions}</div>
+        <div className="grid gap-3 sm:grid-cols-2">
+          {summaryActions}
+          {back && <BackButton onBack={back} className="sm:col-span-2" />}
+        </div>
       </Card>
     )
   }
 
   const next = (choice: LearnChoice) => {
-    if (choice === 'exclude') {
-      onExcluded(item)
-      setExcluded([...excluded, item])
-    } else {
-      if (choice === 'learned') onLearned(item)
-      else onKnown(item)
-      setLearned([...learned, { item, known: choice === 'known' }])
-    }
-    setCurrentIndex(currentIndex + 1)
+    if (choice === 'exclude') onExcluded(item)
+    else if (choice === 'learned') onLearned(item)
+    else onKnown(item)
+    setChoices([...choices, { item, choice, progress }])
   }
 
   const progressText = t('learn.progress', { current: currentIndex + 1, total: items.length })
@@ -95,6 +109,7 @@ export function LearnSession({
       progressText={progressText}
       value={currentIndex}
       max={items.length}
+      onBack={back}
     >
       {(lookUp) => (
         <>

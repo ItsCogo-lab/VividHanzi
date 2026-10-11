@@ -16,6 +16,7 @@ import {
   selectSessionItems,
   createRetryExercise,
   getFirstAttemptResults,
+  getLastAnswer,
   isRetry,
   pickDefinition,
   sessionReducer,
@@ -149,9 +150,11 @@ describe('selectSessionItems', () => {
 
 describe('sessionReducer', () => {
   const exercises: Exercise[] = pool.slice(0, 2).map((item) => ({ type: 'flashcard', item }))
+  // The progress when the exercise was shown, kept to undo the answer
+  const shown = createEmptyProgress()
 
   it('on answering, stores the result and moves to the next exercise', () => {
-    const state = sessionReducer(createSessionState(exercises), { type: 'answer', correct: true })
+    const state = sessionReducer(createSessionState(exercises), { type: 'answer', correct: true, progress: shown })
 
     expect(state.currentIndex).toBe(1)
     expect(state.results).toEqual([{ itemId: 'char:你', exerciseType: 'flashcard', correct: true }])
@@ -160,25 +163,25 @@ describe('sessionReducer', () => {
 
   it('finishes when all exercises have been answered correctly', () => {
     let state = createSessionState(exercises)
-    state = sessionReducer(state, { type: 'answer', correct: true })
+    state = sessionReducer(state, { type: 'answer', correct: true, progress: shown })
     expect(isSessionFinished(state)).toBe(false)
 
-    state = sessionReducer(state, { type: 'answer', correct: true })
+    state = sessionReducer(state, { type: 'answer', correct: true, progress: shown })
     expect(isSessionFinished(state)).toBe(true)
     expect(getCurrentExercise(state)).toBeUndefined()
   })
 
   it('asks a missed exercise again at the end until it is answered correctly', () => {
     let state = createSessionState(exercises)
-    state = sessionReducer(state, { type: 'answer', correct: false })
-    state = sessionReducer(state, { type: 'answer', correct: true })
+    state = sessionReducer(state, { type: 'answer', correct: false, progress: shown })
+    state = sessionReducer(state, { type: 'answer', correct: true, progress: shown })
     expect(isRetry(state)).toBe(true)
     expect(getCurrentExercise(state)?.item).toBe(exercises[0]!.item)
 
-    state = sessionReducer(state, { type: 'answer', correct: false })
+    state = sessionReducer(state, { type: 'answer', correct: false, progress: shown })
     expect(getCurrentExercise(state)?.item).toBe(exercises[0]!.item)
 
-    state = sessionReducer(state, { type: 'answer', correct: true })
+    state = sessionReducer(state, { type: 'answer', correct: true, progress: shown })
     expect(isSessionFinished(state)).toBe(true)
     expect(state.results).toHaveLength(4)
   })
@@ -189,24 +192,54 @@ describe('sessionReducer', () => {
     expect(getCurrentExercise(state)).toBe(exercises[1])
     expect(state.firstAttemptCount).toBe(1)
 
-    state = sessionReducer(state, { type: 'answer', correct: true })
+    state = sessionReducer(state, { type: 'answer', correct: true, progress: shown })
     expect(isSessionFinished(state)).toBe(true)
     expect(state.results).toHaveLength(1)
   })
 
   it('only the first attempts count for the score', () => {
     let state = createSessionState(exercises)
-    state = sessionReducer(state, { type: 'answer', correct: false })
-    state = sessionReducer(state, { type: 'answer', correct: true })
-    state = sessionReducer(state, { type: 'answer', correct: true })
+    state = sessionReducer(state, { type: 'answer', correct: false, progress: shown })
+    state = sessionReducer(state, { type: 'answer', correct: true, progress: shown })
+    state = sessionReducer(state, { type: 'answer', correct: true, progress: shown })
 
     expect(summarizeResults(getFirstAttemptResults(state))).toEqual({ total: 2, correct: 1, wrong: 1 })
+  })
+
+  it('goes back to the last answered exercise, as it was before answering it', () => {
+    const start = createSessionState(exercises)
+    const answered = recordAnswer(shown, 'char:你', false, new Date())
+    let state = sessionReducer(start, { type: 'answer', correct: false, progress: shown })
+    state = sessionReducer(state, { type: 'answer', correct: true, progress: answered })
+
+    // From the retry of the missed exercise back to the second one
+    expect(getLastAnswer(state)).toEqual({ itemId: getStudyItemId(exercises[1]!.item), progress: answered })
+    state = sessionReducer(state, { type: 'back' })
+    expect(state.currentIndex).toBe(1)
+    expect(state.results).toHaveLength(1)
+
+    // And to the first one: its retry and its result are gone
+    expect(getLastAnswer(state)).toEqual({ itemId: getStudyItemId(exercises[0]!.item), progress: shown })
+    state = sessionReducer(state, { type: 'back' })
+    expect(state).toBe(start)
+    expect(getLastAnswer(state)).toBeUndefined()
+    expect(sessionReducer(state, { type: 'back' })).toBe(start)
+  })
+
+  it('can go back from the summary', () => {
+    let state = createSessionState(exercises)
+    state = sessionReducer(state, { type: 'answer', correct: true, progress: shown })
+    state = sessionReducer(state, { type: 'answer', correct: true, progress: shown })
+    expect(isSessionFinished(state)).toBe(true)
+
+    state = sessionReducer(state, { type: 'back' })
+    expect(getCurrentExercise(state)).toBe(exercises[1])
   })
 
   it('ignores answers once the session has finished', () => {
     const finished = { ...createSessionState(exercises), currentIndex: 2 }
 
-    expect(sessionReducer(finished, { type: 'answer', correct: true })).toBe(finished)
+    expect(sessionReducer(finished, { type: 'answer', correct: true, progress: shown })).toBe(finished)
   })
 })
 

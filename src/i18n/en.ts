@@ -76,6 +76,8 @@ export const en = {
   'practice.writingOnlyEmpty': "Nothing to write here yet. A word can be written once you've answered it right in another exercise.",
   'practice.chooseOtherTypes': 'Choose other exercises',
   'practice.again': 'Practice again',
+  'practice.back': 'Back',
+  'practice.backHint': 'Undo the last answer and go back to it',
   'practice.retry': 'Once more: you missed this one earlier.',
   'practice.continue': 'Continue',
   'practice.choice.meaningQuestion': 'What does it mean?',
