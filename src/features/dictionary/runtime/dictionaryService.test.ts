@@ -107,6 +107,24 @@ describe('pickExamples', () => {
     const picked = pickExamples('柠檬', [sentence(1, '柠檬很龘。'), sentence(2, '我吃了你的柠檬。')])
     expect(picked.map((example) => example.tatoebaId)).toEqual([2, 1])
   })
+
+  it('prefers sentences that show the word in context over the word alone', () => {
+    const sentence = (tatoebaId: number, zh: string) => ({
+      tatoebaId,
+      zh,
+      author: 'a',
+      en: 'x',
+      translationTatoebaId: 1,
+      words: ['完成'],
+    })
+    const picked = pickExamples('完成', [
+      sentence(1, '完成了！'),
+      sentence(2, '完成了。'),
+      sentence(3, '我们完成了!'),
+      sentence(4, '我已经完成作业了。'),
+    ])
+    expect(picked.map((example) => example.tatoebaId)).toEqual([4, 1, 3])
+  })
 })
 
 describe('loadDictionaryChunk', () => {

@@ -11,6 +11,7 @@
  *
  * No sentence is generated or modified: they are copied as is.
  */
+import { rankExamples, type WordList } from '../../../src/features/dictionary/exampleChoice.ts'
 import type { ExampleSentence } from '../../../src/features/dictionary/types.ts'
 
 export interface TatoebaSentence {
@@ -68,15 +69,24 @@ export interface ExampleInputs {
   english: ReadonlyMap<number, TatoebaSentence>
   /** English translations of each Chinese sentence. */
   translations: ReadonlyMap<number, readonly number[]>
+  /**
+   * Sentences to keep even if no word picks them: the grammar notes quote
+   * them (often short ones, like 你呢？). Those that fit this level are added.
+   */
+  keep?: ReadonlySet<number>
+  /** Dictionary words, to prefer sentences where the word stands on its own (rankExamples). */
+  dictionaryWords?: WordList
 }
 
 /**
  * Chooses up to MAX_EXAMPLES_PER_WORD sentences per word. Deterministic
- * criterion: shortest first and, at equal length, the one with the lowest
- * id. The translation with the lowest id is used.
+ * criterion: sentences where the word stands on its own first, then those
+ * that show it in context (rankExamples), then shortest first and, at equal
+ * length, the one with the lowest id. The translation with the lowest id is
+ * used.
  */
 export function selectExamples(inputs: ExampleInputs): ExampleSentence[] {
-  const { words, knownCharacters, chinese, english, translations } = inputs
+  const { words, knownCharacters, chinese, english, translations, keep = new Set<number>(), dictionaryWords } = inputs
 
   const candidates = [...chinese.values()]
     .filter((sentence) => sentence.author !== undefined && isUsableSentence(sentence.text, knownCharacters))
@@ -94,23 +104,27 @@ export function selectExamples(inputs: ExampleInputs): ExampleSentence[] {
     )
 
   const selected = new Map<number, ExampleSentence>()
+  const toExample = ({ sentence, translation }: (typeof candidates)[number]): ExampleSentence => ({
+    tatoebaId: sentence.id,
+    zh: sentence.text,
+    author: sentence.author!,
+    en: translation.text,
+    translationTatoebaId: translation.id,
+    ...(translation.author !== undefined && { translationAuthor: translation.author }),
+    words: [],
+  })
   for (const word of words) {
-    const examples = candidates.filter(({ sentence }) => sentence.text.includes(word)).slice(0, MAX_EXAMPLES_PER_WORD)
-    for (const { sentence, translation } of examples) {
-      const existing = selected.get(sentence.id)
-      if (existing) {
-        existing.words.push(word)
-        continue
-      }
-      selected.set(sentence.id, {
-        tatoebaId: sentence.id,
-        zh: sentence.text,
-        author: sentence.author!,
-        en: translation.text,
-        translationTatoebaId: translation.id,
-        ...(translation.author !== undefined && { translationAuthor: translation.author }),
-        words: [word],
-      })
+    const matching = candidates.filter(({ sentence }) => sentence.text.includes(word))
+    const examples = rankExamples(matching, word, ({ sentence }) => sentence.text, dictionaryWords).slice(0, MAX_EXAMPLES_PER_WORD)
+    for (const candidate of examples) {
+      const example = selected.get(candidate.sentence.id) ?? toExample(candidate)
+      example.words.push(word)
+      selected.set(candidate.sentence.id, example)
+    }
+  }
+  for (const candidate of candidates) {
+    if (keep.has(candidate.sentence.id) && !selected.has(candidate.sentence.id)) {
+      selected.set(candidate.sentence.id, { ...toExample(candidate), grammarOnly: true })
     }
   }
   return [...selected.values()].sort((a, b) => a.tatoebaId - b.tatoebaId)

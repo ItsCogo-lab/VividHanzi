@@ -1,6 +1,7 @@
+import { createWordList, rankExamples, type WordList } from '../exampleChoice.ts'
 import { getExamplesFor, loadExampleSet, MAX_EXAMPLES_SHOWN } from '../examples.ts'
 import type { DictionaryChunk } from '../fullDictionary.ts'
-import { hskDictionary } from '../hskDictionary.ts'
+import { hskDictionary, hskWordList } from '../hskDictionary.ts'
 import type { StrokeData } from '../strokeData.ts'
 import { strokeFileName } from '../strokes.ts'
 import type { StudyItem } from '../studyItem.ts'
@@ -110,18 +111,39 @@ export interface Examples {
 }
 
 let knownCharacters: Set<string> | undefined
+let exampleWords: Promise<WordList> | undefined
+
+/**
+ * The words example sentences are split into to tell whether the term
+ * stands on its own: HSK 1-5. The full dictionary would be better, but its
+ * chunks for every candidate sentence would have to load first. HSK 5 comes
+ * from its own lazy chunk (the one Today's Word uses); without it, HSK 1-4.
+ */
+function loadExampleWords(): Promise<WordList> {
+  exampleWords ??= import('../../../data/hsk5/words.ts').then(
+    ({ hsk5Words }) => createWordList([...hskDictionary.words.values(), ...hsk5Words].map((word) => word.hanzi)),
+    () => hskWordList,
+  )
+  return exampleWords
+}
 
 /**
  * Picks the sentences to show: first those that only use HSK 1-4 characters
- * (or those of the term itself), which the learner can read in full; then,
- * the shortest. The API already returns them from shortest to longest.
+ * (or those of the term itself), which the learner can read in full; within
+ * those, the ones where the term stands on its own and shows it in context
+ * (rankExamples); then, the shortest. The API already returns them from
+ * shortest to longest.
  */
-export function pickExamples(term: string, candidates: readonly ExampleSentence[]): ExampleSentence[] {
+export function pickExamples(
+  term: string,
+  candidates: readonly ExampleSentence[],
+  words: WordList = hskWordList,
+): ExampleSentence[] {
   knownCharacters ??= new Set([...hskDictionary.characters.values()].map((character) => character.hanzi))
   const known = knownCharacters
   const readable = (text: string) =>
     Array.from(text).every((symbol) => !/\p{Script=Han}/u.test(symbol) || known.has(symbol) || term.includes(symbol))
-  return candidates
+  return rankExamples(candidates, term, (sentence) => sentence.zh, words)
     .map((sentence, index) => ({
       sentence,
       index,
@@ -142,13 +164,14 @@ export async function loadExamples(
   { signal, onUpdate }: LoadOptions<Examples> = {},
 ): Promise<Availability<Examples>> {
   const term = item.entry.hanzi
+  const words = await loadExampleWords()
   const toResult = (resource: { data: ExampleSentence[]; source: string; stale: boolean }): Availability<Examples> =>
     resource.data.length === 0
       ? { status: 'missing' }
       : {
           status: 'ready',
           data: {
-            sentences: pickExamples(term, resource.data),
+            sentences: pickExamples(term, resource.data, words),
             license: TATOEBA_LICENSE,
           },
           source: resource.source,
@@ -182,7 +205,7 @@ export async function loadExamples(
   if (level !== undefined) {
     try {
       const set = await loadExampleSet(level, sources.fetchFn)
-      const sentences = getExamplesFor(set, item)
+      const sentences = getExamplesFor(set, item, words)
       if (sentences.length > 0) {
         return {
           status: 'ready',

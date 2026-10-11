@@ -132,7 +132,7 @@ export function validateExampleSet(set: ExampleSet, words: readonly Word[]): str
     seen.add(sentence.tatoebaId)
     if (isBlank(sentence.zh) || isBlank(sentence.en)) problems.push(`${label}: missing text`)
     if (isBlank(sentence.author)) problems.push(`${label}: missing author`)
-    if (sentence.words.length === 0) problems.push(`${label}: not linked to any word`)
+    if (sentence.words.length === 0 && !sentence.grammarOnly) problems.push(`${label}: not linked to any word`)
     for (const word of sentence.words) {
       if (!wordHanzi.has(word)) problems.push(`${label}: the word "${word}" is not in the dataset`)
       else if (!sentence.zh.includes(word)) problems.push(`${label}: does not contain the word "${word}"`)
