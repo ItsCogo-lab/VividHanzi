@@ -9,6 +9,20 @@ import { renderWithProviders } from '../test/renderWithProviders.tsx'
 import { SettingsPage } from './SettingsPage.tsx'
 
 describe('SettingsPage', () => {
+  it('copies a study summary to paste into an AI assistant', async () => {
+    const user = userEvent.setup()
+    const storage = memoryStorage()
+    saveProgress(recordAnswer(createEmptyProgress(), 'word:学习', true, new Date()), storage)
+    renderWithProviders(<SettingsPage />, { storage })
+
+    await user.click(screen.getByRole('button', { name: 'Copy summary' }))
+
+    expect(await screen.findByText('Summary copied. Paste it into your chat.')).toBeInTheDocument()
+    const summary = await navigator.clipboard.readText()
+    expect(summary).toContain('# My Chinese study data (VividHanzi)')
+    expect(summary).toContain('| 学习 | xué xí | to learn; to study |')
+  })
+
   it('changes and saves the number of exercises per session', async () => {
     const user = userEvent.setup()
     const storage = memoryStorage()
@@ -84,7 +98,7 @@ describe('SettingsPage', () => {
     await user.click(screen.getByRole('button', { name: 'Yes, delete everything' }))
 
     expect(loadProgress(storage)).toEqual(createEmptyProgress())
-    expect(screen.getByRole('status')).toHaveTextContent('Your progress has been deleted.')
+    expect(screen.getByText('Your progress has been deleted.')).toHaveAttribute('role', 'status')
   })
 
   it('credits the dataset sources and their licenses', () => {

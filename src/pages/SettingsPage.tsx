@@ -3,6 +3,7 @@ import { Button } from '../components/ui/Button.tsx'
 import { Card } from '../components/ui/Card.tsx'
 import { CheckboxRow } from '../components/ui/CheckboxRow.tsx'
 import { PageHeader } from '../components/ui/PageHeader.tsx'
+import { ExportData } from '../features/export/components/ExportData.tsx'
 import { InstallSetting } from '../features/install/components/InstallSetting.tsx'
 import { ToneLegend } from '../features/dictionary/components/ToneLegend.tsx'
 import { useProgress } from '../features/progress/progressContext.ts'
@@ -78,6 +79,9 @@ export function SettingsPage() {
         </SettingsSection>
         <SettingsSection title={t('settings.app')}>
           <InstallSetting />
+        </SettingsSection>
+        <SettingsSection title={t('export.title')}>
+          <ExportData />
         </SettingsSection>
         <SettingsSection title={t('settings.data')}>
           <ResetProgress />
