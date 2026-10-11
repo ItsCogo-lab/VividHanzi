@@ -11,7 +11,7 @@
  *
  * No sentence is generated or modified: they are copied as is.
  */
-import { rankExamples } from '../../../src/features/dictionary/exampleChoice.ts'
+import { rankExamples, type WordList } from '../../../src/features/dictionary/exampleChoice.ts'
 import type { ExampleSentence } from '../../../src/features/dictionary/types.ts'
 
 export interface TatoebaSentence {
@@ -74,16 +74,19 @@ export interface ExampleInputs {
    * them (often short ones, like 你呢？). Those that fit this level are added.
    */
   keep?: ReadonlySet<number>
+  /** Dictionary words, to prefer sentences where the word stands on its own (rankExamples). */
+  dictionaryWords?: WordList
 }
 
 /**
  * Chooses up to MAX_EXAMPLES_PER_WORD sentences per word. Deterministic
- * criterion: sentences that show the word in context first (rankExamples),
- * then shortest first and, at equal length, the one with the lowest id. The
- * translation with the lowest id is used.
+ * criterion: sentences where the word stands on its own first, then those
+ * that show it in context (rankExamples), then shortest first and, at equal
+ * length, the one with the lowest id. The translation with the lowest id is
+ * used.
  */
 export function selectExamples(inputs: ExampleInputs): ExampleSentence[] {
-  const { words, knownCharacters, chinese, english, translations, keep = new Set<number>() } = inputs
+  const { words, knownCharacters, chinese, english, translations, keep = new Set<number>(), dictionaryWords } = inputs
 
   const candidates = [...chinese.values()]
     .filter((sentence) => sentence.author !== undefined && isUsableSentence(sentence.text, knownCharacters))
@@ -112,7 +115,7 @@ export function selectExamples(inputs: ExampleInputs): ExampleSentence[] {
   })
   for (const word of words) {
     const matching = candidates.filter(({ sentence }) => sentence.text.includes(word))
-    const examples = rankExamples(matching, word, ({ sentence }) => sentence.text).slice(0, MAX_EXAMPLES_PER_WORD)
+    const examples = rankExamples(matching, word, ({ sentence }) => sentence.text, dictionaryWords).slice(0, MAX_EXAMPLES_PER_WORD)
     for (const candidate of examples) {
       const example = selected.get(candidate.sentence.id) ?? toExample(candidate)
       example.words.push(word)

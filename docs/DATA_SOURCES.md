@@ -172,13 +172,18 @@ It is the same source the etymology in the Tofu Learn app came from.
 Selection criteria (deterministic): Chinese sentences with an author, at most 16
 characters, without Latin letters or digits and whose Chinese characters are
 all of the same HSK level or a lower one (someone studying HSK 1 can
-read a whole HSK 1 sentence). Per word, 3 sentences: first those that add at
-least 4 Chinese characters to the word, so they show it in use (完成了！ alone
-says little), then the rest; within each group the shortest first (for equal
-length, the one with the lowest id). Sentences that only differ in punctuation
-count once. Each comes with the English translation with the lowest id. The
-same order is used for the sentences fetched from the Tatoeba API at runtime
-(`src/features/dictionary/exampleChoice.ts`). Sentences are copied
+read a whole HSK 1 sentence). Per word, 3 sentences: first those where the
+word stands on its own when the sentence is split into words by longest match
+(接 in 接电话, not in 直接回家 or 我不接受, where it is part of 直接 and 接受);
+within those, first the ones that add at least 4 Chinese characters to the
+word, so they show it in use (完成了！ alone says little), then the rest; within
+each group the shortest first (for equal length, the one with the lowest id).
+Sentences that only differ in punctuation count once. Each comes with the
+English translation with the lowest id. The build splits sentences with all
+CC-CEDICT words. The same order is used for the sentences fetched from the
+Tatoeba API at runtime (`src/features/dictionary/exampleChoice.ts`), which
+splits them with the HSK 1-5 words because the full dictionary may not have
+loaded yet. Sentences are copied
 as they are. Their pinyin is generated in the browser (see "Pinyin of the
 example sentences").
 

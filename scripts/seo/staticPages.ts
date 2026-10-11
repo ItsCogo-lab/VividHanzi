@@ -1,4 +1,5 @@
 import { formatPinyin, getCharactersOfWord, getMeanings, getTraditionalForms, getWordsWithCharacter, type Dictionary } from '../../src/features/dictionary/dictionary.ts'
+import { createWordList, type WordList } from '../../src/features/dictionary/exampleChoice.ts'
 import { getExamplesFor, tatoebaSentenceUrl } from '../../src/features/dictionary/examples.ts'
 import type { StudyItem } from '../../src/features/dictionary/studyItem.ts'
 import type { ExampleSet } from '../../src/features/dictionary/types.ts'
@@ -105,7 +106,7 @@ export function renderEntryContent(
     )
   }
 
-  const sentences = examples === undefined ? [] : getExamplesFor(examples, item)
+  const sentences = examples === undefined ? [] : getExamplesFor(examples, item, wordListOf(dictionary))
   if (sentences.length > 0) {
     sections.push(
       `<h2>Example sentences</h2>${sentences
@@ -162,6 +163,18 @@ export function escapeHtml(text: string): string {
     .replaceAll('<', '&lt;')
     .replaceAll('>', '&gt;')
     .replaceAll('"', '&quot;')
+}
+
+const wordLists = new WeakMap<Dictionary, WordList>()
+
+/** The dictionary's words, built once per dictionary (pages are rendered one by one). */
+function wordListOf(dictionary: Dictionary): WordList {
+  let words = wordLists.get(dictionary)
+  if (!words) {
+    words = createWordList([...dictionary.words.values()].map((word) => word.hanzi))
+    wordLists.set(dictionary, words)
+  }
+  return words
 }
 
 function sectionOf(kind: StudyItem['kind']): string {

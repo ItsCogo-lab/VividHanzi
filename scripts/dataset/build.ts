@@ -18,6 +18,7 @@ import { grammarPoints } from '../../src/data/grammar.ts'
 import type { Character, ExampleSet, HskLevel, Word } from '../../src/features/dictionary/types.ts'
 import { validateDictionaryData, validateExampleSet } from '../../src/features/dictionary/validation.ts'
 import { strokeFileName } from '../../src/features/dictionary/strokes.ts'
+import { createWordList } from '../../src/features/dictionary/exampleChoice.ts'
 import { CHUNK_COUNT, chunkFileName, getChunkIndex } from '../../src/features/dictionary/fullDictionary.ts'
 import { buildBaseEntries, buildFullEntries, buildHsk5Words, crossCheckCharacter, enrichCharacter, type CharacterSources } from './fusion.ts'
 import { DATA_RELEASE_DIR } from './dataRelease.ts'
@@ -185,6 +186,7 @@ if (!skippedSources.has('tatoeba')) {
   }
   const exportDate = readSource('tatoeba/export-date.txt').trim()
   // Sentences quoted by the grammar notes, each kept in the first level that can read it
+  const dictionaryWords = createWordList(cedict.keys())
   const grammarSentences = new Set(grammarPoints.flatMap((point) => point.examples.map((example) => example.tatoebaId)))
   for (const level of LEVELS) {
     const sentences = selectExamples({
@@ -196,6 +198,7 @@ if (!skippedSources.has('tatoeba')) {
       english,
       translations,
       keep: grammarSentences,
+      dictionaryWords,
     })
     for (const sentence of sentences) grammarSentences.delete(sentence.tatoebaId)
     examplesByLevel.set(level, { source: 'Tatoeba', license: 'CC BY 2.0 FR', exportDate, sentences })

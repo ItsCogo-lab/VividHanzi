@@ -1,3 +1,4 @@
+import { rankExamples, type WordList } from './exampleChoice.ts'
 import type { StudyItem } from './studyItem.ts'
 import type { ExampleSentence, ExampleSet, HskLevel } from './types.ts'
 
@@ -17,14 +18,16 @@ export async function loadExampleSet(level: HskLevel, fetchFn: typeof fetch = fe
 
 /**
  * Sentences for an entry page: the ones chosen for that word or, for a
- * character, those of the words that contain it.
+ * character, those of the words that contain it. With a word list, those
+ * where the entry stands on its own come first (see exampleChoice.ts).
  */
-export function getExamplesFor(set: ExampleSet, item: StudyItem): ExampleSentence[] {
+export function getExamplesFor(set: ExampleSet, item: StudyItem, words?: WordList): ExampleSentence[] {
   const matches =
     item.kind === 'word'
       ? (words: string[]) => words.includes(item.entry.hanzi)
       : (words: string[]) => words.some((word) => word.includes(item.entry.hanzi))
-  return set.sentences.filter((sentence) => matches(sentence.words)).slice(0, MAX_EXAMPLES_SHOWN)
+  const matching = set.sentences.filter((sentence) => matches(sentence.words))
+  return rankExamples(matching, item.entry.hanzi, (sentence) => sentence.zh, words).slice(0, MAX_EXAMPLES_SHOWN)
 }
 
 /** A sentence's page on Tatoeba, for attribution. */
