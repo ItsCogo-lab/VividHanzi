@@ -34,10 +34,13 @@ describe('Readings', () => {
     await user.click(screen.getByRole('link', { name: /我喜欢“快”/ }))
 
     expect(await screen.findByText(/Tap a word/)).toBeInTheDocument()
+    // Underline color by HSK level
+    expect(screen.getByRole('button', { name: /很/ })).toHaveAttribute('data-hsk', '1')
+    expect(screen.getByRole('button', { name: /价格/ })).toHaveAttribute('data-hsk', '4')
     await user.click(screen.getByRole('button', { name: /很/ }))
     expect(screen.getByText('I am very busy.')).toBeInTheDocument()
     expect(screen.getByText('very')).toBeInTheDocument()
-    expect(screen.getByText('HSK 1')).toBeInTheDocument()
+    expect(screen.getAllByText('HSK 1')).toHaveLength(2) // legend and badge
     expect(screen.getByRole('button', { name: /很/ })).toHaveAttribute('aria-pressed', 'true')
 
     await user.click(screen.getByRole('button', { name: 'Hide' }))

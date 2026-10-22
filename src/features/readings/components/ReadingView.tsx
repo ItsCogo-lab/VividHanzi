@@ -6,7 +6,7 @@ import { getSyllableTone, splitSyllables } from '../../../lib/tones.ts'
 import { getCharacter, getMeanings } from '../../dictionary/dictionary.ts'
 import { useDictionary, useDictionaryStore, useLoadText } from '../../dictionary/dictionaryContext.ts'
 import { getEntryPath } from '../../dictionary/entryPaths.ts'
-import { TONE_BORDER_CLASSES, TONE_TEXT_CLASSES } from '../../dictionary/toneClasses.ts'
+import { TONE_TEXT_CLASSES } from '../../dictionary/toneClasses.ts'
 import type { Hsk5Word } from '../../dictionary/types.ts'
 import { useSettings } from '../../settings/settingsContext.ts'
 import { displayPinyin, getWordTones, groupWords, listSentences, readingText, sentenceText } from '../reading.ts'
@@ -19,17 +19,35 @@ type Selection = { key: string; word: number }
 
 const HAN = /\p{Script=Han}/u
 
+/** Underline color by the word's HSK level (--color-hsk-* in index.css); outside HSK 1-5 it's faint. */
+const HSK_BORDER_CLASSES: Record<number, string> = {
+  1: 'border-hsk-1',
+  2: 'border-hsk-2',
+  3: 'border-hsk-3',
+  4: 'border-hsk-4',
+  5: 'border-hsk-5',
+}
+const HSK_BG_CLASSES: Record<number, string> = {
+  1: 'bg-hsk-1',
+  2: 'bg-hsk-2',
+  3: 'bg-hsk-3',
+  4: 'bg-hsk-4',
+  5: 'bg-hsk-5',
+}
+
 /**
- * A reading, Du Chinese style: every word underlined in its tones' colors.
- * Tapping a word shows its pinyin above it and, in the panel that stays on
- * top, the sentence's translation and the word's meaning, HSK level and
- * characters, with a button to add it to the words to learn.
+ * A reading, Du Chinese style: every word underlined in the color of its HSK
+ * level. Hovering a word shows its pinyin above it; tapping it also opens, in
+ * the panel that stays on top, the sentence's translation and the word's
+ * meaning, HSK level and characters, with a button to add it to the words
+ * to learn.
  */
 export function ReadingView({ reading }: { reading: Reading }) {
   const [selected, setSelected] = useState<Selection>()
   const [showTranslation, setShowTranslation] = useState(true)
   const [allPinyin, setAllPinyin] = useState(false)
   const [hsk5Words, setHsk5Words] = useState<readonly Hsk5Word[]>([])
+  const store = useDictionaryStore()
   // Loads the full-dictionary entries of the text's characters (meanings, HSK words)
   useLoadText(readingText(reading))
   // The HSK 5 list is a separate chunk: only for the HSK level of the words
@@ -57,6 +75,7 @@ export function ReadingView({ reading }: { reading: Reading }) {
                 <WordButton
                   key={index}
                   word={word}
+                  level={getWordHskLevel(store.wordIndex, word, hsk5Words)}
                   active={active}
                   showPinyin={allPinyin || active}
                   onSelect={() => setSelected({ key, word: index })}
@@ -103,10 +122,13 @@ export function ReadingView({ reading }: { reading: Reading }) {
         )}
       </div>
 
-      <label className="mt-4 flex w-fit items-center gap-2 text-sm text-ink-muted">
-        <input type="checkbox" checked={allPinyin} onChange={(event) => setAllPinyin(event.target.checked)} />
-        {t('readings.showAllPinyin')}
-      </label>
+      <div className="mt-4 flex flex-wrap items-center justify-between gap-x-6 gap-y-2 text-sm text-ink-muted">
+        <label className="flex items-center gap-2">
+          <input type="checkbox" checked={allPinyin} onChange={(event) => setAllPinyin(event.target.checked)} />
+          {t('readings.showAllPinyin')}
+        </label>
+        <HskLegend />
+      </div>
 
       <article lang="zh-Hans" className="font-hanzi mt-2 text-xl leading-[2.9] sm:text-2xl">
         <h1 className="mb-2 font-semibold">{renderSentence(reading.title, 'title')}</h1>
@@ -144,6 +166,24 @@ export function ReadingView({ reading }: { reading: Reading }) {
   )
 }
 
+/** What each underline color means. */
+function HskLegend() {
+  return (
+    <ul aria-label={t('readings.hskLegend')} className="flex flex-wrap items-center gap-x-3 gap-y-1">
+      {[1, 2, 3, 4, 5].map((level) => (
+        <li key={level} className="flex items-center gap-1">
+          <span aria-hidden="true" className={`h-1 w-4 rounded-full ${HSK_BG_CLASSES[level]}`} />
+          {t('dictionary.hskLevelValue', { level })}
+        </li>
+      ))}
+      <li className="flex items-center gap-1">
+        <span aria-hidden="true" className="h-1 w-4 rounded-full bg-line" />
+        {t('readings.notHsk')}
+      </li>
+    </ul>
+  )
+}
+
 function CopyButton({ text }: { text: string }) {
   const [copied, setCopied] = useState(false)
   return (
@@ -166,38 +206,39 @@ function CopyButton({ text }: { text: string }) {
 
 function WordButton({
   word,
+  level,
   active,
   showPinyin,
   onSelect,
 }: {
   word: ReadingWord
+  level: number | undefined
   active: boolean
   showPinyin: boolean
   onSelect: () => void
 }) {
-  const { toneColors } = useSettings().settings
-  const tones = getWordTones(word)
+  const underline = (level !== undefined && HSK_BORDER_CLASSES[level]) || 'border-line'
   return (
     <button
       type="button"
       aria-pressed={active}
       onClick={onSelect}
-      className={`rounded-sm px-0.5 focus-visible:outline-2 focus-visible:outline-accent ${active ? 'text-accent-strong' : 'hover:bg-accent-soft'}`}
+      data-hsk={level}
+      className={`group rounded-sm px-0.5 focus-visible:outline-2 focus-visible:outline-accent ${active ? 'text-accent-strong' : 'hover:bg-accent-soft'}`}
     >
       <ruby>
-        {Array.from(word.text).map((character, index) => {
-          const tone = tones[index]
-          const underline = toneColors && tone !== undefined ? TONE_BORDER_CLASSES[tone] : 'border-line'
-          return (
-            <span
-              key={index}
-              className={`mx-px inline-block border-b-2 leading-tight ${HAN.test(character) ? underline : 'border-transparent'}`}
-            >
-              {character}
-            </span>
-          )
-        })}
-        <rt className={`font-sans text-xs text-ink-muted ${showPinyin ? '' : 'invisible'}`}>
+        {Array.from(word.text).map((character, index) => (
+          <span
+            key={index}
+            className={`mx-px inline-block border-b-2 leading-tight ${HAN.test(character) ? underline : 'border-transparent'}`}
+          >
+            {character}
+          </span>
+        ))}
+        {/* Always takes its room, so lines don't move when it shows (hover, tap or "all pinyin") */}
+        <rt
+          className={`font-sans text-xs text-ink-muted ${showPinyin ? '' : 'invisible group-hover:visible group-focus-visible:visible'}`}
+        >
           {displayPinyin(word.pinyin ?? '')}
         </rt>
       </ruby>

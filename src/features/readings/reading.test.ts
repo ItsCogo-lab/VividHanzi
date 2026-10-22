@@ -1,4 +1,7 @@
 import { describe, expect, it } from 'vitest'
+import { createDictionaryStore } from '../dictionary/dictionaryStore.ts'
+import { hskDictionary } from '../dictionary/hskDictionary.ts'
+import { getWordHskLevel } from './wordEntry.ts'
 import { displayPinyin, getWordTones, groupReadings, groupWords, isReadingsOwner, parseReadings, readingText } from './reading.ts'
 import { TEST_READING_JSON } from './testReading.ts'
 
@@ -87,5 +90,15 @@ describe('isReadingsOwner', () => {
     expect(await isReadingsOwner(' ArnauComerma@Proton.me ')).toBe(true)
     expect(await isReadingsOwner('someone@example.com')).toBe(false)
     expect(await isReadingsOwner(null)).toBe(false)
+  })
+})
+
+describe('getWordHskLevel', () => {
+  it('finds the HSK word even with the tone change of 一 or 不', () => {
+    const index = createDictionaryStore(hskDictionary, async () => ({ characters: [], words: [] })).wordIndex
+    expect(getWordHskLevel(index, { text: '很', pinyin: 'hěn' })).toBe(1)
+    expect(getWordHskLevel(index, { text: '一', pinyin: 'yì' })).toBe(1)
+    expect(getWordHskLevel(index, { text: '不', pinyin: 'bú' })).toBe(1)
+    expect(getWordHskLevel(index, { text: '王静', pinyin: 'Wáng Jìng' })).toBeUndefined()
   })
 })

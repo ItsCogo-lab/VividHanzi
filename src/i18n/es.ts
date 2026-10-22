@@ -516,6 +516,8 @@ export const es: Record<MessageKey, string> = {
   'readings.deleteConfirm': '¿Eliminar esta lectura? No se puede deshacer.',
   'readings.profileCard': 'Tus textos privados para leer palabra por palabra.',
   'readings.open': 'Abrir lecturas',
+  'readings.hskLegend': 'Color del subrayado: nivel HSK de la palabra',
+  'readings.notHsk': 'Fuera de HSK 1-5',
   'readings.questions': 'Preguntas',
   'readings.questionsDescription': 'Para copiar y responder en papel.',
   'readings.copyQuestions': 'Copiar preguntas',

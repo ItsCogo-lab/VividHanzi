@@ -43,6 +43,13 @@
   --color-tone-4: #1565c0;
   --color-tone-5: #6b7280;
 
+  /* HSK level of a word in the readings (underline): 1 red, 2 teal, 3 amber, 4 blue, 5 purple */
+  --color-hsk-1: #d64545;
+  --color-hsk-2: #2a9d8f;
+  --color-hsk-3: #d39e00;
+  --color-hsk-4: #3b6fd4;
+  --color-hsk-5: #8e5bc9;
+
   --font-sans: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
   /* System Chinese fonts: no downloads and works offline */
   --font-hanzi: 'PingFang SC', 'Hiragino Sans GB', 'Noto Sans SC', 'Microsoft YaHei', sans-serif;
@@ -82,6 +89,12 @@ html[data-theme='dark'] {
   --color-tone-3: #6cc97c;
   --color-tone-4: #6fa9f5;
   --color-tone-5: #a0a4ab;
+
+  --color-hsk-1: #f27272;
+  --color-hsk-2: #4fc4b5;
+  --color-hsk-3: #f0c24b;
+  --color-hsk-4: #79a3f2;
+  --color-hsk-5: #b993e8;
 }
 
 /*

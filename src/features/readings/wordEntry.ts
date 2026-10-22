@@ -3,8 +3,19 @@ import type { WordIndex } from '../dictionary/segmentation.ts'
 import type { StudyItem } from '../dictionary/studyItem.ts'
 import type { ReadingWord } from './types.ts'
 
-const samePinyin = (a: string, b: string) =>
-  a.toLowerCase().replace(/\s+/g, ' ').trim() === b.toLowerCase().replace(/\s+/g, ' ').trim()
+/**
+ * Same reading, ignoring case, spacing and the tone changes of 一 and 不
+ * that texts write (yí gè, bú cuò) but dictionaries don't (yī, bù).
+ */
+const samePinyin = (a: string, b: string) => normalizePinyin(a) === normalizePinyin(b)
+
+const normalizePinyin = (pinyin: string) =>
+  pinyin
+    .toLowerCase()
+    .trim()
+    .split(/\s+/)
+    .map((syllable) => ({ yí: 'yī', yì: 'yī', bú: 'bù' })[syllable] ?? syllable)
+    .join(' ')
 
 /**
  * The dictionary entry of a word of a reading: the word read the same way,

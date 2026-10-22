@@ -516,6 +516,8 @@ export const en = {
   'readings.deleteConfirm': 'Delete this reading? This cannot be undone.',
   'readings.profileCard': 'Your private texts to read word by word.',
   'readings.open': 'Open readings',
+  'readings.hskLegend': 'Underline color: HSK level of the word',
+  'readings.notHsk': 'Not HSK 1-5',
   'readings.questions': 'Questions',
   'readings.questionsDescription': 'To copy out and answer on paper.',
   'readings.copyQuestions': 'Copy questions',
