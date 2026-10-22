@@ -58,13 +58,15 @@ describe('loadStrokes', () => {
 })
 
 describe('loadExamples', () => {
+  const outsideHsk: StudyItem = { kind: 'character', entry: ningOutsideHsk }
+
   it('stores Tatoeba sentences and refreshes them when they expire (stale-while-revalidate)', async () => {
     const cache = createMemoryCache()
     let time = 0
     const online = createFakeFetch([['https://api.tatoeba.org/', jsonResponse(ningResponse)]])
     const first = await loadExamples(
       sources(online.fetch, cache, () => time),
-      ning,
+      outsideHsk,
     )
     expect(first).toMatchObject({ status: 'ready', source: 'Tatoeba API v1', stale: false })
 
@@ -72,7 +74,7 @@ describe('loadExamples', () => {
     const updates: unknown[] = []
     const stale = await loadExamples(
       sources(online.fetch, cache, () => time),
-      ning,
+      outsideHsk,
       {
         onUpdate: (fresh) => updates.push(fresh),
       },
@@ -82,15 +84,18 @@ describe('loadExamples', () => {
     expect(online.requested).toHaveLength(2)
   })
 
-  it('offline uses the local sentences for its HSK level', async () => {
-    const local = createFakeFetch([['/examples/hsk1.json', jsonResponse(testExampleSet)]])
+  it('uses the local sentences for its HSK level before Tatoeba', async () => {
+    const local = createFakeFetch([
+      ['/examples/hsk1.json', jsonResponse(testExampleSet)],
+      ['https://api.tatoeba.org/', jsonResponse(ningResponse)],
+    ])
     const result = await loadExamples(sources(local.fetch), ning)
     expect(result).toMatchObject({ status: 'ready', source: 'public/examples (HSK 1-4)' })
+    expect(local.requested.some((url) => url.startsWith('https://api.tatoeba.org/'))).toBe(false)
   })
 
   it('offline and outside HSK says so, without making up sentences', async () => {
-    const outside: StudyItem = { kind: 'character', entry: ningOutsideHsk }
-    expect(await loadExamples(sources(offlineFetch), outside)).toEqual({ status: 'unavailable' })
+    expect(await loadExamples(sources(offlineFetch), outsideHsk)).toEqual({ status: 'unavailable' })
   })
 })
 
