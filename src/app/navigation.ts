@@ -18,3 +18,6 @@ export const NAVIGATION_ITEMS: readonly NavigationItem[] = [
   { path: '/dictionary', labelKey: 'nav.dictionary', symbol: '典' },
   { path: '/profile', labelKey: 'nav.profile', symbol: '我' },
 ]
+
+/** Readings: only for the account that has them (see features/readings), before Profile. */
+export const READINGS_ITEM: NavigationItem = { path: '/readings', labelKey: 'nav.readings', symbol: '读' }

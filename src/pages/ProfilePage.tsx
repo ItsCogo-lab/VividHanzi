@@ -12,6 +12,7 @@ import { HskLevelCard } from '../features/progress/components/HskLevelCard.tsx'
 import { useProgress } from '../features/progress/progressContext.ts'
 import { getAnswerTotals, summarizeCharacters, summarizeItems } from '../features/progress/stats.ts'
 import { getCurrentStreak } from '../features/progress/streak.ts'
+import { ReadingsCard } from '../features/readings/components/ReadingsCard.tsx'
 import { SupportCard } from '../features/support/SupportCard.tsx'
 import { useStudySets } from '../features/studySets/useStudySets.ts'
 import { getSetPath } from '../features/studySets/setPaths.ts'
@@ -72,6 +73,8 @@ export function ProfilePage() {
         </section>
 
         <AccountCard />
+
+        <ReadingsCard />
 
         <HskLevelCard />
 

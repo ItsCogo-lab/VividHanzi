@@ -56,9 +56,20 @@ next account that signs in on that browser merges its data with it.
 The localStorage keys (`hanzivocab.*`, plus `hanzivocab.sync` for the sync
 state) keep the app's old name on purpose, so saved progress survives.
 
+## Private readings
+
+Readings (Profile → Readings, `/readings`) are texts split into words with
+pinyin, meanings and sentence translations, read Du Chinese style. They can
+come from copyrighted textbooks, so they are never in the repository: each one
+is a row of the `readings` table (`supabase/readings.sql`), whose policies only
+let its owner read or change it. The section is shown only to one account
+(`isReadingsOwner` in `features/readings/reading.ts`, which compares a SHA-256
+of the email so the address isn't published). Readings are added from that
+page with a JSON file in the format described in `parseReadings`.
+
 ## Setup (one time)
 
-1. Run `supabase/schema.sql` in Supabase → SQL Editor.
+1. Run `supabase/schema.sql` and `supabase/readings.sql` in Supabase → SQL Editor.
 2. Supabase → Authentication → Sign In / Providers → Google: client ID and
    secret from Google Cloud. The secret lives only in Supabase.
 3. Google Cloud OAuth client: authorized JavaScript origins

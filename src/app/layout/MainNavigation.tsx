@@ -1,7 +1,8 @@
 import { Link, NavLink } from 'react-router'
+import { useReadings } from '../../features/readings/useReadings.ts'
 import { KOFI_BUTTON_CLASSES } from '../../features/support/SupportCard.tsx'
 import { t } from '../../i18n/index.ts'
-import { NAVIGATION_ITEMS } from '../navigation.ts'
+import { NAVIGATION_ITEMS, READINGS_ITEM } from '../navigation.ts'
 
 /**
  * A single list of links that changes shape with the screen width:
@@ -9,6 +10,8 @@ import { NAVIGATION_ITEMS } from '../navigation.ts'
  * That way we don't duplicate the navigation for each size.
  */
 export function MainNavigation() {
+  const readings = useReadings().status === 'ready'
+  const items = readings ? [...NAVIGATION_ITEMS.slice(0, -1), READINGS_ITEM, ...NAVIGATION_ITEMS.slice(-1)] : NAVIGATION_ITEMS
   return (
     <nav
       aria-label={t('app.mainNavigation')}
@@ -23,8 +26,8 @@ export function MainNavigation() {
       </Link>
 
       {/* On mobile each link is exactly 3.5rem tall (--mobile-nav-height in index.css) */}
-      <ul className="grid grid-cols-4 md:flex md:flex-col md:gap-1">
-        {NAVIGATION_ITEMS.map((item) => (
+      <ul className={`grid ${readings ? 'grid-cols-5' : 'grid-cols-4'} md:flex md:flex-col md:gap-1`}>
+        {items.map((item) => (
           <li key={item.path}>
             <NavLink
               to={item.path}
@@ -48,7 +51,7 @@ export function MainNavigation() {
       </ul>
 
       {/* Desktop only: the mobile bar has no room for a fifth item */}
-      <Link to="/support" className={`${KOFI_BUTTON_CLASSES} mt-auto hidden justify-center md:flex`}>
+      <Link to="/support" className={`${KOFI_BUTTON_CLASSES} mt-auto justify-center max-md:hidden md:flex`}>
         <span aria-hidden="true">☕</span>
         {t('support.short')}
       </Link>
