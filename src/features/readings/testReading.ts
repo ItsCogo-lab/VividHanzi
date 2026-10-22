@@ -1,3 +1,4 @@
+import { parseReadings } from './reading.ts'
 import type { ReadingsStore } from './readingsStore.ts'
 import type { Reading, ReadingSummary } from './types.ts'
 
@@ -42,7 +43,11 @@ export function createMemoryReadings(): ReadingsStore & { rows: Map<string, Read
         title: title(reading),
         titleTranslation: reading.title.translation,
       })),
-    get: async (id) => rows.get(id) ?? null,
+    // Like Supabase: the saved reading comes back as JSON and is parsed again
+    get: async (id) => {
+      const reading = rows.get(id)
+      return reading ? (parseReadings(JSON.stringify(reading))[0] ?? null) : null
+    },
     save: async (readings) => {
       for (const reading of readings) {
         const id = [...rows].find(([, row]) => row.book === reading.book && row.unit === reading.unit && title(row) === title(reading))?.[0]

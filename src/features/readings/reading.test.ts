@@ -13,6 +13,11 @@ describe('parseReadings', () => {
     expect(readingText(reading!)).toBe('我喜欢“快”我很忙。快点儿！老师价格怎么样？你忙吗？')
   })
 
+  it('reads a saved reading back, with words as objects', () => {
+    const [reading] = parseReadings(TEST_READING_JSON)
+    expect(parseReadings(JSON.stringify(reading))).toEqual([reading])
+  })
+
   it('reads a list and turns a numeric unit into text', () => {
     const one = JSON.parse(TEST_READING_JSON)
     const readings = parseReadings(JSON.stringify([one, { ...one, unit: 3 }]))

@@ -146,7 +146,9 @@ function parseSentence(value: unknown, where: string): ReadingSentence {
   return { words: value.words.map((word: unknown) => parseWord(word, where)), translation }
 }
 
-function parseWord(value: unknown, where: string): ReadingWord {
+function parseWord(word: unknown, where: string): ReadingWord {
+  // Saved readings (Supabase) keep words as { text, pinyin, meaning }
+  const value = isRecord(word) ? [word.text, word.pinyin, word.meaning].filter((part) => part !== undefined) : word
   if (!Array.isArray(value) || !value.every((part) => typeof part === 'string')) {
     throw new Error(`${where}: each word must be ["text"] or ["text", "pinyin", "meaning"].`)
   }
