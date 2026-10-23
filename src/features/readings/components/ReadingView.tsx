@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { Fragment, useEffect, useState } from 'react'
 import { Link } from 'react-router'
 import { HanziText } from '../../../components/ui/HanziText.tsx'
 import { t } from '../../../i18n/index.ts'
@@ -66,23 +66,28 @@ export function ReadingView({ reading }: { reading: Reading }) {
     const isSelected = selected?.key === key
     return (
       <span key={key} className={`box-decoration-clone rounded-md ${isSelected ? 'bg-paper ring-4 ring-paper' : ''}`}>
+        {/* <wbr>: an explicit place to break the line between words. Without it,
+            iPhone Safari didn't break between them and long lines overflowed */}
         {groupWords(sentence.words).map((group) => (
-          <span key={group[0]!.index} className="whitespace-nowrap">
-            {group.map(({ word, index }) => {
-              if (!word.pinyin) return <span key={index}>{word.text}</span>
-              const active = isSelected && selected.word === index
-              return (
-                <WordButton
-                  key={index}
-                  word={word}
-                  level={getWordHskLevel(store.wordIndex, word, hsk5Words)}
-                  active={active}
-                  showPinyin={allPinyin || active}
-                  onSelect={() => setSelected({ key, word: index })}
-                />
-              )
-            })}
-          </span>
+          <Fragment key={group[0]!.index}>
+            <wbr />
+            <span className="whitespace-nowrap">
+              {group.map(({ word, index }) => {
+                if (!word.pinyin) return <span key={index}>{word.text}</span>
+                const active = isSelected && selected.word === index
+                return (
+                  <WordButton
+                    key={index}
+                    word={word}
+                    level={getWordHskLevel(store.wordIndex, word, hsk5Words)}
+                    active={active}
+                    showPinyin={allPinyin || active}
+                    onSelect={() => setSelected({ key, word: index })}
+                  />
+                )
+              })}
+            </span>
+          </Fragment>
         ))}
       </span>
     )
@@ -130,15 +135,15 @@ export function ReadingView({ reading }: { reading: Reading }) {
         <HskLegend />
       </div>
 
-      <article lang="zh-Hans" className="font-hanzi mt-2 text-xl leading-[2.9] sm:text-2xl">
+      <article lang="zh-Hans" className="font-hanzi mt-2 min-w-0 text-xl leading-[2.9] sm:text-2xl">
         <h1 className="mb-2 font-semibold">{renderSentence(reading.title, 'title')}</h1>
         {reading.paragraphs.map((paragraph, p) =>
           paragraph.speaker ? (
-            <div key={p} className="mb-1 flex gap-2">
+            <div key={p} className="mb-1 flex min-w-0 gap-2">
               <span className="shrink-0 font-semibold">
                 {renderSentence(paragraph.speaker, `p${p}-speaker`)}：
               </span>
-              <p>{paragraph.sentences.map((sentence, s) => renderSentence(sentence, `p${p}-${s}`))}</p>
+              <p className="min-w-0 flex-1">{paragraph.sentences.map((sentence, s) => renderSentence(sentence, `p${p}-${s}`))}</p>
             </div>
           ) : (
             <p key={p} className="mb-2 indent-[2em]">
