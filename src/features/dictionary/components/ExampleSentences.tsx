@@ -17,9 +17,9 @@ import type { EntryOpener } from './EntryLink.tsx'
 
 /**
  * Example sentences from Tatoeba, with their pinyin and each sentence's link
- * and author as its license requires. Requested from the dictionary service when the entry page opens (Tatoeba at
- * runtime, or the local HSK sentences). If there are no sentences, nothing
- * is shown; if they couldn't be fetched, it says so. Pronunciations that
+ * and author as its license requires. Requested from the dictionary service when the entry page opens (the local
+ * sentences for HSK words, or Tatoeba at runtime). While they load, if there are none, or
+ * if they couldn't be fetched, it says so. Pronunciations that
  * couldn't be determined are counted in one note at the end of the block.
  */
 export function ExampleSentences({ item, opener }: { item: StudyItem; opener: EntryOpener }) {
@@ -27,15 +27,19 @@ export function ExampleSentences({ item, opener }: { item: StudyItem; opener: En
   const examples = useRuntimeData<Examples>(itemId, (sources, options) => loadExamples(sources, item, options))
   const uncertain = useUncertainCounts()
 
-  if (examples.status === 'unavailable') {
+  if (examples.status !== 'ready') {
+    const message = {
+      loading: 'dictionary.examplesLoading',
+      missing: 'dictionary.examplesMissing',
+      unavailable: 'dictionary.examplesUnavailable',
+    } as const
     return (
       <section>
         <h2 className="mb-2 text-lg font-semibold">{t('dictionary.examples')}</h2>
-        <p className="text-sm text-ink-muted">{t('dictionary.examplesUnavailable')}</p>
+        <p className="text-sm text-ink-muted">{t(message[examples.status])}</p>
       </section>
     )
   }
-  if (examples.status !== 'ready') return null
   const { sentences, license } = examples.data
   const keyOf = (tatoebaId: number) => `${itemId}-${tatoebaId}`
 
