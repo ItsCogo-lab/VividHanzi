@@ -110,16 +110,25 @@ describe('EntryDetails for a character', () => {
     renderCharacter(outsideHsk)
 
     expect(await screen.findByText('Stroke order unavailable offline.')).toBeInTheDocument()
-    expect(await screen.findByText('Example sentences unavailable offline.')).toBeInTheDocument()
+    expect(
+      await screen.findByText("Couldn't load example sentences from Tatoeba (offline, or Tatoeba isn't responding)."),
+    ).toBeInTheDocument()
   })
 
-  it('does not show stroke order or sentences if the sources lack them', async () => {
+  it('does not show stroke order if the sources lack it, and says there are no sentences', async () => {
     const fake = createFakeFetch([[/./, new Response('', { status: 404 })]])
     renderCharacter(ningCharacter, fake.fetch)
 
+    expect(await screen.findByText('No example sentences found on Tatoeba.')).toBeInTheDocument()
     await vi.waitFor(() => expect(fake.requested).toHaveLength(4))
     expect(screen.queryByRole('heading', { name: 'Stroke order' })).not.toBeInTheDocument()
-    expect(screen.queryByRole('heading', { name: 'Example sentences' })).not.toBeInTheDocument()
+  })
+
+  it('says example sentences are loading until they arrive', async () => {
+    const pending = (() => new Promise<Response>(() => {})) as typeof fetch
+    renderCharacter(ningCharacter, pending)
+
+    expect(await screen.findByText('Loading example sentences…')).toBeInTheDocument()
   })
 
   it('shows Tatoeba sentences at runtime with their attribution', async () => {
@@ -139,7 +148,6 @@ describe('EntryDetails for a character', () => {
       'https://tatoeba.org/en/sentences/show/8934444',
     )
     expect(screen.getByText(/licensed CC BY 2.0 FR/)).toBeInTheDocument()
-    expect(fake.requested).not.toContain('/examples/hsk1.json')
   })
 
   it('shows the direct translation with the lowest id', async () => {
@@ -184,13 +192,17 @@ describe('EntryDetails for a character', () => {
     expect(word).toHaveAttribute('href', getEntryPath({ kind: 'word', entry: ningmengWord }))
   })
 
-  it('without a connection to Tatoeba uses the local HSK sentences', async () => {
-    const fake = createFakeFetch([['/examples/hsk1.json', jsonResponse(testExampleSet)]])
+  it('shows the local HSK sentences first, without asking Tatoeba', async () => {
+    const fake = createFakeFetch([
+      ['/examples/hsk1.json', jsonResponse(testExampleSet)],
+      ['https://api.tatoeba.org/v1/sentences?', jsonResponse(ningResponse)],
+    ])
     renderCharacter(ningCharacter, fake.fetch)
 
     expect(await screen.findByRole('heading', { name: 'Example sentences' })).toBeInTheDocument()
     await expectSentenceWithPinyin('柠檬很酸。', 'níng méng hěn suān。')
     expect(screen.getByRole('link', { name: 'Tatoeba #8934441 by iiujik' })).toBeInTheDocument()
+    expect(fake.requested.some((url) => url.startsWith('https://api.tatoeba.org/'))).toBe(false)
   })
 
   it("shows a particle's grammar notes with its example and the Grammar Wiki link", () => {

@@ -406,8 +406,12 @@ Actions because Claude's environment cannot reach those domains):
 - **Authentication:** none.
 - **Cache:** 7 days; after that the stored data is shown and it is requested
   again in the background.
-- **On failure:** in HSK 1-4, the local sentences in `public/examples/`. Outside
-  HSK, "Example sentences unavailable offline.".
+- **When it is used:** HSK 1-4 entries show their local sentences in
+  `public/examples/` first (instant, offline, and no load on Tatoeba); the API
+  is only asked for entries outside HSK or HSK entries without local sentences.
+- **On failure:** the card says the sentences couldn't be loaded. While they
+  load it says so, and if Tatoeba has none it says that too (the section is
+  never silently missing).
 - **Selection:** the same rules as the script (at most 16 characters,
   no Latin letters or digits, with a direct English translation), plus: the sentence
   must contain the term as is (Tatoeba also returns sentences in
