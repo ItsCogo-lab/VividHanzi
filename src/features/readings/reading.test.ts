@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest'
 import { createDictionaryStore } from '../dictionary/dictionaryStore.ts'
 import { hskDictionary } from '../dictionary/hskDictionary.ts'
 import { getWordHskLevel } from './wordEntry.ts'
-import { displayPinyin, getWordTones, groupReadings, groupWords, isReadingsOwner, parseReadings, readingText } from './reading.ts'
+import { displayPinyin, findSentenceWith, getWordTones, groupReadings, groupWords, isReadingsOwner, parseReadings, readingText } from './reading.ts'
 import { TEST_READING_JSON } from './testReading.ts'
 
 describe('parseReadings', () => {
@@ -13,12 +13,18 @@ describe('parseReadings', () => {
     expect(reading?.title.words[2]).toEqual({ text: '“' })
     expect(reading?.level).toBe(4)
     expect(reading?.paragraphs[1]?.speaker?.translation).toBe('Teacher')
-    expect(readingText(reading!)).toBe('我喜欢“快”我很忙。快点儿！老师价格怎么样？你忙吗？')
+    expect(readingText(reading!)).toBe('我喜欢“快”我很忙。快点儿！老师价格怎么样？你忙吗？价格')
   })
 
   it('reads a saved reading back, with words as objects', () => {
     const [reading] = parseReadings(TEST_READING_JSON)
     expect(parseReadings(JSON.stringify(reading))).toEqual([reading])
+  })
+
+  it('finds the sentence of the text that uses a word', () => {
+    const [reading] = parseReadings(TEST_READING_JSON)
+    expect(findSentenceWith(reading!, '价格')?.translation).toBe('How is the price?')
+    expect(findSentenceWith(reading!, '葡萄')).toBeUndefined()
   })
 
   it('reads a list and turns a numeric unit into text', () => {

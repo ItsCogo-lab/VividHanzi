@@ -25,6 +25,7 @@ export const TEST_READING_JSON = JSON.stringify({
       sentences: [{ words: [['价格', 'jià gé', 'price'], ['怎么样', 'zěn me yàng', 'how'], ['？']], translation: 'How is the price?' }],
     },
   ],
+  vocabulary: [['价格', 'jià gé', 'n. price']],
   questions: [{ words: [['你', 'nǐ', 'you'], ['忙', 'máng', 'busy'], ['吗', 'ma', '(question particle)'], ['？']], translation: 'Are you busy?' }],
 })
 

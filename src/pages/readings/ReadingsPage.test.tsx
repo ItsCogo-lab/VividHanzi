@@ -36,7 +36,7 @@ describe('Readings', () => {
     expect(await screen.findByText(/Tap a word/)).toBeInTheDocument()
     // Underline color by HSK level
     expect(screen.getByRole('button', { name: /很/ })).toHaveAttribute('data-hsk', '1')
-    expect(screen.getByRole('button', { name: /价格/ })).toHaveAttribute('data-hsk', '4')
+    expect(screen.getAllByRole('button', { name: /价格/ })[0]).toHaveAttribute('data-hsk', '4')
     await user.click(screen.getByRole('button', { name: /很/ }))
     expect(screen.getByText('I am very busy.')).toBeInTheDocument()
     expect(screen.getByText('very')).toBeInTheDocument()
@@ -56,6 +56,14 @@ describe('Readings', () => {
     expect(screen.getByRole('button', { name: /老师/ })).toBeInTheDocument()
     expect(screen.getByRole('heading', { name: 'Questions' })).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'Copy questions' })).toBeInTheDocument()
+
+    // The new words, apart from the text
+    const newWords = screen.getByRole('heading', { name: 'New words' }).parentElement!
+    expect(within(newWords).getByText('n. price')).toBeInTheDocument()
+    // Its sentence meaning is the sentence of the text that uses it
+    await user.click(within(newWords).getByRole('button', { name: /价格/ }))
+    await user.click(screen.getByRole('button', { name: 'Show' }))
+    expect(screen.getByText('How is the price?')).toBeInTheDocument()
   })
 
   it('adds a word to learn to the book set of its HSK level', async () => {
@@ -68,7 +76,7 @@ describe('Readings', () => {
       </ReadingsStoreContext>,
       { path: '/readings/reading-1' },
     )
-    await user.click(await screen.findByRole('button', { name: /价格/ }))
+    await user.click((await screen.findAllByRole('button', { name: /价格/ }))[0]!)
     await user.click(screen.getByRole('button', { name: '+ Learn: add to Book words · HSK 4' }))
     expect(screen.getByRole('button', { name: '✓ In Book words · HSK 4 (remove)' })).toBeInTheDocument()
 

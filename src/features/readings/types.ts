@@ -40,6 +40,8 @@ export interface Reading {
   paragraphs: ReadingParagraph[]
   /** Questions about the text, to copy out (there is nothing to answer in the app). */
   questions?: ReadingSentence[]
+  /** The text's new words (生词), listed apart from it with their meanings. */
+  vocabulary?: ReadingWord[]
 }
 
 /** What the library lists, without the whole text. */

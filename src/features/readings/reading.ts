@@ -28,7 +28,19 @@ export function listSentences(reading: Reading): { key: string; sentence: Readin
       ...paragraph.sentences.map((sentence, s) => ({ key: `p${p}-${s}`, sentence })),
     ]),
     ...(reading.questions ?? []).map((sentence, q) => ({ key: `q${q}`, sentence })),
+    // A new word on its own: its "sentence" is just the word and its meaning
+    ...(reading.vocabulary ?? []).map((word, v) => ({
+      key: `v${v}`,
+      sentence: { words: [word], translation: word.meaning ?? '' },
+    })),
   ]
+}
+
+/** The first sentence of the text (title and paragraphs) where this word is written. */
+export function findSentenceWith(reading: Reading, text: string): ReadingSentence | undefined {
+  return [reading.title, ...reading.paragraphs.flatMap((paragraph) => paragraph.sentences)].find((sentence) =>
+    sentenceText(sentence).includes(text),
+  )
 }
 
 /**
@@ -78,10 +90,12 @@ export function displayPinyin(pinyin: string): string {
  *   { "book": "...", "level": 4, "unit": "1", "position": 1,
  *     "title": { "words": [["简单", "jiǎn dān", "simple"]], "translation": "Simple" },
  *     "paragraphs": [[{ "words": [["我", "wǒ", "I"], ["。"]], "translation": "..." }]],
- *     "questions": [{ "words": [...], "translation": "..." }] }
+ *     "questions": [{ "words": [...], "translation": "..." }],
+ *     "vocabulary": [["家具", "jiā jù", "n. furniture"]] }
  *
  * A paragraph is a list of sentences, or { "speaker": sentence, "sentences": [...] }
- * for a line of a dialogue. "level" and "questions" are optional.
+ * for a line of a dialogue. "level", "questions" and "vocabulary" (the
+ * text's new words, 生词) are optional.
  *
  * Every word with pinyin needs one syllable per hanzi, so tone colors never
  * guess. Throws an Error saying what is wrong and where.
@@ -116,6 +130,14 @@ function parseReading(value: unknown, where: string): Reading {
     throw new Error(`${where}: "questions" must be a list.`)
   }
   const questions = value.questions?.map((question: unknown, q) => parseSentence(question, `${where}, question ${q + 1}`))
+  if (value.vocabulary !== undefined && !Array.isArray(value.vocabulary)) {
+    throw new Error(`${where}: "vocabulary" must be a list.`)
+  }
+  const vocabulary = value.vocabulary?.map((word: unknown) => {
+    const parsed = parseWord(word, `${where}, vocabulary`)
+    if (!parsed.pinyin) throw new Error(`${where}, vocabulary: "${parsed.text}" needs its pinyin and meaning.`)
+    return parsed
+  })
   return {
     book,
     ...(value.level !== undefined && { level: value.level as number }),
@@ -124,6 +146,7 @@ function parseReading(value: unknown, where: string): Reading {
     title,
     paragraphs,
     ...(questions && questions.length > 0 && { questions }),
+    ...(vocabulary && vocabulary.length > 0 && { vocabulary }),
   }
 }
 

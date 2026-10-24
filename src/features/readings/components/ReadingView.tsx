@@ -9,7 +9,7 @@ import { getEntryPath } from '../../dictionary/entryPaths.ts'
 import { TONE_TEXT_CLASSES } from '../../dictionary/toneClasses.ts'
 import type { Hsk5Word } from '../../dictionary/types.ts'
 import { useSettings } from '../../settings/settingsContext.ts'
-import { displayPinyin, getWordTones, groupWords, listSentences, readingText, sentenceText } from '../reading.ts'
+import { displayPinyin, getWordTones, groupWords, findSentenceWith, listSentences, readingText, sentenceText } from '../reading.ts'
 import type { Reading, ReadingSentence, ReadingWord } from '../types.ts'
 import { findWordEntry, getWordHskLevel } from '../wordEntry.ts'
 import { LearnWordButton } from './LearnWordButton.tsx'
@@ -61,6 +61,11 @@ export function ReadingView({ reading }: { reading: Reading }) {
 
   const selectedSentence = selected && listSentences(reading).find(({ key }) => key === selected.key)?.sentence
   const selectedWord = selected && selectedSentence?.words[selected.word]
+  // A new word from the list: its sentence is the first one of the text that uses it
+  const sentence =
+    selected?.key.startsWith('v') && selectedWord
+      ? findSentenceWith(reading, selectedWord.text)
+      : selectedSentence
 
   const renderSentence = (sentence: ReadingSentence, key: string) => {
     const isSelected = selected?.key === key
@@ -107,9 +112,9 @@ export function ReadingView({ reading }: { reading: Reading }) {
           </button>
         </div>
         <p className="mt-1 min-h-6 sm:text-lg">
-          {selectedSentence ? (
+          {sentence ? (
             showTranslation ? (
-              selectedSentence.translation
+              sentence.translation
             ) : (
               '…'
             )
@@ -117,12 +122,12 @@ export function ReadingView({ reading }: { reading: Reading }) {
             <span className="text-ink-muted">{t('readings.tapWord')}</span>
           )}
         </p>
-        {selectedWord && selectedSentence && (
+        {selectedWord && (
           <>
             <h2 className="mt-3 border-t border-line pt-3 text-xs font-medium tracking-wide text-ink-muted uppercase">
               {t('readings.wordMeaning')}
             </h2>
-            <WordDetails word={selectedWord} sentence={selectedSentence} level={reading.level} hsk5Words={hsk5Words} />
+            <WordDetails word={selectedWord} sentence={sentence} level={reading.level} hsk5Words={hsk5Words} />
           </>
         )}
       </div>
@@ -152,6 +157,33 @@ export function ReadingView({ reading }: { reading: Reading }) {
           ),
         )}
       </article>
+
+      {reading.vocabulary && (
+        <section className="mt-8 border-t border-line pt-6">
+          <h2 className="text-lg font-semibold">{t('readings.vocabulary')}</h2>
+          <ol className="mt-3 grid gap-x-8 gap-y-1 sm:grid-cols-2">
+            {reading.vocabulary.map((word, v) => {
+              const active = selected?.key === `v${v}`
+              return (
+                <li key={v} className="flex items-baseline gap-3">
+                  <span className="w-5 shrink-0 text-right text-sm text-ink-muted">{v + 1}.</span>
+                  <span lang="zh-Hans" className="font-hanzi shrink-0 text-xl leading-[2.4] sm:text-2xl">
+                    <WordButton
+                      word={word}
+                      level={getWordHskLevel(store.wordIndex, word, hsk5Words)}
+                      active={active}
+                      showPinyin={false}
+                      onSelect={() => setSelected({ key: `v${v}`, word: 0 })}
+                    />
+                  </span>
+                  <span className="shrink-0">{displayPinyin(word.pinyin ?? '')}</span>
+                  <span className="text-ink-muted">{word.meaning}</span>
+                </li>
+              )
+            })}
+          </ol>
+        </section>
+      )}
 
       {reading.questions && (
         <section className="mt-8 border-t border-line pt-6">
@@ -259,7 +291,7 @@ function WordDetails({
   hsk5Words,
 }: {
   word: ReadingWord
-  sentence: ReadingSentence
+  sentence: ReadingSentence | undefined
   level: number | undefined
   hsk5Words: readonly Hsk5Word[]
 }) {

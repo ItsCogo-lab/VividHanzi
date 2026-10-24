@@ -19,7 +19,7 @@ export function LearnWordButton({
 }: {
   entry: StudyItem
   word: ReadingWord
-  sentence: ReadingSentence
+  sentence: ReadingSentence | undefined
   level: number | undefined
 }) {
   const customSets = useCustomSets()
@@ -36,7 +36,7 @@ export function LearnWordButton({
       addSet(setId)
     } else customSets.addItem(setId, itemId)
     if (word.meaning) customSets.setMeaning(setId, itemId, toSetMeaning(word.meaning))
-    const example = toSetSentence(sentence)
+    const example = sentence && toSetSentence(sentence)
     if (example) customSets.addSentence(setId, { ...example, itemId })
   }
 
